@@ -89,11 +89,6 @@ class GraphSetup:
 
         # Build the execution order: insert industry_social right after social
         ordered_analysts = list(selected_analysts)
-        if "social" in ordered_analysts and "industry_social" in analyst_nodes:
-            idx = ordered_analysts.index("social")
-            # Avoid duplicates if caller already included "industry_social"
-            if "industry_social" not in ordered_analysts:
-                ordered_analysts.insert(idx + 1, "industry_social")
 
         # Create researchers / managers ...
         bull_researcher_node = create_bull_researcher(self.quick_thinking_llm, self.bull_memory)

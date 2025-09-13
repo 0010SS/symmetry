@@ -713,7 +713,7 @@ class Toolkit:
 
     @staticmethod
     @tool
-    def resolve_industry_etf(
+    def get_industry_etf_openai(
         ticker: Annotated[str, "Ticker symbol, e.g., 'NVDA', 'AAPL', 'JPM'"],
         curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
     ) -> str:

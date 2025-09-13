@@ -48,6 +48,10 @@ class TradingAgentsGraph:
         self.debug = debug
         self.config = config or DEFAULT_CONFIG
 
+        if "industry_sentiment" in selected_analysts:
+            selected_analysts.remove("industry_sentiment")
+            selected_analysts.append("industry_social")
+
         # Update the interface's config
         set_config(self.config)
 
@@ -164,6 +168,7 @@ class TradingAgentsGraph:
                     # online tools
                     self.toolkit.get_YFin_data_online,
                     self.toolkit.get_stockstats_indicators_report_online,
+                    self.toolkit.get_industry_etf_openai,
                     # offline tools
                     self.toolkit.get_YFin_data,
                     self.toolkit.get_stockstats_indicators_report,
