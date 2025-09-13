@@ -14,7 +14,110 @@ from tqdm import tqdm
 import yfinance as yf
 from openai import OpenAI
 from .config import get_config, set_config, DATA_DIR
+from data_models import *
 
+
+def get_shareholder_news(
+    ticker: Annotated[
+        str,
+        "Search query of a company's, e.g. 'AAPL, TSM, etc.",
+    ],
+    curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+    look_back_days: Annotated[int, "how many days to look back"],
+):
+    from __future__ import annotations
+
+import os
+import json
+from datetime import datetime, timedelta, timezone
+from typing import Annotated, Dict, Any
+from openai import OpenAI
+
+# Expected: OPENAI_API_KEY in env
+# Docs: Responses API + web_search tool
+# https://platform.openai.com/docs/api-reference/responses
+# https://platform.openai.com/docs/guides/tools-web-search
+
+
+def get_shareholder_news(
+    ticker: Annotated[str, "Search query of a company's, e.g. 'AAPL, TSM, etc.'"],
+    curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+    look_back_days: Annotated[int, "How many days to look back"],
+) -> Dict[str, Any]:
+    """
+    Fetch shareholder-centric news via OpenAI Responses API web_search tool.
+
+    Returns a dict:
+    {
+      "ticker": "...",
+      "from_date": "YYYY-MM-DD",
+      "to_date": "YYYY-MM-DD",
+      "items": [
+        {
+          "headline": "...",
+          "source": "...",
+          "numbers": {"stake_pct": 9.9, "shares": 1234567, "usd_value": 12.34e6}
+        },
+        ...
+      ]
+    }
+
+    Notes:
+    - This function is a data provider only (no judgments, no recommendations).
+    - It relies on headlines/snippets and linked articles; it does not compute fundamentals.
+    - Requires an API key in OPENAI_API_KEY.
+    """
+    # --- dates ---
+    to_dt = datetime.strptime(curr_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    from_dt = to_dt - timedelta(days=int(look_back_days))
+    from_date = from_dt.date().isoformat()
+    to_date = to_dt.date().isoformat()
+
+    # --- OpenAI setup ---
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+    # Guidance for the model (facts-only extraction)
+    system_instructions = (
+        "You are a news extraction agent. Use the web_search tool to gather shareholder-"
+        "centric news for the specified ticker within the date window. Extract only "
+        "facts from headlines and linked articles (no opinions). Return JSON matching "
+        "the provided schema. If an item does not clearly relate to shareholders or ownership, "
+        "exclude it."
+    )
+
+    # Search directives (the model will run multiple searches)
+    search_directives = (
+        f"Ticker: {ticker}\n"
+        f"Window: {from_date} to {to_date} (inclusive)\n\n"
+        "Focus only on shareholder/ownership-related items:\n"
+        "- 13D/13G (beneficial ownership >5%) and amendments\n"
+        "- 13F (institutional positions; mention with date if found)\n"
+        "- Insider transactions (Forms 3/4/5), officer/director buys/sells\n"
+        "- Activist stakes, tender offers, buybacks, secondary/follow-on offerings\n"
+        "- Block trades, lock-up expirations, PIPE/convertible deals\n"
+        "- Share class/structure changes, stock splits/reverse splits, ADR ratio changes\n"
+        "- Dual listing/delisting that affects float/ownership\n\n"
+        "For each relevant article or press release:\n"
+        "- Keep one entry per distinct event (dedupe near-duplicates).\n"
+        "- Extract numbers in headlines/snippets when present (stake %, shares, $ value).\n"
+        "- Keep notes neutral and brief (one sentence max).\n"
+        "- Include source name.\n\n"
+        "Do not include analysis, predictions, or recommendations."
+    )
+
+    resp = client.responses.parse(
+        model="gpt-5-nano",
+        instructions=system_instructions,
+        input=search_directives,
+        tools=[{"type": "web_search"}],
+        text_format=ShareholderNews,
+    )
+
+    parsed: ShareholderNews = resp.output_parsed
+
+    # Convert to dict for return
+    return parsed.dict()
+    
 
 def get_finnhub_news(
     ticker: Annotated[
