@@ -12,7 +12,7 @@ from tqdm import tqdm
 import yfinance as yf
 from openai import OpenAI
 from .config import get_config, set_config, DATA_DIR
-from data_models import *
+from tradingagents.dataflows.data_models import *
 import os
 import json
 from datetime import datetime, timedelta, timezone

@@ -47,6 +47,46 @@ class Toolkit:
     def __init__(self, config=None):
         if config:
             self.update_config(config)
+    
+    @staticmethod
+    @tool
+    def get_shareholder_news(
+        ticker: Annotated[str, "Search query of a company's, e.g. 'AAPL, TSM, etc.'"],
+        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+        look_back_days: Annotated[int, "How many days to look back"],
+    ) -> str:
+        """
+        Retrieve the latest shareholder news about a given stock within a specified time frame.
+        Args:
+            ticker (str): Ticker of a company. e.g. AAPL, TSM
+            curr_date (str): Current date in yyyy-mm-dd format
+            look_back_days (int): How many days to look back
+        Returns:
+            str: A formatted dataframe containing the latest shareholder news about the company within the specified time frame
+        """
+        # --- Call the underlying data provider ---
+        news_data = interface.get_shareholder_news(ticker, curr_date, look_back_days)
+        # print(news_data)
+
+        # --- Build DataFrame ---
+        if not news_data.get("items"):
+            return f"## {ticker} News Report\n\nNo shareholder-related news found from {news_data['from_date']} to {curr_date}."
+
+        df = pd.DataFrame(news_data["items"])
+
+        # Keep only the columns we want visible
+        # (headline, source, numbers)
+        keep_cols = [c for c in ["headline", "source", "numbers"] if c in df.columns]
+        df = df[keep_cols]
+
+        # Convert DataFrame to markdown
+        news_str = df.to_markdown(index=False)
+
+        # Final formatted markdown output
+        return (
+            f"## {ticker} News Report related to significant shareholders, from {news_data['from_date']} to {curr_date}:\n\n"
+            f"{news_str}"
+        )
 
     @staticmethod
     @tool
