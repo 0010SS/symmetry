@@ -1,0 +1,155 @@
+{
+  "ticker": "NVDA",
+  "industry": "Semiconductors",
+  "from_date": "2024-05-03",
+  "to_date": "2024-05-10",
+  "items": [
+    {
+      "headline": "TSMC’s advanced packaging capacity fully booked by major AI chip customers through next year",
+      "source": "TrendForce",
+      "platform": "News site / industry research",
+      "url": "citeturn3search1",
+      "published_at": "2024-05-06T00:00:00Z",
+      "numbers": {
+        "CoWoS_monthly_target_end_of_year": 45000,
+        "CoWoS_monthly_target_end_of_year_high": 50000,
+        "SoIC_monthly_target_end_of_year_low": 5000,
+        "SoIC_monthly_target_end_of_year_high": 6000
+      },
+      "summary": "TrendForce reported TSMC’s CoWoS/SoIC advanced-packaging capacity is fully booked by major AI chip customers, affecting multiple GPU/accelerator suppliers and cloud buyers. citeturn3search1",
+      "sentiment": {
+        "label": "neutral",
+        "score": 0.0
+      }
+    },
+    {
+      "headline": "TSMC fully booked on advanced packaging until 2025, TrendForce/EDN coverage",
+      "source": "The Register (news coverage of TrendForce/EDN)",
+      "platform": "News site",
+      "url": "citeturn3search4",
+      "published_at": "2024-05-07T00:00:00Z",
+      "numbers": {
+        "quoted_tail": null
+      },
+      "summary": "Coverage summarised that TSMC’s advanced-packaging orderbook is constrained, calling out potential crowding effects on HBM and multi-customer allocation issues. citeturn3search4",
+      "sentiment": {
+        "label": "neutral",
+        "score": 0.0
+      }
+    },
+    {
+      "headline": "TSMC’s advanced packaging booked for two years, industry commentary",
+      "source": "TechNode (industry news)",
+      "platform": "News site",
+      "url": "citeturn11search9",
+      "published_at": "2024-05-06T00:00:00Z",
+      "numbers": {
+        "note": null
+      },
+      "summary": "TechNode reported Taiwanese media saying CoWoS/SoIC capacity is reserved by large GPU/HPC customers, a sector-wide supply constraint for AI accelerators. citeturn11search9",
+      "sentiment": {
+        "label": "neutral",
+        "score": 0.0
+      }
+    },
+    {
+      "headline": "Reddit: TSMC’s CoWoS capacity reportedly booked by Nvidia and AMD (community thread)",
+      "source": "r/AMD_Stock (Reddit thread)",
+      "platform": "Reddit",
+      "url": "citeturn1reddit18",
+      "published_at": "2024-05-06T00:00:00Z",
+      "numbers": {
+        "upvotes": 82
+      },
+      "summary": "Community discussion picked up TrendForce reporting that TSMC’s advanced-packaging slots are reserved by major GPU/accelerator vendors, debating allocation across peers. citeturn1reddit18",
+      "sentiment": {
+        "label": "neutral",
+        "score": 0.1
+      }
+    },
+    {
+      "headline": "Infographic: 'Breaking Down $545 Billion Semiconductor' (sector revenue breakdown shared on Reddit)",
+      "source": "r/Infographics (Reddit)",
+      "platform": "Reddit",
+      "url": "citeturn0reddit22",
+      "published_at": "2024-05-07T00:00:00Z",
+      "numbers": {
+        "upvotes": 328
+      },
+      "summary": "Viral sector infographic outlining semiconductor revenue segments and supply-chain chokepoints, widely shared by investors and technologists. citeturn0reddit22",
+      "sentiment": {
+        "label": "neutral",
+        "score": 0.0
+      }
+    },
+    {
+      "headline": "TSMC April sales jump as AI demand stays strong (social discussion)",
+      "source": "r/stocks (Reddit post summarising TSMC revenue jump)",
+      "platform": "Reddit",
+      "url": "citeturn1reddit20",
+      "published_at": "2024-05-10T00:00:00Z",
+      "numbers": {
+        "April_revenue_jump_percent": 60
+      },
+      "summary": "Reddit discussion highlighted TSMC’s strong April sales, reinforcing the industry-wide AI-driven demand narrative for foundry and packaging services. citeturn1reddit20",
+      "sentiment": {
+        "label": "neutral",
+        "score": 0.0
+      }
+    },
+    {
+      "headline": "SK Hynix says high-end HBM production largely sold out through 2025",
+      "source": "AFP (widely re-posted)",
+      "platform": "News site (AFP syndication)",
+      "url": "citeturn5search2",
+      "published_at": "2024-05-03T00:00:00Z",
+      "numbers": {
+        "HBM_2024_status": 0,
+        "HBM_2025_status": 1,
+        "note": 0
+      },
+      "summary": "SK Hynix announced HBM output for 2024 was sold out and much of 2025 already allocated, tightening memory supply used across AI accelerators. citeturn5search2",
+      "sentiment": {
+        "label": "negative",
+        "score": -0.4
+      }
+    },
+    {
+      "headline": "TSMC advanced-packaging demand heralds growth for packaging suppliers",
+      "source": "EDN / industry commentary",
+      "platform": "News site",
+      "url": "citeturn3search5",
+      "published_at": "2024-05-08T00:00:00Z",
+      "numbers": {
+        "industry_note": null
+      },
+      "summary": "Industry outlets flagged that TSMC’s booking pressure is stimulating equipment and OSAT supplier activity, a multi-company supply-chain story. citeturn3search5",
+      "sentiment": {
+        "label": "neutral",
+        "score": 0.0
+      }
+    },
+    {
+      "headline": "HBM supply tightness: coverage noting SK Hynix and Micron commitments",
+      "source": "Tom's Hardware (industry reporting)",
+      "platform": "News site",
+      "url": "citeturn5search1",
+      "published_at": "2024-05-03T00:00:00Z",
+      "numbers": {
+        "industry_shares_note": null
+      },
+      "summary": "Tom’s Hardware summarised vendor remarks that HBM inventories are mostly allocated for 2024–2025, creating cross-company memory supply tightness for AI accelerators. citeturn5search1",
+      "sentiment": {
+        "label": "negative",
+        "score": -0.3
+      }
+    }
+  ],
+  "window_summary": "Industry conversations May 3–10 focused on TSMC advanced-packaging bookings and tight HBM memory allocations constraining AI accelerator supply. citeturn3search1turn5search2",
+  "window_sentiment": {
+    "positive": 0,
+    "negative": 2,
+    "neutral": 7,
+    "net_score": -0.22
+  }
+}

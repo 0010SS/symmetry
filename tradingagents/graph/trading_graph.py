@@ -48,6 +48,10 @@ class TradingAgentsGraph:
         self.debug = debug
         self.config = config or DEFAULT_CONFIG
 
+        if "industry_sentiment" in selected_analysts:
+            selected_analysts.remove("industry_sentiment")
+            selected_analysts.append("industry_social")
+
         # Update the interface's config
         set_config(self.config)
 
