@@ -61,6 +61,19 @@ class AgentState(MessagesState):
     ]
     fundamentals_report: Annotated[str, "Report from the Fundamentals Researcher"]
 
+    industry_sentiment_report: Annotated[
+        str, "Report from the Industry Social Media Analyst"
+    ]
+    industry_market_report: Annotated[
+        str, "Report from the Industry Market Analyst"
+    ]
+    industry_fundamentals_report: Annotated[
+        str, "Report from the Industry Fundamentals Analyst"
+    ]
+    industry_company_relatedness_report: Annotated[
+        str, "Report from the Industry Company Relatedness Analyst"
+    ]
+
     # researcher team discussion step
     investment_debate_state: Annotated[
         InvestDebateState, "Current state of the debate on if to invest or not"
