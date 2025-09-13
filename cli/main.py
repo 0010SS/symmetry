@@ -913,6 +913,7 @@ def run_analysis():
                     )
                     # Set all research team members to in_progress
                     update_research_team_status("in_progress")
+                
 
                 # Research Team - Handle Investment Debate State
                 if (

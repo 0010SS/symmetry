@@ -34,7 +34,7 @@ class TradingAgentsGraph:
 
     def __init__(
         self,
-        selected_analysts=["market", "social", "news", "fundamentals"],
+        selected_analysts=["market", "social", "news", "fundamentals", "industry_social"],
         debug=False,
         config: Dict[str, Any] = None,
     ):
@@ -135,6 +135,7 @@ class TradingAgentsGraph:
                     # online tools
                     self.toolkit.get_global_news_openai,
                     self.toolkit.get_google_news,
+                    self.toolkit.get_shareholder_news,
                     # offline tools
                     self.toolkit.get_finnhub_news,
                     self.toolkit.get_reddit_news,
@@ -150,6 +151,12 @@ class TradingAgentsGraph:
                     self.toolkit.get_simfin_balance_sheet,
                     self.toolkit.get_simfin_cashflow,
                     self.toolkit.get_simfin_income_stmt,
+                ]
+            ),
+            "industry_social": ToolNode(
+                [
+                    # online tools
+                    self.toolkit.get_industry_social_news_openai,
                 ]
             ),
         }

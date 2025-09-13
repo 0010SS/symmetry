@@ -18,10 +18,8 @@ def create_market_analyst(llm, toolkit):
         # === Tools ===
         if toolkit.config.get("online_tools"):
             tools = [
-                toolkit.get_YFin_data_online,                     # MUST be called first (YoY)
+                toolkit.get_YFin_data_online,               # MUST be called first (YoY)
                 toolkit.get_stockstats_indicators_report_online,   # indicators from CSV
-                toolkit.get_YFin_data,
-                toolkit.get_stockstats_indicators_report,
             ]
             yf_tool_name = toolkit.get_YFin_data_online.name
             indi_tool_name = toolkit.get_stockstats_indicators_report_online.name

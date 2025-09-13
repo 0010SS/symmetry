@@ -487,3 +487,62 @@ class Toolkit:
         )
 
         return openai_fundamentals_results
+
+    """Industry-level tools"""
+    @staticmethod
+    @tool
+    def get_industry_social_news_openai(
+        ticker: Annotated[str, "Search query of a company's ticker, e.g. 'AAPL', 'TSM'"],
+        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+        look_back_days: Annotated[int, "How many days to look back"],
+    ) -> str:
+        """
+        Retrieve industry-level social media news related to a given stock's industry within a specified time frame.
+        Args:
+            ticker (str): Ticker of a company, e.g. AAPL, TSM
+            curr_date (str): Current date in yyyy-mm-dd format
+            look_back_days (int): How many days to look back
+        Returns:
+            str: A formatted Markdown report containing the latest industry social media news, including per-item sentiment
+                 and a window-level sentiment roll-up.
+        """
+        # --- Call the underlying data provider ---
+        print("Calling get_industry_social_news_openai...")
+        news_data = interface.get_industry_social_news_openai(ticker, curr_date, look_back_days)
+        print("Received data:", news_data)
+
+        # --- No items case ---
+        if not news_data.get("items"):
+            return (
+                f"## {ticker} Industry Social Media Report\n\n"
+                f"No industry-level social media news found from {news_data['from_date']} to {curr_date}."
+            )
+
+        # --- Build DataFrame ---
+        df = pd.DataFrame(news_data["items"])
+
+        # Keep selected columns for readability
+        keep_cols = [c for c in ["headline", "platform", "source", "summary", "sentiment", "url"] if c in df.columns]
+        df = df[keep_cols]
+
+        # Convert to Markdown
+        news_str = df.to_markdown(index=False)
+
+        # --- Compose sentiment roll-up ---
+        ws = news_data.get("window_sentiment", {})
+        ws_str = (
+            f"- Positive: {ws.get('positive', 0)}\n"
+            f"- Negative: {ws.get('negative', 0)}\n"
+            f"- Neutral: {ws.get('neutral', 0)}\n"
+        )
+        if "net_score" in ws and ws["net_score"] is not None:
+            ws_str += f"- Net score: {ws['net_score']:.2f}\n"
+
+        # --- Final Markdown report ---
+        return (
+            f"## {ticker} Industry Social Media Report, from {news_data['from_date']} to {curr_date}\n\n"
+            f"**Industry:** {news_data.get('industry','Unknown')}\n\n"
+            f"**Window Summary:** {news_data.get('window_summary','')}\n\n"
+            f"### Window Sentiment\n{ws_str}\n"
+            f"### Detailed Items\n{news_str}"
+        )

@@ -1038,3 +1038,134 @@ def get_fundamentals_openai(ticker, curr_date):
     )
 
     return response.output[1].content[0].text
+
+def get_industry_social_news_openai(
+    ticker: Annotated[str, "Search query of a company's, e.g. 'AAPL, TSM, etc.'"],
+    curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+    look_back_days: Annotated[int, "how many days to look back"],
+) -> Dict[str, Any]:
+    """
+    Fetch industry-level social-media news via OpenAI Responses API + web_search tool.
+
+    Returns a dict:
+    {
+      "ticker": "...",
+      "industry": "...",
+      "from_date": "YYYY-MM-DD",
+      "to_date": "YYYY-MM-DD",
+      "items": [
+        {
+          "headline": "...",
+          "source": "...",
+          "platform": "Reddit|X/Twitter|YouTube|TikTok|News site|...",
+          "url": "...",
+          "published_at": "YYYY-MM-DDTHH:MM:SSZ",
+          "numbers": {"mentions": 120, "likes": 2300, "retweets": 150},
+          "summary": "One-sentence factual synopsis (≤28 words).",
+          "sentiment": {"label": "positive|negative|neutral", "score": 0.42}
+        },
+        ...
+      ],
+      "window_summary": "One-sentence theme for the period (≤28 words).",
+      "window_sentiment": {"positive": 10, "negative": 6, "neutral": 9, "net_score": 0.12}
+    }
+
+    Notes:
+    - Data provider only (no opinions/recommendations).
+    - Two-step extraction: (1) resolve the company's primary industry; (2) collect
+      social-media-centric items about that industry during the window.
+    - Prefers social platforms; aims to return a larger set of social items when available.
+    - Requires OPENAI_API_KEY in the environment.
+    """
+    # --- dates ---
+    to_dt = datetime.strptime(curr_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    from_dt = to_dt - timedelta(days=int(look_back_days))
+    from_date = from_dt.date().isoformat()
+    to_date = to_dt.date().isoformat()
+
+    # --- OpenAI setup ---
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+    # --- Instructions (facts-only, tool-first, social-heavy, sentiment required) ---
+    system_instructions = (
+        "You are an **industry** social-media news extraction agent (NOT a single-company scraper). Use the web_search tool.\n"
+        "Primary objective: given a ticker, first resolve its **primary industry/sector**, then collect **industry-level** "
+        "social news and discussions for the window. Prioritize items that reflect **cross-company, supply-chain, regulatory, "
+        "or standards-driven** narratives likely to affect the whole group.\n\n"
+
+        "Scope rules:\n"
+        "- Include: multi-company themes (peer mentions), sector-wide policy/regulation, supply-chain constraints, input price shocks, "
+        "labor/union actions, technology/standard changes, index/ETF rebalances (e.g., XLK, XLE), sell-side/industry notes that name multiple peers.\n"
+        "- Exclude: purely **single-company** items **unless** the post clearly argues for **industry-wide impact** (e.g., a dominant supplier’s outage "
+        "or a pricing action that peers are already copying). If included, state the cross-industry rationale in the summary.\n\n"
+
+        "Collection strategy (cast a wide net):\n"
+        "- Use both **industry keywords** and **peer tickers/cashtags** (e.g., sector name, common sub-segments, large constituents, supplier/customer names), "
+        "plus relevant ETFs/indices (e.g., 'SOX', 'SMH', 'XLE', 'KRE').\n"
+        "- Prefer social sources and return **as many relevant social items as available** (target 15–30 if possible); de-duplicate aggressively; "
+        "prefer the original thread/post URL.\n\n"
+
+        "For each item, provide:\n"
+        "- headline; source (site/sub/author org); platform (Reddit, X/Twitter, YouTube, TikTok, News site, etc.); url; "
+        "published_at (ISO8601 if available); numbers (e.g., mentions/likes/retweets/views if present); "
+        "a **one-sentence summary** (≤28 words; factual & neutral) that makes the **industry linkage explicit**; and a **sentiment** label "
+        "(positive/negative/neutral) with an optional score in [-1, 1].\n\n"
+
+        "Window-level fields (required):\n"
+        "- **window_summary**: one-sentence factual theme (≤28 words) describing the period’s **dominant industry narrative**.\n"
+        "- **window_sentiment**: counts of positive/negative/neutral items (based on your per-item labels) and an optional net_score in [-1, 1].\n\n"
+
+        "Strict filters & guardrails:\n"
+        "- Tag each candidate internally as {scope: industry | mixed | company}. **Only output industry or mixed**; drop pure company unless it has "
+        "clear, stated cross-industry implications.\n"
+        "- Be strictly factual; no predictions or recommendations. Exclude items outside the window or off-topic."
+    )
+
+
+    # --- Search directives (multi-step guidance) ---
+    search_directives = (
+        f"Ticker: {ticker}\n"
+        f"Window: {from_date} to {to_date} (inclusive)\n\n"
+        "Step 1 — Resolve industry/sector for the ticker:\n"
+        "- Use authoritative sources (Yahoo Finance profile, Wikipedia, company IR) to determine the company's primary industry/sector. "
+        "Capture the most specific commonly-used label (e.g., 'Semiconductors', 'Specialty Retail', 'Integrated Oil & Gas').\n\n"
+        "Step 2 — Harvest industry-level **social-media** news (not just the single company):\n"
+        "- Prioritize platforms and sources such as Reddit (e.g., r/investing, r/wallstreetbets, industry subs), X/Twitter threads, "
+        "YouTube channels, TikTok posts (if web-indexed), LinkedIn posts/articles, and news sites that summarize social buzz.\n"
+        "- Only include items within the window and clearly tied to the industry (cross-company narratives are good). "
+        "De-duplicate near-identical items and prefer the original thread/post URL.\n\n"
+        "Sentiment extraction:\n"
+        "- Assign positive/negative/neutral based on the item’s text and context (e.g., wording and reaction metrics). "
+        "If uncertain, choose neutral. You may include an optional polarity score in [-1,1].\n\n"
+        "Output all fields per the required schema, including **window_summary** and **window_sentiment**."
+    )
+
+    # --- Responses API call with structured output ---
+    resp = client.responses.parse(
+        model="gpt-5-mini",
+        instructions=system_instructions,
+        input=search_directives,
+        tools=[{"type": "web_search"}],
+        text_format=IndustrySocialNews,
+    )
+
+    parsed: IndustrySocialNews = resp.output_parsed
+
+    # Defensive normalization
+    if parsed.ticker != ticker:
+        parsed.ticker = ticker
+    parsed.from_date = from_date
+    parsed.to_date = to_date
+
+
+    # If the model omitted required window fields, backfill minimally to keep downstream safe
+    if not getattr(parsed, "window_summary", None):
+        parsed.window_summary = ""
+    if not getattr(parsed, "window_sentiment", None):
+        parsed.window_sentiment = WindowSentiment(positive=0, negative=0, neutral=0, net_score=0.0)
+
+    # write the parsed output to a json file for inspection
+    with open("industry_social_output.json", "w") as f:
+        f.write(parsed.model_dump_json(indent=2))
+
+    return parsed.model_dump()

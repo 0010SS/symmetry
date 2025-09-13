@@ -45,7 +45,7 @@ def create_social_media_analyst(llm, toolkit):
             "- **Narratives & evidence**: brief bullets per narrative with representative links; label confirmed/rumor/speculative.\n"
             "- **Influence & quality**: notable accounts/threads, suspected coordination/bots (if any), and confidence.\n"
             "- **Actionable watchlist**: 3–6 one-liners (what to monitor next; include dates/events if known).\n"
-            "-  Conclude with a section titled (\"## Social Media Analyst Insights\") that contains a **Markdown table** that organizes key points "
+            "- Conclude with a section titled (\"## Social Media Analyst Insights\") that contains a **Markdown table** that organizes key points "
             "(columns: Theme | Source/Platform | Date/Window | Metric | Value | Link | Confidence | Takeaway), and a brief summary.\n\n"
 
             "⚡ Important: Do not limit yourself only to these categories. If you find other "

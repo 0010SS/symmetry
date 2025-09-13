@@ -40,7 +40,6 @@ class OwnershipNews(BaseModel):
     to_date: str
     items: list[OwnershipEvent]
 
-
 class Sentiment(BaseModel):
     # Use "positive" | "negative" | "neutral" (exact strings).
     label: str

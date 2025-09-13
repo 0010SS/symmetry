@@ -101,6 +101,7 @@ def create_fundamentals_analyst(llm, toolkit):
             "|---|---|---|---|---|---|---|---|---|\n"
             "# Generate 4–8 rows BELOW this line, grounded ONLY in tools you called. "
             "# Do not copy any example rows. Determine 'Signal' per evidence; if unclear, use 'Uncertain (?)'.\n"
+        )
 
         
 
