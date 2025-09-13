@@ -546,6 +546,170 @@ class Toolkit:
             f"### Window Sentiment\n{ws_str}\n"
             f"### Detailed Items\n{news_str}"
         )
+    
+    @staticmethod
+    @tool
+    def get_industry_fundamentals_openai(
+        ticker: Annotated[str, "Search query of a company's ticker, e.g. 'AAPL', 'TSM'"],
+        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+        look_back_days: Annotated[int, "How many days to look back"],
+        weights_mode: Annotated[str, "etf | cap | equal"] = "etf",
+        top_n_per_etf: Annotated[int, "Max constituents per ETF to include"] = 15,
+    ) -> str:
+        """
+        Retrieve **industry-level fundamentals** for the ticker’s industry in the given window.
+        Returns a compact **Markdown** report (facts only), matching the style of other industry tools.
+        """
+        print("Calling get_industry_fundamentals_openai...")
+        # --- Call the underlying data provider (unified interface.py) ---
+        data = interface.get_industry_fundamentals_openai(
+            ticker, curr_date, look_back_days, weights_mode, top_n_per_etf
+        )  # schema produced by interface.get_industry_fundamentals_openai
+        # (same call pattern as other industry tools)  # :contentReference[oaicite:3]{index=3}
+
+        # --- Handle empty cases like other tools ---
+        if not data or not (data.get("constituents") or []):
+            return (
+                f"## {ticker} Industry Fundamentals Report\n\n"
+                f"No industry-level constituents/fundamentals returned from {data.get('from_date','?')} to {curr_date}."
+            )
+
+        # --- Helper to format numbers like other industry-tool reports ---
+        def _fmt_num(x, unit=None, decimals=2):
+            if x is None:
+                return "—"
+            try:
+                v = float(x)
+            except Exception:
+                return "—"
+            if unit == "$":
+                av = abs(v)
+                if av >= 1e12:
+                    return f"${v/1e12:.2f}T"
+                if av >= 1e9:
+                    return f"${v/1e9:.2f}B"
+                if av >= 1e6:
+                    return f"${v/1e6:.2f}M"
+                return f"${v:,.0f}"
+            if unit == "%":
+                return f"{v:.2f}%"
+            return f"{v:.{decimals}f}"
+
+        # --- Unpack key blocks ---
+        industry = data.get("industry", "Unknown")
+        method = data.get("method", "unknown")
+        from_date = data.get("from_date", "")
+        to_date = data.get("to_date", curr_date)
+        uni = data.get("universe", {}) or {}
+        etfs = ", ".join((uni.get("etfs") or []))
+        ws = data.get("window_summary", "") or ""
+
+        comp = (data.get("aggregates", {}) or {}).get("composite", {}) or {}
+        wm = (data.get("aggregates", {}) or {}).get("weighted_means", {}) or {}
+        cov = data.get("coverage_stats", {}) or {}
+        n_names = cov.get("n_names", 0)
+        weights_sum = cov.get("weights_sum")
+
+        # --- Build a small top-constituents table (same pandas->markdown pattern as social tool) ---
+        rows = []
+        for c in data.get("constituents", []) or []:
+            m = (c.get("metrics") or {})
+            rows.append({
+                "Ticker": c.get("ticker", ""),
+                "Weight": (c.get("weight") or 0) * 100.0,
+                "Mcap": _fmt_num(c.get("mcap_usd"), unit="$"),
+                "EV/EBITDA": _fmt_num(m.get("ev_ebitda_ttm"), decimals=2),
+                "P/E": _fmt_num(m.get("pe_ttm"), decimals=2),
+                "Net Margin": _fmt_num(m.get("net_margin_pct"), unit="%", decimals=2),
+                "ROIC": _fmt_num(m.get("roic_pct"), unit="%", decimals=2),
+            })
+        rows.sort(key=lambda r: r["Weight"], reverse=True)
+        rows = rows[:8]
+
+        df = pd.DataFrame(rows)  # mirrors industry social tool’s style for tabular sections
+        table_md = df.to_markdown(index=False) if not df.empty else "_No constituents returned._"  # :contentReference[oaicite:4]{index=4}
+
+        # --- Compose Markdown report (sections parallel to our industry-social tool) ---
+        md = []
+        md.append(f"## {ticker} Industry Fundamentals Report")
+        md.append(f"**Industry:** {industry}  \n**Method:** {method}  \n**Window:** {from_date} → {to_date}")
+        if etfs:
+            md.append(f"**ETFs used:** {etfs}")
+        if ws:
+            md.append(f"**Window Summary:** {ws}")
+        md.append("")
+
+        # Executive summary (tight bullets)
+        md.append("### Executive Summary")
+        md.append(f"- Names covered: **{n_names}**; weights sum: **{_fmt_num(weights_sum, None, 4)}**")
+        md.append(f"- Composite EV/EBITDA: **{_fmt_num(comp.get('ev_ebitda_ttm'), decimals=2)}**; "
+                  f"Net Debt/EBITDA: **{_fmt_num(comp.get('net_debt_to_ebitda'), decimals=2)}**")
+        md.append(f"- Net Margin: **{_fmt_num(comp.get('net_margin_pct'), unit='%')}**; "
+                  f"FCF Yield: **{_fmt_num(comp.get('fcf_yield_ttm_pct'), unit='%')}**")
+        md.append("")
+
+        # Composite fundamentals (flows-first)
+        md.append("### Composite Fundamentals (TTM/MRQ)")
+        md.append(
+            f"- Revenue: {_fmt_num(comp.get('revenue_ttm'), unit='$')}, EBITDA: {_fmt_num(comp.get('ebitda_ttm'), unit='$')}, "
+            f"EBIT: {_fmt_num(comp.get('ebit_ttm'), unit='$')}, Net Income: {_fmt_num(comp.get('net_income_ttm'), unit='$')}"
+        )
+        md.append(
+            f"- CFO: {_fmt_num(comp.get('cfo_ttm'), unit='$')}, Capex: {_fmt_num(comp.get('capex_ttm'), unit='$')}, "
+            f"Cash: {_fmt_num(comp.get('cash_mrq'), unit='$')}, Debt: {_fmt_num(comp.get('debt_mrq'), unit='$')}, "
+            f"Mcap: {_fmt_num(comp.get('mcap_usd'), unit='$')}"
+        )
+        md.append(
+            f"- Gross Margin: {_fmt_num(comp.get('gross_margin_pct'), unit='%')}, "
+            f"Operating Margin: {_fmt_num(comp.get('oper_margin_pct'), unit='%')}, "
+            f"Net Margin: {_fmt_num(comp.get('net_margin_pct'), unit='%')}"
+        )
+        md.append(
+            f"- EV/EBITDA: {_fmt_num(comp.get('ev_ebitda_ttm'), decimals=2)}, "
+            f"FCF Yield: {_fmt_num(comp.get('fcf_yield_ttm_pct'), unit='%')}, "
+            f"Net Debt/EBITDA: {_fmt_num(comp.get('net_debt_to_ebitda'), decimals=2)}"
+        )
+        md.append("")
+
+        # Valuation & returns (weighted means)
+        md.append("### Valuation & Returns (Weighted Means)")
+        md.append(
+            f"- P/E: {_fmt_num(wm.get('pe_ttm'), decimals=2)}, "
+            f"P/S: {_fmt_num(wm.get('ps_ttm'), decimals=2)}, "
+            f"EV/EBITDA: {_fmt_num(wm.get('ev_ebitda_ttm'), decimals=2)}, "
+            f"Dividend Yield: {_fmt_num(wm.get('div_yield_pct'), unit='%', decimals=2)}, "
+            f"FCF Yield: {_fmt_num(wm.get('fcf_yield_ttm_pct'), unit='%', decimals=2)}"
+        )
+        md.append(
+            f"- ROIC: {_fmt_num(wm.get('roic_pct'), unit='%', decimals=2)}, "
+            f"ROE: {_fmt_num(wm.get('roe_pct'), unit='%', decimals=2)}, "
+            f"Asset Turnover: {_fmt_num(wm.get('asset_turnover'), decimals=2)}, "
+            f"Interest Coverage: {_fmt_num(wm.get('interest_coverage'), decimals=2)}, "
+            f"Piotroski F: {_fmt_num(wm.get('piotroski_f'), decimals=2)}"
+        )
+        md.append("")
+
+        # Top constituents table
+        md.append("### Top Constituents (by weight)")
+        md.append(table_md)
+        md.append("")
+
+        # Coverage & Notes
+        md.append("### Coverage & Notes")
+        md.append(f"- Universe source: {uni.get('source','—')}")
+        if uni.get("selection_notes"):
+            md.append(f"- Selection notes: {uni['selection_notes']}")
+        excl = cov.get("excluded") or []
+        if excl:
+            md.append("- Exclusions:")
+            for e in excl:
+                md.append(f"  - {e.get('ticker','?')}: {e.get('reason','')}")
+        winz = cov.get("winsorization") or {}
+        if winz.get("p_low") is not None and winz.get("p_high") is not None:
+            md.append(f"- Winsorization: p{winz['p_low']}–p{winz['p_high']} on ratio panel")
+
+        return "\n".join(md)
+
 
     @staticmethod
     @tool

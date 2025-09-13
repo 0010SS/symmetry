@@ -16,7 +16,7 @@ from tradingagents.dataflows.data_models import *
 import os
 import json
 from datetime import datetime, timedelta, timezone
-from typing import Annotated, Dict, Any
+from typing import Annotated, Dict, Any, List
 from openai import OpenAI
 
 # Expected: OPENAI_API_KEY in env
@@ -1222,7 +1222,7 @@ def get_industry_etf_openai(
     )
 
     resp = client.responses.parse(
-        model="gpt-5-mini",
+        model="gpt-5-nano",
         instructions=system_instructions,
         input=search_directives,
         tools=[{"type": "web_search"}],
@@ -1235,3 +1235,331 @@ def get_industry_etf_openai(
     parsed.ticker = ticker.upper()
 
     return parsed.model_dump()
+
+def get_industry_fundamentals_openai(
+    ticker: Annotated[str, "Search query of a company's, e.g. 'AAPL, TSM, etc.'"],
+    curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+    look_back_days: Annotated[int, "how many days to look back for 'as-of' alignment (prices/filings)"],
+    weights_mode: Annotated[str, "etf|cap|equal"] = "etf",
+    top_n_per_etf: Annotated[int, "max constituents per ETF to include"] = 15,
+) -> Dict[str, Any]:
+    """
+    Fetch **industry-level fundamentals** via OpenAI Responses API + web_search tool
+    using a **top-firms → weighted aggregation** approach.
+
+    Output schema (Pydantic) expected in tradingagents.dataflows.data_models as `IndustryFundamentals`:
+
+      {
+        "ticker": "AAPL",
+        "industry": "Semiconductors",
+        "from_date": "YYYY-MM-DD",
+        "to_date": "YYYY-MM-DD",
+        "universe": {
+          "source": "ETF|Peers|Mixed",
+          "etfs": ["SOXX","SMH"],
+          "selection_notes": "How the universe/weights were chosen"
+        },
+        "method": "etf_weighted|cap_weighted|equal_weighted",
+        "constituents": [
+          {
+            "ticker": "NVDA",
+            "name": "NVIDIA Corp",
+            "weight": 0.089,                      # if missing, we’ll backfill/normalize below
+            "mcap_usd": 3.1e12,
+            "currency": "USD",
+            "report_dates": {"ttm_end": "2025-06-30", "mrq": "2025-06-30"},
+            "flows_ttm": {                        # optional but preferred (flows-first composite)
+              "revenue": 0.0, "cogs": 0.0, "ebitda": 0.0, "ebit": 0.0, "net_income": 0.0,
+              "cfo": 0.0, "capex": 0.0
+            },
+            "stocks_mrq": {                       # optional but preferred (for EV/leverage)
+              "cash": 0.0, "total_debt": 0.0, "shares_out": 0.0
+            },
+            "metrics": {                          # ratio panel (use if flows/stocks unavailable)
+              "pe_ttm": None, "ps_ttm": None, "ev_ebitda_ttm": None,
+              "fcf_yield_ttm_pct": None, "div_yield_pct": None,
+              "gross_margin_pct": None, "oper_margin_pct": None, "net_margin_pct": None,
+              "roic_pct": None, "roe_pct": None,
+              "net_debt_to_ebitda": None, "interest_coverage": None,
+              "asset_turnover": None, "piotroski_f": None
+            }
+          }
+        ],
+        "aggregates": {                           # filled/validated in code below
+          "composite": {                          # flows-first derived ratios if flows/stocks present
+            "revenue_ttm": 0.0, "ebitda_ttm": 0.0, "ebit_ttm": 0.0, "net_income_ttm": 0.0,
+            "cfo_ttm": 0.0, "capex_ttm": 0.0, "cash_mrq": 0.0, "debt_mrq": 0.0, "mcap_usd": 0.0,
+            "gross_margin_pct": None, "oper_margin_pct": None, "net_margin_pct": None,
+            "ev_ebitda_ttm": None, "fcf_yield_ttm_pct": None, "net_debt_to_ebitda": None
+          },
+          "weighted_means": {                     # ratio-weighted means
+            "pe_ttm": None, "ps_ttm": None, "ev_ebitda_ttm": None,
+            "fcf_yield_ttm_pct": None, "div_yield_pct": None,
+            "gross_margin_pct": None, "oper_margin_pct": None, "net_margin_pct": None,
+            "roic_pct": None, "roe_pct": None,
+            "net_debt_to_ebitda": None, "interest_coverage": None,
+            "asset_turnover": None, "piotroski_f": None
+          }
+        },
+        "coverage_stats": {
+          "n_names": 0,
+          "weights_sum": 1.0,
+          "excluded": [],
+          "winsorization": {"p_low": 0.0, "p_high": 100.0}
+        },
+        "window_summary": "≤28 words factual synthesis (optional)"
+      }
+
+    Behavior:
+    - Two steps via the model: (1) resolve industry and canonical ETFs; (2) extract top constituents
+      and the best-available fundamentals (flows+stocks preferred; else ratios), with ETF weights
+      when available.
+    - Then **this function** normalizes/backs-fills weights (ETF → cap → equal) and computes
+      industry-level aggregates (flows-first composite + ratio weighted means).
+    - Data provider only (no opinions or recommendations).
+
+    Requires: OPENAI_API_KEY in env.
+    """
+
+    # --- dates ---
+    to_dt = datetime.strptime(curr_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    from_dt = to_dt - timedelta(days=int(look_back_days))
+    from_date = from_dt.date().isoformat()
+    to_date = to_dt.date().isoformat()
+
+    # --- OpenAI setup ---
+    config = get_config()
+    client = OpenAI(base_url=config["backend_url"])
+    model = config["deep_think_llm"]
+    # --- Instructions (facts-only, tool-first) ---
+    system_instructions = (
+        "You are an **industry fundamentals extraction** agent. Use the web_search tool.\n"
+        "Task:\n"
+        "1) For the given ticker, resolve its **primary industry/sector** via authoritative sources "
+        "(Yahoo Finance profile, company IR page, Wikipedia). Capture a commonly used label "
+        "(e.g., 'Semiconductors', 'Software', 'Biotech', 'Integrated Oil & Gas').\n"
+        "2) Build a **top-firms universe** for that industry:\n"
+        "   - Prefer canonical ETFs (e.g., Semis: SOXX/SMH; Software: IGV; Biotech: XBI/IBB; Energy: XLE; "
+        "     Banks: KBE/KRE; Retail: XRT). Take the top constituents (target up to {top_n} per ETF), "
+        "     with **ETF weights** if listed. De-duplicate tickers across ETFs.\n"
+        "   - If ETF holdings cannot be obtained, fall back to well-cited peer lists and later use "
+        "     market-cap or equal weights.\n"
+        "3) For **each constituent**, extract as many of the following as reliably available (as of the date window end):\n"
+        "   - **Flows (TTM)**: revenue, COGS, EBITDA, EBIT, net_income, CFO, capex.\n"
+        "   - **Stocks (MRQ)**: cash, total_debt, shares_out.\n"
+        "   - **Ratios**: PE (TTM), PS (TTM), EV/EBITDA (TTM), FCF_yield (TTM, %), dividend_yield (%), "
+        "     gross/operating/net margin (%), ROIC (%), ROE (%), net_debt_to_ebitda, interest_coverage, "
+        "     asset_turnover, Piotroski F-score.\n"
+        "   - mcap (USD) and currency.\n"
+        "4) Return JSON that matches the provided schema (`IndustryFundamentals`).\n"
+        "Rules: facts only; cite numbers from reliable sources; exclude clearly stale data; "
+        "omit fields you cannot verify. No opinions or recommendations.\n"
+    ).replace("{top_n}", str(top_n_per_etf))
+
+    # --- Search directives (multi-step guidance) ---
+    search_directives = (
+        f"Ticker: {ticker}\n"
+        f"Window (for 'as-of' alignment): {from_date} to {to_date} (inclusive)\n\n"
+        "Step 1 — Resolve industry/sector:\n"
+        "- Prefer Yahoo Finance profile, company IR, Wikipedia. Record a single industry label.\n\n"
+        "Step 2 — Identify canonical ETFs & top constituents:\n"
+        "- Select 1–3 ETFs that best represent this industry; collect their top holdings and weights.\n"
+        "- De-duplicate tickers; limit to the most representative set.\n\n"
+        "Step 3 — Extract fundamentals per constituent (as listed in the instructions):\n"
+        "- Use reliable sources (company filings, IR summaries, major data vendors in news, reputable finance sites).\n"
+        "- Use TTM for flow items and MRQ for stock items; ratios as TTM where applicable.\n\n"
+        "Output: fill every field you can in the `IndustryFundamentals` schema. "
+        "If a weight is from an ETF, place it in the constituent's `weight`."
+    )
+
+    # --- Responses API call with structured output (Pydantic) ---
+    # --- Responses API call via your gateway (same style as other working funcs) ---
+    resp = client.responses.parse(
+        model="gpt-5-nano",
+        instructions=system_instructions,
+        input=search_directives,
+        tools=[{"type": "web_search"}],
+        text_format=IndustryFundamentals,
+    )
+
+    print(f"Websearch response {resp}")
+    parsed: IndustryFundamentals = resp.output_parsed
+
+    # --- Defensive normalization (mirror your social-news pattern) ---
+    if getattr(parsed, "ticker", None) != ticker:
+        parsed.ticker = ticker
+    parsed.from_date = from_date
+    parsed.to_date = to_date
+
+    # --- Convert to dict for post-processing aggregates ---
+    out = parsed.model_dump()
+
+    # ---------- Aggregation & backfills (weights: etf → cap → equal) ----------
+    constituents: List[Dict[str, Any]] = out.get("constituents", []) or []
+
+    # Choose weights source
+    weights = []
+    mcap = []
+    for c in constituents:
+        w = c.get("weight")
+        weights.append(w if isinstance(w, (int, float)) else None)
+        mcap.append(c.get("mcap_usd"))
+
+    def _normalize(nums: List[Optional[float]]) -> Optional[List[float]]:
+        arr = [x for x in nums if isinstance(x, (int, float))]
+        if len(arr) != len(nums):
+            return None
+        s = sum(arr)
+        if not s or s <= 0:
+            return None
+        return [x / s for x in arr]
+
+    chosen_method = None
+    norm_w = _normalize(weights)
+    if norm_w:
+        chosen_method = "etf_weighted"
+    else:
+        # try cap-weight
+        if all(isinstance(x, (int, float)) and x > 0 for x in mcap) and sum(mcap) > 0:
+            norm_w = [x / sum(mcap) for x in mcap]
+            chosen_method = "cap_weighted"
+        else:
+            # equal-weight
+            n = max(len(constituents), 1)
+            norm_w = [1.0 / n] * n
+            chosen_method = "equal_weighted"
+
+    # write back normalized weights
+    for i, c in enumerate(constituents):
+        c["weight"] = norm_w[i]
+
+    out["method"] = chosen_method
+    out["coverage_stats"] = out.get("coverage_stats", {}) or {}
+    out["coverage_stats"]["n_names"] = len(constituents)
+    out["coverage_stats"]["weights_sum"] = round(sum(norm_w), 6)
+
+    # ---------- Compute aggregates ----------
+    def _get_num(d, *keys):
+        x = d
+        for k in keys:
+            x = x.get(k) if isinstance(x, dict) else None
+            if x is None:
+                return None
+        return x if isinstance(x, (int, float)) else None
+
+    # flows-first composite (weighted sums of flows/stocks & cap, then derived ratios)
+    comp = {
+        "revenue_ttm": 0.0,
+        "cogs_ttm": 0.0,
+        "ebitda_ttm": 0.0,
+        "ebit_ttm": 0.0,
+        "net_income_ttm": 0.0,
+        "cfo_ttm": 0.0,
+        "capex_ttm": 0.0,
+        "cash_mrq": 0.0,
+        "debt_mrq": 0.0,
+        "mcap_usd": 0.0,
+    }
+    for w, c in zip(norm_w, constituents):
+        # flows
+        for k_json, k in [("revenue", "revenue_ttm"), ("cogs", "cogs_ttm"), ("ebitda", "ebitda_ttm"),
+                          ("ebit", "ebit_ttm"), ("net_income", "net_income_ttm"),
+                          ("cfo", "cfo_ttm"), ("capex", "capex_ttm")]:
+            v = _get_num(c, "flows_ttm", k_json)
+            if v is not None:
+                comp[k] += w * v
+        # stocks
+        for k_json, k in [("cash", "cash_mrq"), ("total_debt", "debt_mrq")]:
+            v = _get_num(c, "stocks_mrq", k_json)
+            if v is not None:
+                comp[k] += w * v
+        # market cap
+        mc = c.get("mcap_usd")
+        if isinstance(mc, (int, float)):
+            comp["mcap_usd"] += w * mc
+
+    # derived composite ratios (guard against zero/neg denominators)
+    def _safe_div(a, b):
+        try:
+            return (a / b) if (a is not None and b is not None and b != 0) else None
+        except Exception:
+            return None
+
+    composite_out = {
+        "revenue_ttm": comp["revenue_ttm"],
+        "ebitda_ttm": comp["ebitda_ttm"],
+        "ebit_ttm": comp["ebit_ttm"],
+        "net_income_ttm": comp["net_income_ttm"],
+        "cfo_ttm": comp["cfo_ttm"],
+        "capex_ttm": comp["capex_ttm"],
+        "cash_mrq": comp["cash_mrq"],
+        "debt_mrq": comp["debt_mrq"],
+        "mcap_usd": comp["mcap_usd"],
+        "gross_margin_pct": None,
+        "oper_margin_pct": None,
+        "net_margin_pct": None,
+        "ev_ebitda_ttm": None,
+        "fcf_yield_ttm_pct": None,
+        "net_debt_to_ebitda": None,
+    }
+
+    # margins from flows if revenue available
+    if comp["revenue_ttm"] and comp["revenue_ttm"] > 0:
+        # gross margin needs COGS; if missing, skip
+        if comp["cogs_ttm"] and comp["cogs_ttm"] >= 0:
+            composite_out["gross_margin_pct"] = 100.0 * _safe_div(
+                comp["revenue_ttm"] - comp["cogs_ttm"], comp["revenue_ttm"]
+            )
+        composite_out["oper_margin_pct"] = 100.0 * _safe_div(comp["ebit_ttm"], comp["revenue_ttm"])
+        composite_out["net_margin_pct"] = 100.0 * _safe_div(comp["net_income_ttm"], comp["revenue_ttm"])
+
+    # EV/EBITDA, FCF yield, NetDebt/EBITDA
+    ev = (comp["mcap_usd"] or 0.0) + (comp["debt_mrq"] or 0.0) - (comp["cash_mrq"] or 0.0)
+    if comp["ebitda_ttm"] and comp["ebitda_ttm"] > 0:
+        composite_out["ev_ebitda_ttm"] = _safe_div(ev, comp["ebitda_ttm"])
+        composite_out["net_debt_to_ebitda"] = _safe_div((comp["debt_mrq"] or 0.0) - (comp["cash_mrq"] or 0.0),
+                                                        comp["ebitda_ttm"])
+
+    fcf_ttm = None
+    if comp["cfo_ttm"] is not None and comp["capex_ttm"] is not None:
+        fcf_ttm = comp["cfo_ttm"] - comp["capex_ttm"]
+        if comp["mcap_usd"] and comp["mcap_usd"] > 0:
+            composite_out["fcf_yield_ttm_pct"] = 100.0 * _safe_div(fcf_ttm, comp["mcap_usd"])
+
+    # ratio weighted means (when provided per name)
+    weighted_means = {
+        "pe_ttm": None, "ps_ttm": None, "ev_ebitda_ttm": None,
+        "fcf_yield_ttm_pct": None, "div_yield_pct": None,
+        "gross_margin_pct": None, "oper_margin_pct": None, "net_margin_pct": None,
+        "roic_pct": None, "roe_pct": None,
+        "net_debt_to_ebitda": None, "interest_coverage": None,
+        "asset_turnover": None, "piotroski_f": None
+    }
+
+    def _weighted_mean(key: str) -> Optional[float]:
+        num, den = 0.0, 0.0
+        for w, c in zip(norm_w, constituents):
+            v = _get_num(c, "metrics", key)
+            if isinstance(v, (int, float)):
+                num += w * v
+                den += w
+        return (num / den) if den > 0 else None
+
+    for k in list(weighted_means.keys()):
+        weighted_means[k] = _weighted_mean(k)
+
+    out["aggregates"] = {
+        "composite": composite_out,
+        "weighted_means": weighted_means,
+    }
+
+    # Be explicit on universe+method for the analyst chain
+    out["universe"] = out.get("universe", {}) or {}
+    out["universe"].setdefault("source", "ETF")  # model can overwrite
+    out["universe"].setdefault("selection_notes", "")
+
+    # Ensure required top fields are present for downstream safety
+    out.setdefault("industry", getattr(parsed, "industry", ""))
+    out.setdefault("window_summary", out.get("window_summary", ""))
+
+    return out

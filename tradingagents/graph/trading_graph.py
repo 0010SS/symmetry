@@ -34,7 +34,7 @@ class TradingAgentsGraph:
 
     def __init__(
         self,
-        selected_analysts=["market", "social", "news", "fundamentals", "industry_social", "industry_market"],
+        selected_analysts=["market", "social", "news", "fundamentals", "industry_social", "industry_market", "industry_fundamentals"],
         debug=False,
         config: Dict[str, Any] = None,
     ):
@@ -167,6 +167,12 @@ class TradingAgentsGraph:
                     # offline tools
                     self.toolkit.get_YFin_data,
                     self.toolkit.get_stockstats_indicators_report,
+                ]
+            ),
+            "industry_fundamentals": ToolNode(
+                [
+                    # online tools
+                    self.toolkit.get_industry_fundamentals_openai,
                 ]
             ),
         }
