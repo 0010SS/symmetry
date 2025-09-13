@@ -13,6 +13,7 @@ from langchain_openai import ChatOpenAI
 import tradingagents.dataflows.interface as interface
 from tradingagents.default_config import DEFAULT_CONFIG
 from langchain_core.messages import HumanMessage
+import json
 
 
 def create_msg_delete():
@@ -380,6 +381,35 @@ class Toolkit:
         )
 
         return data_income_stmt
+    
+    @staticmethod
+    @tool
+    def get_capital_returns_news(
+        ticker: Annotated[str, "Company ticker, e.g., AAPL, TSM"],
+        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+        look_back_days: Annotated[int, "How many days to look back"],
+    ) -> str:
+        """
+        Retrieve dividend & buyback (capital returns) events for a company within a date window,
+        using OpenAI web_search. Returns JSON as a string following CapitalReturnNews schema.
+        """
+        result = interface.get_capital_returns_news(ticker, curr_date, look_back_days)
+        return json.dumps(result)
+    
+    @staticmethod
+    @tool
+    def get_ownership_structure_news(
+        ticker: Annotated[str, "Company ticker, e.g., AAPL, TSM"],
+        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+        look_back_days: Annotated[int, "How many days to look back"],
+    ) -> str:
+        """
+        Retrieve an ownership-structure snapshot (float %, institutional %, insider %, top holders, share classes)
+        via OpenAI web_search. Returns JSON string following OwnershipNews schema.
+        """
+        result = interface.get_ownership_structure_news(ticker, curr_date, look_back_days)
+        return json.dumps(result)
+    
 
     @staticmethod
     @tool
