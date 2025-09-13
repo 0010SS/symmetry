@@ -24,6 +24,150 @@ from openai import OpenAI
 # https://platform.openai.com/docs/api-reference/responses
 # https://platform.openai.com/docs/guides/tools-web-search
 
+def get_capital_returns_news(
+    ticker: Annotated[str, "Company ticker, e.g., 'AAPL', 'TSM'"],
+    curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+    look_back_days: Annotated[int, "How many days to look back"],
+) -> Dict[str, Any]:
+    """
+    Fetch dividend & buyback (capital returns) news via OpenAI Responses API web_search tool.
+
+    Returns a dict:
+    {
+      "ticker": "...",
+      "from_date": "YYYY-MM-DD",
+      "to_date": "YYYY-MM-DD",
+      "items": [
+        {
+          "headline": "...",
+          "source": "...",
+          "numbers": {
+            "dividend_per_share": 0.25,
+            "yield_pct": 1.8,
+            "record_date_ts": 1718064000,
+            "ex_date_ts": 1717891200,
+            "payable_date_ts": 1719446400,
+            "buyback_auth_usd": 5.0e9,
+            "buyback_pct_float": 2.1
+          }
+        },
+        ...
+      ]
+    }
+
+    Notes:
+    - Facts-only extraction; dedupe near-duplicates.
+    - Focus on dividends (initiation/raise/cut/suspend; ex/record/payable dates) and buybacks (new/expanded authorizations, ASRs, completions).
+    """
+    # --- dates ---
+    to_dt = datetime.strptime(curr_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    from_dt = to_dt - timedelta(days=int(look_back_days))
+    from_date = from_dt.date().isoformat()
+    to_date = to_dt.date().isoformat()
+
+    # --- OpenAI setup ---
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+    system_instructions = (
+        "You are a news extraction agent. Use the web_search tool to collect CAPITAL "
+        "RETURNS events (dividends & buybacks) for the specified ticker within the date window. "
+        "Return JSON matching the provided schema; extract facts only from headlines/snippets/articles."
+    )
+
+    search_directives = (
+        f"Ticker: {ticker}\n"
+        f"Window: {from_date} to {to_date} (inclusive)\n\n"
+        "Include only dividends & buybacks:\n"
+        "- Dividend: initiation, increase, decrease, suspension; per-share amount; ex-date; record date; payable date; stated/approx yield.\n"
+        "- Buyback: new or expanded authorizations (USD size, % float if stated, duration/expiry), accelerated share repurchases (ASR), completion updates.\n"
+        "- Special dividends (amount, timing).\n\n"
+        "For each distinct event (dedupe near-duplicates):\n"
+        "- headline (plain), source (domain/site), numbers: extract any available metrics.\n"
+        "- Use keys: dividend_per_share, yield_pct, record_date_ts, ex_date_ts, payable_date_ts, buyback_auth_usd, buyback_pct_float, buyback_exec_usd.\n"
+        "- Convert known dates to UNIX seconds if present; leave missing fields out.\n"
+        "Do not add opinions, predictions, or recommendations."
+    )
+
+    resp = client.responses.parse(
+        model="gpt-5-nano",
+        instructions=system_instructions,
+        input=search_directives,
+        tools=[{"type": "web_search"}],
+        text_format=CapitalReturnNews,
+    )
+
+    parsed: CapitalReturnNews = resp.output_parsed
+    return parsed.dict()
+
+def get_ownership_structure_news(
+    ticker: Annotated[str, "Company ticker, e.g. 'AAPL', 'TSM'"],
+    curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+    look_back_days: Annotated[int, "How many days to look back"],
+) -> Dict[str, Any]:
+    """
+    Fetch an ownership-structure snapshot via OpenAI Responses API web_search tool.
+
+    Returns a dict:
+    {
+      "ticker": "...",
+      "from_date": "YYYY-MM-DD",
+      "to_date": "YYYY-MM-DD",
+      "items": [
+        {"headline": "Ownership snapshot as of 2025-09-10", "source": "example.com",
+         "numbers": {"float_pct": 86.2, "institutional_pct": 70.4, "insider_pct": 1.1, "shares_outstanding": 1.57e10}},
+        {"headline": "BlackRock top holder", "source": "example.com",
+         "numbers": {"stake_pct": 7.6, "shares": 1.23e9, "usd_value": 2.5e10}},
+        {"headline": "Share classes", "source": "example.com",
+         "numbers": {"class_a_shares": 1.0e9, "class_b_shares": 0.2e9, "votes_per_a": 1.0, "votes_per_b": 10.0}},
+        ...
+      ]
+    }
+
+    Notes:
+    - Facts only (no recommendations).
+    - Prefer the most recent snapshot and clearly-labeled sources within the time window.
+    """
+    # --- dates ---
+    to_dt = datetime.strptime(curr_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    from_dt = to_dt - timedelta(days=int(look_back_days))
+    from_date = from_dt.date().isoformat()
+    to_date = to_dt.date().isoformat()
+
+    # --- OpenAI setup ---
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+    system_instructions = (
+        "You are a news/data extraction agent. Use the web_search tool to compile an "
+        "OWNERSHIP STRUCTURE snapshot for the specified ticker within the given window. "
+        "Extract ONLY facts from headlines/snippets/articles and return JSON matching the schema."
+    )
+
+    search_directives = (
+        f"Ticker: {ticker}\n"
+        f"Window: {from_date} to {to_date} (inclusive)\n\n"
+        "Collect:\n"
+        "- Snapshot metrics: free float %, institutional %, insider %, shares outstanding, ADR ratio if stated.\n"
+        "- Top holders with stake % and/or shares and (if present) USD value; include notable insiders.\n"
+        "- Share classes and voting structure if cited; report share counts and votes/share when available.\n"
+        "- Any recent structural changes affecting float or share classes.\n\n"
+        "For each fact, emit an item with:\n"
+        "- headline (plain, concise), source (domain/site), numbers (dict of key metrics).\n"
+        "Keys to prefer in numbers: float_pct, institutional_pct, insider_pct, shares_outstanding, adr_ratio,\n"
+        "stake_pct, shares, usd_value, class_a_shares, class_b_shares, votes_per_a, votes_per_b.\n"
+        "Deduplicate near-duplicates. No analysis, predictions, or recommendations."
+    )
+
+    resp = client.responses.parse(
+        model="gpt-5-nano",
+        instructions=system_instructions,
+        input=search_directives,
+        tools=[{"type": "web_search"}],
+        text_format=OwnershipNews,
+    )
+
+    parsed: OwnershipNews = resp.output_parsed
+    return parsed.dict()
+
 
 def get_shareholder_news(
     ticker: Annotated[str, "Search query of a company's, e.g. 'AAPL, TSM, etc.'"],
