@@ -102,8 +102,8 @@ def get_shareholder_news(
     parsed: ShareholderNews = resp.output_parsed
 
     # Convert to dict for return
-    return parsed.dict()
-    
+    return parsed.model_dump()
+
 
 def get_finnhub_news(
     ticker: Annotated[
