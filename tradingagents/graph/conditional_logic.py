@@ -51,6 +51,14 @@ class ConditionalLogic:
             return "tools_industry_social"
         return "Msg Clear Industry_social"
 
+    def should_continue_industry_market(self, state: AgentState):
+        """Determine if industry market analysis should continue."""
+        messages = state["messages"]
+        last_message = messages[-1]
+        if last_message.tool_calls:
+            return "tools_industry_market"
+        return "Msg Clear Industry_market"
+
     def should_continue_debate(self, state: AgentState) -> str:
         """Determine if debate should continue."""
 

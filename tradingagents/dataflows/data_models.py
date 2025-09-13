@@ -70,3 +70,11 @@ class IndustrySocialNews(BaseModel):
     items: list[IndustrySocialItem]
     window_summary: str                # REQUIRED one-sentence theme for the period (≤ 28 words)
     window_sentiment: WindowSentiment  # REQUIRED aggregate sentiment counts (+ optional net_score)
+
+class ETFResolution(BaseModel):
+    ticker: str
+    industry: str                    # e.g., "Semiconductors", "Integrated Oil & Gas"
+    etf: str                         # e.g., "SMH", "SOXX", "XLK"
+    etf_name: Optional[str] = None   # e.g., "VanEck Semiconductor ETF"
+    sources: list[str]               # 1–3 links supporting the choice
+    rationale: Optional[str] = None  # one-liner: why this ETF represents the industry

@@ -1169,3 +1169,69 @@ def get_industry_social_news_openai(
         f.write(parsed.model_dump_json(indent=2))
 
     return parsed.model_dump()
+
+def get_industry_etf_openai(
+    ticker: Annotated[str, "Company ticker, e.g. 'AAPL', 'NVDA', 'JPM'"],
+    curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+) -> Dict[str, Any]:
+    """
+    Resolve a representative industry/sector ETF for the given ticker using OpenAI + web_search.
+    Returns a minimal dict like:
+    {
+      "ticker": "NVDA",
+      "industry": "Semiconductors",
+      "etf": "SMH",
+      "etf_name": "VanEck Semiconductor ETF",
+      "sources": ["https://...", "https://..."],
+      "rationale": "Tracks large-cap semiconductors; NVDA is a top holding."
+    }
+
+    Notes:
+    - Prefers a liquid **subsector ETF** (e.g., SMH, SOXX) over a broad sector ETF when appropriate.
+    - If no clear subsector ETF exists, defaults to the sector SPDR (e.g., XLK, XLF, XLE).
+    - Must NOT invent tickers; exclude databases/services like “XTF”.
+    - Requires OPENAI_API_KEY in the environment.
+    """
+    # Basic date sanity; not strictly needed but keeps inputs tidy
+    _ = datetime.strptime(curr_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+    system_instructions = (
+        "You are an ETF resolver. Use the web_search tool.\n"
+        "Goal: given a company ticker, (1) determine its primary industry/sector from credible sources "
+        "(Yahoo Finance profile, Wikipedia, company IR), then (2) select ONE representative, liquid ETF "
+        "that tracks that industry (prefer a well-known **subsector ETF**; otherwise use the **sector SPDR**).\n\n"
+        "Guardrails:\n"
+        "- Do NOT invent ETF symbols. Exclude databases/services like 'XTF' (not an ETF).\n"
+        "- Prefer subsector ETFs like SMH/SOXX (Semis), XBI/IBB (Biotech), IGV (Software), KRE/KBE (Banks), etc.\n"
+        "- If ambiguous, pick the most representative fund by AUM/liquidity; else fall back to sector SPDR (XLK/XLF/XLE/...).\n"
+        "- Provide 1–3 supporting links (sources). Keep a one-line rationale. Return JSON per schema."
+    )
+
+    search_directives = (
+        f"Ticker: {ticker}\n"
+        f"Today: {curr_date}\n\n"
+        "Return fields:\n"
+        "- ticker: the input ticker\n"
+        "- industry: concise industry label\n"
+        "- etf: the chosen ETF ticker (single best choice)\n"
+        "- etf_name: the ETF’s full name\n"
+        "- sources: 1–3 URLs justifying the selection (ETF provider page, holdings page, profile pages)\n"
+        "- rationale: one sentence on why this ETF represents the company’s industry\n"
+    )
+
+    resp = client.responses.parse(
+        model="gpt-5-mini",
+        instructions=system_instructions,
+        input=search_directives,
+        tools=[{"type": "web_search"}],
+        text_format=ETFResolution,
+    )
+
+    parsed: ETFResolution = resp.output_parsed
+
+    # Normalize ticker casing and ensure return matches request
+    parsed.ticker = ticker.upper()
+
+    return parsed.model_dump()

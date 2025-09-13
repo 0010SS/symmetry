@@ -40,7 +40,7 @@ class GraphSetup:
         self.risk_manager_memory = risk_manager_memory
         self.conditional_logic = conditional_logic
 
-    def setup_graph(self, selected_analysts=["market", "social", "news", "fundamentals", "industry_social"]) -> StateGraph:
+    def setup_graph(self, selected_analysts=["market", "social", "news", "fundamentals", "industry_social", "industry_market"]) -> StateGraph:
         if len(selected_analysts) == 0:
             raise ValueError("Trading Agents Graph Setup Error: no analysts selected!")
 
@@ -53,6 +53,11 @@ class GraphSetup:
             analyst_nodes["market"] = create_market_analyst(self.quick_thinking_llm, self.toolkit)
             delete_nodes["market"] = create_msg_delete()
             tool_nodes["market"] = self.tool_nodes["market"]
+
+        if "industry_market" in selected_analysts:
+            analyst_nodes["industry_market"] = create_industry_market_analyst(self.quick_thinking_llm, self.toolkit)
+            delete_nodes["industry_market"] = create_msg_delete()
+            tool_nodes["industry_market"] = self.tool_nodes["industry_market"]
 
         # --- Social (company) + Industry Social companion ---
         if "social" in selected_analysts:

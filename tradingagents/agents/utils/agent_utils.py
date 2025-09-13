@@ -546,3 +546,28 @@ class Toolkit:
             f"### Window Sentiment\n{ws_str}\n"
             f"### Detailed Items\n{news_str}"
         )
+
+    @staticmethod
+    @tool
+    def resolve_industry_etf(
+        ticker: Annotated[str, "Ticker symbol, e.g., 'NVDA', 'AAPL', 'JPM'"],
+        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+    ) -> str:
+        """
+        Agent-facing tool: resolves a representative industry ETF for a ticker via OpenAI web search
+        and returns a short Markdown snippet.
+        """
+        data = interface.get_industry_etf_openai(ticker, curr_date)
+
+        md = [
+            f"## Industry ETF Resolver — {data.get('ticker','').upper()}",
+            f"- **Industry:** {data.get('industry','')}",
+            f"- **ETF:** {data.get('etf','')} ({data.get('etf_name','')})",
+        ]
+        if data.get("rationale"):
+            md.append(f"- **Why:** {data['rationale']}")
+        if data.get("sources"):
+            md.append("**Sources:**")
+            for url in data["sources"]:
+                md.append(f"- {url}")
+        return "\n".join(md)
