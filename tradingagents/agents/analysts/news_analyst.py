@@ -37,8 +37,9 @@ def create_news_analyst(llm, toolkit):
 
             "⚡ Important: Do not limit yourself only to these categories. If you find other "
             "news or signals that could influence markets (e.g., legal rulings, environmental shocks, "
-            "technological breakthroughs, labor unrest, political changes), you must include them. You must have at least one insight that can't be found by human analysts.\n"
-            "Always think beyond the obvious categories to avoid human bias. You must come up with one category that is not listed above.\n\n"
+            "technological breakthroughs, labor unrest, political changes), you must include them." 
+            "You must come up with one category that is not listed above.\n\n"
+            "Also, provide **at least two non-obvious, evidence-backed synthesis insights** that a typical summary might miss."
 
             "Guidelines:\n"
             "- Integrate data across multiple APIs (Finnhub, Google News, Reddit, shareholder news).\n"
