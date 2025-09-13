@@ -1,4 +1,3 @@
-from typing import Annotated, Dict
 from .reddit_utils import fetch_top_from_category
 from .yfin_utils import *
 from .stockstats_utils import *
@@ -6,7 +5,6 @@ from .googlenews_utils import *
 from .finnhub_utils import get_data_in_range
 from dateutil.relativedelta import relativedelta
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
 import json
 import os
 import pandas as pd
@@ -15,18 +13,6 @@ import yfinance as yf
 from openai import OpenAI
 from .config import get_config, set_config, DATA_DIR
 from data_models import *
-
-
-def get_shareholder_news(
-    ticker: Annotated[
-        str,
-        "Search query of a company's, e.g. 'AAPL, TSM, etc.",
-    ],
-    curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
-    look_back_days: Annotated[int, "how many days to look back"],
-):
-    from __future__ import annotations
-
 import os
 import json
 from datetime import datetime, timedelta, timezone
