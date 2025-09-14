@@ -112,5 +112,7 @@ And it’s just getting started.
 > **Source Code**: https://github.com/0010SS/symmetry  
 > Join us. Democratize information.
 
+**Important Note**: our codebase structure is adapted from the amazing [TradingAgents](https://github.com/TauricResearch/TradingAgents) repo with Apache license. We've added custom prompts for all agents and implemented an extensive set of new agent nodes, tools, and edges. We sincerely appreciate their solid work and code.
+
 **Yours truly,**
 **Zehao Wen & Zihuan Zhang**
