@@ -114,7 +114,7 @@ export const TradingDashboard = () => {
 
         {/* Main Chart Area - Large center taking 4 columns, 2 rows */}
         <div className="col-span-4 row-span-2">
-          <TradingChart symbol="AAPL" />
+          <TradingChart symbol="TSLA" />
         </div>
 
         {/* Bottom panel spanning same width as chart */}
