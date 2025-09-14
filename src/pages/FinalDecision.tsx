@@ -1,29 +1,108 @@
-import { ArrowLeft, Target, TrendingUp, CheckCircle, AlertCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ArrowLeft, TrendingUp, DollarSign, Clock, Target, AlertTriangle, CheckCircle2, Eye, Activity, Shield, BarChart3, AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import riskData from "@/data/risk-final-packet.json";
 
 export default function FinalDecision() {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("overview");
 
-  const decisionFactors = [
-    { category: 'Fundamentals', score: 92, weight: 25, impact: 'Very Positive' },
-    { category: 'Technical Analysis', score: 88, weight: 20, impact: 'Positive' },
-    { category: 'Market Sentiment', score: 85, weight: 15, impact: 'Positive' },
-    { category: 'Industry Trends', score: 90, weight: 20, impact: 'Very Positive' },
-    { category: 'Cross Signals', score: 87, weight: 20, impact: 'Positive' },
-  ];
+  const getDirectionColor = (direction: string) => {
+    switch (direction) {
+      case "buy": return "text-green-600 bg-green-50";
+      case "hold": return "text-yellow-600 bg-yellow-50";
+      case "sell": return "text-red-600 bg-red-50";
+      default: return "text-gray-600 bg-gray-50";
+    }
+  };
 
-  const riskFactors = [
-    { risk: 'Market Volatility', level: 'Medium', mitigation: 'Position sizing and stop-losses' },
-    { risk: 'Sector Rotation', level: 'Low', mitigation: 'Strong fundamental support' },
-    { risk: 'Valuation Concerns', level: 'Low', mitigation: 'Fair P/E ratio vs growth' },
-    { risk: 'Macro Headwinds', level: 'Medium', mitigation: 'Defensive characteristics' },
-  ];
+  const getRiskLevelColor = (level: string) => {
+    switch (level.toLowerCase()) {
+      case "low": return "text-green-600 bg-green-50";
+      case "medium": return "text-yellow-600 bg-yellow-50";
+      case "high": return "text-red-600 bg-red-50";
+      default: return "text-gray-600 bg-gray-50";
+    }
+  };
 
-  const overallScore = decisionFactors.reduce((acc, factor) => acc + (factor.score * factor.weight / 100), 0);
+  const renderStrategyMatrix = () => {
+    const strategies = riskData.strategy_matrix;
+    const profiles = ["aggressive", "neutral", "conservative"];
+    const timeframes = ["annual", "swing", "intraday"];
+
+    return (
+      <div className="space-y-6">
+        {profiles.map((profile) => (
+          <Card key={profile} className="trading-panel-enhanced">
+            <CardHeader>
+              <CardTitle className="capitalize text-lg">
+                {profile} Profile Strategies
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                {timeframes.map((timeframe) => {
+                  const strategy = strategies[profile][timeframe];
+                  return (
+                    <div key={timeframe} className="border rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-semibold capitalize">{timeframe}</h4>
+                        <Badge className={getDirectionColor(strategy.direction)}>
+                          {strategy.direction.toUpperCase()}
+                        </Badge>
+                      </div>
+                      
+                      <div className="space-y-3 text-sm">
+                        <div>
+                          <span className="font-medium">Entry: </span>
+                          <span className="text-muted-foreground">{strategy.entry.rule}</span>
+                        </div>
+                        
+                        {strategy.entry.band && (
+                          <div>
+                            <span className="font-medium">Zone: </span>
+                            <span className="text-muted-foreground">{strategy.entry.band}</span>
+                          </div>
+                        )}
+                        
+                        <div>
+                          <span className="font-medium">Stop: </span>
+                          <span className="text-muted-foreground">{strategy.stop.level}</span>
+                        </div>
+                        
+                        {strategy.targets.length > 0 && (
+                          <div>
+                            <span className="font-medium">Targets: </span>
+                            <span className="text-muted-foreground">{strategy.targets.join(", ")}</span>
+                          </div>
+                        )}
+                        
+                        <div>
+                          <span className="font-medium">Size: </span>
+                          <span className="text-muted-foreground">
+                            {strategy.sizing.max_size_pct_portfolio}% / {strategy.sizing.risk_per_trade_pct}%
+                          </span>
+                        </div>
+                        
+                        <div className="pt-2 border-t">
+                          <p className="text-xs italic text-muted-foreground">{strategy.one_liner}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-surface-1 to-surface-2 p-6">
@@ -41,228 +120,280 @@ export default function FinalDecision() {
           <h1 className="text-3xl font-bold">Final Investment Decision</h1>
         </div>
 
-        {/* Decision Summary */}
-        <Card className="trading-panel-enhanced mb-8 border-trading-green">
-          <CardHeader className="bg-gradient-to-r from-trading-green/10 to-trading-green/5">
-            <CardTitle className="flex items-center gap-2 text-trading-green">
-              <CheckCircle className="h-6 w-6" />
-              STRONG BUY RECOMMENDATION
+        {/* Main Decision Summary */}
+        <Card className="trading-panel-enhanced mb-8 border-yellow-500">
+          <CardHeader className="bg-gradient-to-r from-yellow-500/10 to-yellow-500/5">
+            <CardTitle className="flex items-center gap-2 text-yellow-600">
+              <AlertCircle className="h-6 w-6" />
+              FINAL DECISION: {riskData.decision.toUpperCase()}
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
+            <p className="text-muted-foreground leading-relaxed mb-6">
+              {riskData.decision_rationale}
+            </p>
+            
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-center">
-                <div className="text-4xl font-bold text-trading-green mb-2">{overallScore.toFixed(0)}%</div>
-                <p className="text-sm text-muted-foreground">Overall Score</p>
-                <Badge variant="sentiment" className="mt-2">EXCELLENT</Badge>
+                <div className="text-4xl font-bold text-yellow-600 mb-2">HOLD</div>
+                <p className="text-sm text-muted-foreground">Recommended Action</p>
+                <Badge variant="outline" className="mt-2">MAINTAIN POSITIONS</Badge>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-trading-blue mb-2">$165</div>
-                <p className="text-sm text-muted-foreground">Price Target</p>
-                <Badge variant="technical" className="mt-2">+5% UPSIDE</Badge>
+                <div className="text-4xl font-bold text-trading-blue mb-2">330-335</div>
+                <p className="text-sm text-muted-foreground">Support Zone</p>
+                <Badge variant="technical" className="mt-2">KEY LEVEL</Badge>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-amber-500 mb-2">3-6M</div>
-                <p className="text-sm text-muted-foreground">Time Horizon</p>
-                <Badge variant="decision" className="mt-2">MEDIUM TERM</Badge>
+                <div className="text-4xl font-bold text-trading-green mb-2">350-420</div>
+                <p className="text-sm text-muted-foreground">Target Range</p>
+                <Badge variant="sentiment" className="mt-2">UPSIDE POTENTIAL</Badge>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-purple-500 mb-2">HIGH</div>
-                <p className="text-sm text-muted-foreground">Confidence Level</p>
-                <Badge variant="outline" className="mt-2">94% PROBABILITY</Badge>
+                <div className="text-4xl font-bold text-red-500 mb-2">320</div>
+                <p className="text-sm text-muted-foreground">Stop Level</p>
+                <Badge variant="destructive" className="mt-2">RISK CONTROL</Badge>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Decision Matrix */}
-        <Card className="trading-panel-enhanced mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-trading-blue" />
-              Decision Analysis Matrix
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {decisionFactors.map((factor, index) => (
-                <div key={index} className="p-4 border rounded-lg">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-4">
-                      <h3 className="font-semibold">{factor.category}</h3>
-                      <Badge variant="outline">Weight: {factor.weight}%</Badge>
+        {/* Navigation Tabs */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {[
+            { id: "overview", label: "Strategy Overview", icon: Eye },
+            { id: "matrix", label: "Strategy Matrix", icon: BarChart3 },
+            { id: "execution", label: "Execution Plan", icon: Target },
+            { id: "risk", label: "Risk Management", icon: Shield },
+            { id: "monitoring", label: "Monitoring", icon: Activity }
+          ].map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? "default" : "outline"}
+                onClick={() => setActiveTab(tab.id)}
+                className="flex items-center gap-2"
+              >
+                <Icon className="h-4 w-4" />
+                {tab.label}
+              </Button>
+            );
+          })}
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === "overview" && (
+          <div className="space-y-6">
+            {/* Quick Strategy Snapshot */}
+            <Card className="trading-panel-enhanced">
+              <CardHeader>
+                <CardTitle>Strategy Matrix Snapshot</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="font-semibold">Profile / Timeframe</div>
+                    <div className="font-semibold">Direction</div>
+                    <div className="font-semibold">Key Details</div>
+                  </div>
+                  
+                  {Object.entries(riskData.strategy_matrix).map(([profile, strategies]) =>
+                    Object.entries(strategies).map(([timeframe, strategy]) => (
+                      <div key={`${profile}-${timeframe}`} className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-3 border rounded">
+                        <div className="capitalize font-medium">{profile} / {timeframe}</div>
+                        <div>
+                          <Badge className={getDirectionColor(strategy.direction)}>
+                            {strategy.direction}
+                          </Badge>
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Entry: {strategy.entry.band || "N/A"} | 
+                          Stop: {strategy.stop.level} | 
+                          Size: {strategy.sizing.max_size_pct_portfolio}%
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Conflicts and Resolutions */}
+            <Card className="trading-panel-enhanced">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-amber-500" />
+                  Conflicts & Resolutions
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {riskData.conflicts_and_resolutions.map((conflict, index) => (
+                    <div key={index} className="p-3 border rounded-lg bg-amber-50/50">
+                      <p className="text-sm">{conflict}</p>
                     </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-trading-green">{factor.score}%</div>
-                      <div className="text-xs text-muted-foreground">{factor.impact}</div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === "matrix" && (
+          <div>
+            {renderStrategyMatrix()}
+          </div>
+        )}
+
+        {activeTab === "execution" && (
+          <div className="space-y-6">
+            {/* Execution Ticket */}
+            <Card className="trading-panel-enhanced">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-trading-blue" />
+                  Execution Ticket
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <span className="font-medium">Instrument: </span>
+                      <span className="text-muted-foreground">{riskData.execution_ticket.instrument}</span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Side: </span>
+                      <span className="text-muted-foreground">{riskData.execution_ticket.side}</span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Entry Method: </span>
+                      <span className="text-muted-foreground">{riskData.execution_ticket.entry_method}</span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Size Plan: </span>
+                      <span className="text-muted-foreground">{riskData.execution_ticket.initial_size_plan}</span>
                     </div>
                   </div>
-                  <Progress value={factor.score} className="mt-2" />
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Weighted Contribution: {((factor.score * factor.weight) / 100).toFixed(1)} points
+                  <div className="space-y-4">
+                    <div>
+                      <span className="font-medium">Max Slippage: </span>
+                      <span className="text-muted-foreground">{riskData.execution_ticket.max_slippage_bps} bps</span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Time in Force: </span>
+                      <span className="text-muted-foreground">{riskData.execution_ticket.time_in_force}</span>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Investment Rationale */}
+            {/* What Would Change My Mind */}
+            <Card className="trading-panel-enhanced">
+              <CardHeader>
+                <CardTitle>What Would Change My Mind</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {riskData.what_would_change_my_mind.map((scenario, index) => (
+                    <div key={index} className="p-3 border rounded-lg">
+                      <p className="text-sm">{scenario}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === "risk" && (
+          <div className="space-y-6">
+            {/* Risk Budget Summary */}
+            <Card className="trading-panel-enhanced">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-red-500" />
+                  Risk Budget Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <span className="font-medium">Exposure After Trade: </span>
+                    <span className="text-muted-foreground">{riskData.risk_budget_summary.exposure_after_trade}</span>
+                  </div>
+                  <div>
+                    <span className="font-medium">Position Risk: </span>
+                    <span className="text-muted-foreground">{riskData.risk_budget_summary.position_risk}</span>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div>
+                    <h3 className="font-semibold mb-3">Portfolio Risk Considerations</h3>
+                    <div className="space-y-2">
+                      {riskData.risk_budget_summary.portfolio_risk_considerations.map((consideration, index) => (
+                        <div key={index} className="p-2 bg-blue-50 rounded text-sm">
+                          {consideration}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-semibold mb-3">Hard Constraints</h3>
+                    <div className="space-y-2">
+                      {riskData.risk_budget_summary.hard_constraints.map((constraint, index) => (
+                        <div key={index} className="p-2 bg-red-50 rounded text-sm font-medium">
+                          {constraint}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Lessons Learned */}
+            <Card className="trading-panel-enhanced">
+              <CardHeader>
+                <CardTitle>Lessons Learned</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {riskData.lessons_learned.map((lesson, index) => (
+                    <div key={index} className="p-3 border rounded-lg bg-green-50/50">
+                      <p className="text-sm">{lesson}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === "monitoring" && (
           <Card className="trading-panel-enhanced">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-trading-green" />
-                Investment Rationale
+                <Activity className="h-5 w-5 text-trading-blue" />
+                Monitoring Checklist
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h3 className="font-semibold mb-2 text-trading-green">Key Strengths</h3>
-                <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• <strong>Exceptional fundamentals:</strong> 15% revenue growth with improving margins</li>
-                  <li>• <strong>Technical momentum:</strong> Golden cross pattern with volume confirmation</li>
-                  <li>• <strong>Positive sentiment:</strong> 72% bullish sentiment with analyst upgrades</li>
-                  <li>• <strong>Industry leadership:</strong> Well-positioned for AI and cloud trends</li>
-                  <li>• <strong>Strong balance sheet:</strong> Improved debt ratios and cash generation</li>
-                </ul>
-              </div>
-              
-              <div>
-                <h3 className="font-semibold mb-2 text-trading-blue">Catalyst Timeline</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Next Earnings (Q1):</span>
-                    <span className="font-medium">April 2024</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Product Launch:</span>
-                    <span className="font-medium">March 2024</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Market Expansion:</span>
-                    <span className="font-medium">Q2 2024</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Risk Assessment */}
-          <Card className="trading-panel-enhanced">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-amber-500" />
-                Risk Assessment & Mitigation
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent>
               <div className="space-y-3">
-                {riskFactors.map((risk, index) => (
-                  <div key={index} className="p-3 border rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium">{risk.risk}</span>
-                      <Badge variant={
-                        risk.level === 'Low' ? 'sentiment' :
-                        risk.level === 'Medium' ? 'technical' : 'destructive'
-                      }>
-                        {risk.level}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{risk.mitigation}</p>
+                {riskData.execution_ticket.monitoring_checklist.map((item, index) => (
+                  <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
+                    <CheckCircle2 className="h-4 w-4 text-trading-green" />
+                    <span className="text-sm">{item}</span>
                   </div>
                 ))}
               </div>
-
-              <div className="pt-4 border-t">
-                <h3 className="font-semibold mb-2">Overall Risk Rating</h3>
-                <div className="flex items-center gap-4">
-                  <Badge variant="technical">MODERATE RISK</Badge>
-                  <span className="text-sm text-muted-foreground">
-                    Well-managed with clear mitigation strategies
-                  </span>
-                </div>
-              </div>
             </CardContent>
           </Card>
-
-          {/* Action Plan */}
-          <Card className="trading-panel-enhanced col-span-1 lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Recommended Action Plan</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-trading-green">Immediate Actions</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-trading-green" />
-                      <span>Initiate position at current levels</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-trading-green" />
-                      <span>Set stop-loss at $148 (-6%)</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-trading-green" />
-                      <span>Position size: 2-3% of portfolio</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-trading-blue">Monitoring Plan</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-trading-blue" />
-                      <span>Weekly technical review</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-trading-blue" />
-                      <span>Track earnings estimates</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-trading-blue" />
-                      <span>Monitor sector performance</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-amber-500">Exit Strategy</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-amber-500" />
-                      <span>Take profits at $165 target</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-amber-500" />
-                      <span>Reassess if fundamentals change</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-amber-500" />
-                      <span>Review position in 3-6 months</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 p-4 bg-trading-green/10 rounded-lg border border-trading-green/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <CheckCircle className="h-5 w-5 text-trading-green" />
-                  <h3 className="font-semibold text-trading-green">Final Recommendation</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Based on comprehensive analysis across all factors, this presents a 
-                  <strong className="text-trading-green"> STRONG BUY opportunity</strong> with 
-                  favorable risk-reward profile. High confidence in achieving price target 
-                  within the specified timeframe.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        )}
       </div>
     </div>
   );
