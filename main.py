@@ -11,7 +11,7 @@ config["max_debate_rounds"] = 1  # Increase debate rounds
 config["online_tools"] = True  # Increase debate rounds
 
 # Initialize with custom config
-ta = TradingAgentsGraph(config=config)
+ta = TradingAgentsGraph(config=config, selected_analysts=["fundamentals"])
 
 # forward propagate
 _, decision = ta.propagate("TSLA", "2025-09-13")

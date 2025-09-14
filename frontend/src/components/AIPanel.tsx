@@ -105,12 +105,12 @@ export const AIPanel = ({ title, summary, onClick, className, panelType = 'funda
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Recommendation</span>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-trading-green animate-pulse">BUY</span>
-                <div className="w-2 h-2 bg-trading-green rounded-full animate-pulse"></div>
+                <span className="font-bold text-yellow-500 animate-pulse">HOLD</span>
+                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
               </div>
             </div>
             <div className="mt-2 text-xs text-muted-foreground">
-              Target: <span className="font-semibold text-foreground">$165.00</span>
+              Target: <span className="font-semibold text-foreground">$330.00 - $335.00</span>
             </div>
           </div>
         )}

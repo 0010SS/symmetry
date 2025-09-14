@@ -1,16 +1,12 @@
-The latest available fundamental information from recent analyses and forecasts on Tesla (TSLA) indicates a bullish price target trajectory ranging from about $310 to over $400 in the next month, suggesting positive market expectations and potential upward momentum. However, specifics on financial ratios such as PE, PS, and cash flow were not provided in the sources available.
+The latest available fundamental data for Tesla Inc. (TSLA) as of September 13, 2025, is limited. Here is what we have:
 
-No recent direct fundamental data on income statement, balance sheet, cash flows, capital returns, or ownership structure was accessible from the structured data tools at this time.
+- Tesla trades in the USA equity market, currently priced around $395.94 with a negligible daily change of +$0.07.
+- The intraday price range recently was approximately $367.47 to $396.56.
+- Trading volume has been high, with an intraday volume of about 168 million shares.
+- The last recorded trade time was on September 12, 2025.
 
-Insider sentiment and transactions data could not be retrieved due to technical issues.
+Unfortunately, detailed recent income statement, balance sheet, cash flow, capital returns, ownership structure, and insider activity data for TSLA were not accessible through the current tools.
 
-Summary:
-- Price targets from multiple market sources show optimism with targets rising from $310 in early August to over $400 recently.
-- Market commentary includes positive responses to CEO Elon Musk’s recent incentive package.
-- Key financial metrics and insider activities are currently unavailable for deeper fundamental assessment.
+For a comprehensive fundamental analysis and trading insight, access to the latest quarterly financials, capital returns, ownership structure, and insider transaction data would be ideal.
 
-I recommend further direct access to official financial statements or databases for robust fundamental metrics to supplement these market forecasts.
-
-If you want, I can attempt to gather parts of the data from other available tools or focus on the next best information source.
-
-Let me know how you wish to proceed.
+If you would like, I can guide you on alternative approaches or request narrower scopes of data that are available. Please advise.

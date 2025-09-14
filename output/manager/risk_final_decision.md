@@ -1,14 +1,14 @@
-# Final decision: **Hold**
+# Final decision: **Buy**
 
-Despite strong bullish momentum, positive seasonality, and technical support near $330-$335, significant risks including intensified competition, regulatory and legal uncertainties, valuation concerns, and near-term overbought conditions advise caution. Synthesizing all views favors maintaining existing positions without new purchases, employing risk controls and monitoring key technical and fundamental signals.
+Tesla's multi-faceted growth potential in EV, energy storage, and software segments, supported by strong volume and liquidity, favors a Buy recommendation. Phased entries and strict risk parameters address concerns around valuation and volatility, balancing upside opportunity with capital preservation.
 
 ## Strategy Matrix (snapshot)
-- **Aggressive / Annual** → buy | Entry: Enter on confirmed price strength near/above support 330-335 with volume confirmation and RSI moderating from extreme levels. 330-335 zone | Stop: Below 320 | Target1: 350 | Size: 30.0% / 3.0%
-- **Aggressive / Swing** → buy | Entry: Buy on dip towards 335 with stable volume and RSI ≤ 70 332-338 | Stop: 325 | Target1: 370 | Size: 20.0% / 2.0%
-- **Aggressive / Intraday** → hold | Entry: No new intraday entries recommended  | Stop: Within 1% below entry | Target1: Intraday scalps not favored | Size: 5.0% / 0.5%
-- **Neutral / Annual** → hold | Entry: No new annual entries; maintain current exposure  | Stop: 330 | Target1: n/a | Size: 15.0% / 1.0%
-- **Neutral / Swing** → hold | Entry: No new swing entries; monitor and manage existing positions prudently  | Stop: 325 | Target1: n/a | Size: 10.0% / 1.0%
-- **Neutral / Intraday** → hold | Entry: No new intraday positions  | Stop: Within 0.5% | Target1: n/a | Size: 2.0% / 0.3%
-- **Conservative / Annual** → hold | Entry: No new annual buys until clear risk resolution  | Stop: 325 | Target1: n/a | Size: 8.0% / 1.0%
-- **Conservative / Swing** → hold | Entry: No new swing entries recommended  | Stop: 320-325 | Target1: n/a | Size: 5.0% / 0.5%
-- **Conservative / Intraday** → hold | Entry: No new intraday entries  | Stop: Within 0.3% | Target1: n/a | Size: 1.0% / 0.2%
+- **Aggressive / Annual** → buy | Entry: Phased entries at key technical support zones $360-$380 | Stop: $340 | Target1: $450 | Size: 30.0% / 3.0%
+- **Aggressive / Swing** → buy | Entry: Buy on pullbacks to 50-day moving average $370-$385 | Stop: $350 | Target1: $440 | Size: 25.0% / 2.5%
+- **Aggressive / Intraday** → buy | Entry: Immediate entry on confirmed breakout Above $395 | Stop: $385 | Target1: $405 | Size: 10.0% / 1.0%
+- **Neutral / Annual** → buy | Entry: Step-in at technical supports and fundamental triggers $365-$390 | Stop: $345 | Target1: $460 | Size: 25.0% / 2.5%
+- **Neutral / Swing** → buy | Entry: Buy if pullback does not breach fundamental support $370-$385 | Stop: $345 | Target1: $440 | Size: 20.0% / 2.0%
+- **Neutral / Intraday** → buy | Entry: Breakout entry with volume above average Above $390 | Stop: $385 | Target1: $400 | Size: 5.0% / 0.8%
+- **Conservative / Annual** → buy | Entry: Entry near strong technical support and fundamental oversight $360-$375 | Stop: $345 | Target1: $430 | Size: 15.0% / 1.5%
+- **Conservative / Swing** → buy | Entry: Buy on shallow pullbacks $370-$380 | Stop: $350 | Target1: $430 | Size: 10.0% / 1.0%
+- **Conservative / Intraday** → buy | Entry: Entry on confirmed volume breakout Above $390 | Stop: $385 | Target1: $400 | Size: 5.0% / 0.5%

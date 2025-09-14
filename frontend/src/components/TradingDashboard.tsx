@@ -9,44 +9,53 @@ export const TradingDashboard = () => {
   const aiPanels = [
     {
       title: "Company Fundamentals",
-      summary: "Strong quarterly earnings with 15% revenue growth. P/E ratio of 24.5 indicates fair valuation. Debt-to-equity ratio improved to 0.42.",
-      route: "/company-fundamentals"
+      summary:
+        "Multiple analyst set $400+ price targets. Leadership development from recent wage plan on Elon.",
+      route: "/company-fundamentals",
     },
     {
-      title: "Company Trends", 
-      summary: "Upward momentum in stock price with consistent volume. Technical indicators showing bullish patterns across multiple timeframes.",
-      route: "/company-trends"
+      title: "Company Trends",
+      summary:
+        "Positive average September returns. Several bullish indicators. Under strong growth momentum.",
+      route: "/company-trends",
     },
     {
       title: "Industry Fundamentals",
-      summary: "Sector P/E ratio normalizing after recent correction. Growth projections remain optimistic at 12% annually. Market cap expansion expected.",
-      route: "/industry-fundamentals"
+      summary:
+        "Sector P/E ratio normalizing after recent correction. Growth projections remain optimistic at 12% annually. Market cap expansion expected.",
+      route: "/industry-fundamentals",
     },
     {
       title: "Industry Trends",
-      summary: "Cloud adoption accelerating. AI integration driving competitive advantages. Digital transformation creating new revenue streams.",
-      route: "/industry-trends"
+      summary:
+        "DRIV in a confirmed medium/long-term uptrend with accelerating momentum. Near 52-week highs, moderate volatility, and a positive September seasonal tilt.",
+      route: "/industry-trends",
     },
     {
       title: "Market Sentiment",
-      summary: "Company sentiment at 72% positive with analyst upgrades from 3 major institutions. Technology sector momentum remains strong.",
-      route: "/market-sentiment"
+      summary:
+        "Positive company sentiment (72%) – driven by analyst upgrades and innovation (AI chips, Optimus v3, Megablock).\nIndustry slightly positive (+0.06) – charging standard adoption offsets tax-credit expiry and trade frictions.\nStable backdrop – no manipulation detected, sector momentum intact.",
+      route: "/market-sentiment",
     },
     {
       title: "Cross Signals",
-      summary: "Golden cross pattern detected. MACD showing bullish divergence. Volume confirmation suggests sustainable uptrend.",
-      route: "/cross-signals"
+      summary:
+        "Moderate linkage (53) – correlation 0.40, but high beta (3.11) amplifies volatility. Supply & policy risks – lithium constraints and U.S. EV credit expiry pressure Tesla’s cost/demand balance. ETF flows matter – 3% weight in QQQ makes index moves influence stock dynamics.",
+      route: "/cross-signals",
     },
     {
       title: "Final Decision",
-      summary: "BUY recommendation based on strong fundamentals, positive technical signals, and favorable sentiment confluence. Target: $165.",
-      route: "/final-decision"
+      summary:
+        "HOLD recommendation based on technical analysis and market conditions. Target: $330-335.",
+      route: "/final-decision",
     },
     {
       title: "News",
-      summary: data.one_sentence_summary || "Latest news impacting the stock and market sentiment.",
-      route: "/news"
-    }
+      summary:
+        data.one_sentence_summary ||
+        "Latest news impacting the stock and market sentiment.",
+      route: "/news",
+    },
   ];
 
   const handlePanelClick = (route: string) => {
