@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "pageTitle": "Market Sentiment Analysis",
+    "ticker": "TSLA",
+    "period_start": "2025-09-06",
+    "period_end": "2025-09-13"
+  },
+
+  "company": {
+    "badge": { "label": "POSITIVE", "tone": "green" },
+    "stock_price": "$395.94",
+    "stock_note": "Slight positive intraday",
+    "peak_mentions_range": "Sep 6-9",
+    "peak_note": "High volume period",
+    "key_focus_areas": [
+      "AI chips (AI5 and AI6 designs) for market-leading inference",
+      "Optimus Version 3 described as \"sublime\"",
+      "Megablock 20 MWh AC battery technology",
+      "$1 trillion compensation package positive sentiment"
+    ],
+    "market_stability_note": "No signs of social media manipulation, brigading, or pump-and-dump activity detected"
+  },
+
+  "industry": {
+    "badge": { "label": "SLIGHTLY POSITIVE (+0.06)", "tone": "amber" },
+    "net_score": "+0.06",
+    "breakdown": { "positive": 7, "negative": 6, "neutral": 3 },
+    "dynamics": [
+      { "icon": "up", "text": "Tesla NACS charging standard adoption by Porsche, Audi" },
+      { "icon": "down", "text": "EV tax-credit expiry driving consumer rush" },
+      { "icon": "down", "text": "GM cutting EV production ahead of credit expiry" },
+      { "icon": "warn", "text": "Trade policy frictions: Mexico tariffs, US chip controls" }
+    ],
+    "supply_chain_note": "CATL Hungary plant expansion, Tesla Megapack 3 and Megablock products continuing battery supply growth"
+  },
+
+  "timelines": {
+    "company": [
+      {
+        "title": "September 6-9, 2025",
+        "window": "Peak Volume",
+        "tone": "pos",
+        "summary": "Most significant volume of mentions tied to technical innovation narratives and executive announcements",
+        "note": "AI chips; Optimus v3; Megablock 20 MWh; positive analyst commentary"
+      }
+    ],
+    "industry": [
+      { "title": "Sep 6: Tesla Supercharger + Porsche", "window": "Pos spike", "tone": "pos", "summary": "Positive spike (+0.3 to +0.4 sentiment)", "note": "Business sales launch and access announced" },
+      { "title": "Sep 7: CATL Hungary Plant", "window": "Neutral", "tone": "neu", "summary": "Neutral sentiment", "note": "Battery factory expansion news" },
+      { "title": "Sep 8: Policy & Production", "window": "Negative", "tone": "neg", "summary": "Negative (-0.4 to -0.5 sentiment)", "note": "US chip export controls + GM cuts EV production" },
+      { "title": "Sep 10: Mexico Tariffs", "window": "Negative", "tone": "neg", "summary": "Negative (-0.6); VW delays (-0.2)", "note": "Trade friction impacts" },
+      { "title": "Sep 11+: Audi Access", "window": "Positive", "tone": "pos", "summary": "Positive (+0.35 sentiment)", "note": "Tesla Supercharger access + industry adaptation" }
+    ]
+  },
+
+  "company_insights_table": [
+    { "theme": "AI Chip Development", "platform": "News", "source": "Multiple", "date_window": "Sep 6-8, 2025", "metric": "Headline mentions", "value": "3 major announcements", "confidence": "High", "takeaway": "Leading AI chip designs with strong CEO backing" },
+    { "theme": "Optimus Robot Version", "platform": "Social/News", "source": "Multiple", "date_window": "Sep 7, 2025", "metric": "Positive sentiment", "value": "CEO calls v3 \"sublime\"", "confidence": "High", "takeaway": "Robotics segment interest likely to rise" },
+    { "theme": "Battery Megablock", "platform": "News", "source": "Multiple", "date_window": "Sep 9, 2025", "metric": "Product launch", "value": "20 MWh AC blocks, 50 GWh/yr", "confidence": "High", "takeaway": "Energy storage scale and efficiency improves" },
+    { "theme": "Compensation Package", "platform": "Analyst", "source": "Morgan Stanley", "date_window": "Sep 7, 2025", "metric": "Analyst tone", "value": "Positive", "confidence": "High", "takeaway": "$1T CEO package seen as shareholder positive" }
+  ],
+
+  "industry_insights_table": [
+    { "theme": "EV Tax Credit & Production", "platform": "News", "source": "The Verge, WP", "date_window": "2025-09-06 to 13", "metric": "Sentiment score", "value": "-0.5 to 0.0", "confidence": "High", "takeaway": "Expiry drives production cuts and purchase timing" },
+    { "theme": "Charging Standard (NACS) Adoption", "platform": "Industry portals", "source": "CBT News, EVCS", "date_window": "2025-09-06 to 13", "metric": "Sentiment score", "value": "+0.25 to +0.4", "confidence": "High", "takeaway": "Cross-brand access accelerates; VW delays persist" },
+    { "theme": "Trade/Policy Impact", "platform": "Reuters", "source": "Reuters", "date_window": "2025-09-08 to 10", "metric": "Sentiment score", "value": "-0.6 to -0.4", "confidence": "High", "takeaway": "Tariffs and export controls add headwinds" },
+    { "theme": "Battery Supply Growth", "platform": "Reuters", "source": "Reuters", "date_window": "2025-09-07", "metric": "Neutral", "value": "0.0", "confidence": "High", "takeaway": "Long-term foundation for EV supply" },
+    { "theme": "Utility Storage & Infrastructure", "platform": "News/Blogs", "source": "The Verge, TeslaNorth", "date_window": "2025-09-06 to 13", "metric": "Sentiment score", "value": "+0.2 to +0.3", "confidence": "High", "takeaway": "Fast charging + grid storage momentum" },
+    { "theme": "EV Market Consolidation & Pricing", "platform": "Financial news", "source": "FT", "date_window": "2025-09-07 to 10", "metric": "Sentiment score", "value": "-0.3", "confidence": "Medium", "takeaway": "China consolidation → returning pricing power" }
+  ],
+
+  "company_narratives": {
+    "non_obvious_insights": [
+      { "title": "Strategic Silicon Consolidation", "text": "A single-chip architecture (AI5) could increase R&D efficiency vs multi-platform rivals." },
+      { "title": "Robotics Strategy Maturation", "text": "Staggered Optimus reveals indicate pacing toward robustness before commercialization." }
+    ],
+    "action_watchlist": [
+      { "text": "Watch for official Tesla releases on Optimus Version 3" },
+      { "text": "Monitor Megablock installations starting 2026" },
+      { "text": "Track compensation package implications" },
+      { "text": "Follow AI chip production volume disclosures" },
+      { "text": "Observe AI chip performance benchmarks" }
+    ]
+  },
+
+  "industry_narratives": {
+    "key_narratives": [
+      { "title": "EV Tax Credit Expiry & Production Adjustments", "text": "GM cuts EV output; retail rush across US consumers/dealers." },
+      { "title": "Charging Standard Consolidation (NACS)", "text": "Porsche/Audi soft access; Nissan entry-level NACS; VW adapter delays." },
+      { "title": "Trade & Supply Chain Policies", "text": "Mexico 50% tariffs on Chinese cars; US tightening chip controls." }
+    ],
+    "action_watchlist": [
+      { "text": "Monitor Sept 30 EV tax credit deadline impact" },
+      { "text": "Track NACS adoption pace by other OEMs" },
+      { "text": "Watch China supply chain policies" },
+      { "text": "Follow CATL Hungary plant progress (early 2026)" },
+      { "text": "Track EV pricing dynamics in China" }
+    ]
+  },
+
+  "final_proposals": {
+    "company": { "label": "HOLD", "text": "No brigading/manipulation found. Positive sentiment aligns with verified updates; impact likely neutral to moderately positive." },
+    "industry": { "label": "HOLD", "text": "Balanced sentiment with tax-credit timing, NACS consolidation, policy headwinds, and infrastructure progress." }
+  }
+}
