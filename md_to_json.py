@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Union
 from pydantic import BaseModel
 from openai import OpenAI
 
@@ -122,6 +122,100 @@ class IndustryFundamentalsData(BaseModel):
     coverageNotes: _IF_CoverageNotes
     analystInsights: List[_IF_InsightsRow]
     actions: _IF_Actions
+
+# ---------- Company Trends schema ----------
+
+from typing import Union
+
+class _CT_SeasonYear(BaseModel):
+    year: int
+    start: Union[float, str]
+    end: Union[float, str]
+    return_pct: Union[float, str]
+    note: str
+
+class _CT_SeasonalitySnapshot(BaseModel):
+    heading: str
+    month: str
+    years: List[_CT_SeasonYear]
+    avg_return_pct: Union[float, str]
+    sample_note: str
+
+class _CT_52W(BaseModel):
+    low: Union[float, str]
+    high: Union[float, str]
+    above_low_pct: Union[float, str]
+    below_high_pct: Union[float, str]
+
+class _CT_ExecSummary(BaseModel):
+    yoy_return_pct: Union[float, str]
+    absolute_gain_pts: Union[float, str]
+    current_close: Union[float, str]
+    current_close_date: str
+    range_52w: _CT_52W
+    key_points: str
+
+class _CT_TrendLevels(BaseModel):
+    sma50: Union[float, str]
+    sma200: Union[float, str]
+    distance_to_50_pts: Union[float, str]
+    distance_to_50_pct: Union[float, str]
+    distance_to_200_pts: Union[float, str]
+    distance_to_200_pct: Union[float, str]
+    support: str
+    resistance: str
+    note: str
+
+class _CT_MomentumVol(BaseModel):
+    macd: Union[float, str]
+    rsi: Union[float, str]
+    atr: Union[float, str]
+    rsi_badge: Optional[str] = None
+    atr_badge: Optional[str] = None
+
+class _CT_SeasonalityBlock(BaseModel):
+    september_avg_return_pct: Union[float, str]
+    n_years: Union[int, str]
+    note: str
+
+class _CT_Indicator(BaseModel):
+    name: str
+    value: str
+    note: Optional[str] = None
+
+class _CT_Scenario(BaseModel):
+    type: Literal["bullish", "risk", "invalidated"]
+    title: str
+    text: str
+
+class _CT_TextItem(BaseModel):
+    title: str
+    text: str
+
+class _CT_TableRow(BaseModel):
+    theme: str
+    metric: str
+    value: str
+    source: str
+    takeaway: str
+
+class _CT_SummaryProposal(BaseModel):
+    summary: str
+    action_label: str
+
+class CompanyTrendsData(BaseModel):
+    meta: dict
+    seasonality_snapshot: _CT_SeasonalitySnapshot
+    exec_summary: _CT_ExecSummary
+    trend_levels: _CT_TrendLevels
+    momentum_vol: _CT_MomentumVol
+    seasonality: _CT_SeasonalityBlock
+    indicator_panel: List[_CT_Indicator]
+    scenarios_risks: List[_CT_Scenario]
+    volume_dynamics: List[_CT_TextItem]
+    insights: List[_CT_TextItem]
+    analyst_table: List[_CT_TableRow]
+    summary_proposal: _CT_SummaryProposal
 
 
 # ---------- GPT helper ----------
@@ -255,10 +349,53 @@ def parse_industry_fundamentals(markdown_file: str, output_file: str, json_schem
     )
     print(f"✅ Industry Fundamentals: Structured data saved to {output_file}")
 
+def parse_company_trends(markdown_file: str, output_file: str, json_schema: BaseModel):
+    """Turn a Company Trends markdown into structured JSON for the frontend (seasonality, exec summary, indicators, etc.)."""
+
+    client = OpenAI()  # requires OPENAI_API_KEY
+    text = Path(markdown_file).read_text(encoding="utf-8")
+
+    response = client.chat.completions.create(
+        model="gpt-5-nano",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a financial analyst assistant. Extract structured *company trends* data "
+                    "from the markdown into the required JSON schema (seasonality snapshot, executive summary, "
+                    "trend levels, momentum/vol, indicator panel, scenarios/risks, volume dynamics, insights, table, summary). "
+                    "Preserve original wording where sensible. If qualitative fields are missing, provide a plausible fill. "
+                    "If quantitative fields are missing, use 'N/A' or '—'. Do NOT invent precise numbers."
+                )
+            },
+            {
+                "role": "user",
+                "content": f"Markdown:\n\n{text}\n\nReturn ONLY JSON matching the schema."
+            }
+        ],
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "CompanyTrendsData",
+                "schema": json_schema.model_json_schema()
+            }
+        }
+    )
+
+    raw = response.choices[0].message.content
+    data = json_schema.model_validate_json(raw)
+
+    Path(output_file).write_text(
+        json.dumps(data.model_dump(), indent=2),
+        encoding="utf-8"
+    )
+    print(f"✅ Company Trends: Structured data saved to {output_file}")
+
 
 
 # ---------- Example run ----------
 if __name__ == "__main__":
     parse_news("output/analysts/company_news.md", "tesla_news.json", NewsData)
     parse_industry_trends("output/analysts/industry_market.md", "tesla_industry_trends.json", IndustryTrendsData)
-    parse_industry_fundamentals("output/analysts/industry_fundamentals.md", "industry_fundamentals.json", IndustryFundamentalsData)
+    parse_industry_fundamentals("output/analysts/industry_fundamentals.md", "tesla_industry_fundamentals.json", IndustryFundamentalsData)
+    parse_company_trends("output/analysts/company_market.md", "tesla_company_trends.json", CompanyTrendsData)
