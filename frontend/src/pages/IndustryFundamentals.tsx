@@ -1,4 +1,4 @@
-import { ArrowLeft, Building2, TrendingUp, AlertTriangle, BarChart3, DollarSign, Target, Users, Briefcase } from 'lucide-react';
+import { ArrowLeft, TrendingUp, AlertTriangle, BarChart3, DollarSign, Users, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,171 +22,147 @@ export default function IndustryFundamentals() {
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
           </Button>
-          <h1 className="text-3xl font-bold">Industry Fundamentals Analysis</h1>
+          <h1 className="text-3xl font-bold">TSLA Industry Fundamentals Report — Auto Manufacturers</h1>
         </div>
 
         {/* Executive Summary */}
-        <Card className="trading-panel-enhanced mb-8">
+        <Card className="trading-panel-enhanced mb-6">
           <CardHeader className="flex flex-row items-center gap-2">
-            <Building2 className="h-5 w-5 text-trading-blue" />
+            <TrendingUp className="h-5 w-5 text-trading-green" />
             <CardTitle className="text-lg">Executive Summary</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div>
-                <h3 className="font-semibold text-sm">Industry</h3>
-                <p className="text-sm text-muted-foreground">
-                  <strong>Auto Manufacturers</strong> (method: ETF-weighted, global auto/EV/tech exposure)
-                </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Industry</p>
+                <p className="text-2xl font-bold text-trading-blue">Auto Manufacturers</p>
               </div>
-              <div>
-                <h3 className="font-semibold text-sm">Names Covered</h3>
-                <div className="text-xl font-bold">8</div>
-                <p className="text-xs text-muted-foreground">weights sum: 1.0000</p>
-              </div>
-              <div>
-                <h3 className="font-semibold text-sm">Top Anchors</h3>
-                <p className="text-sm text-muted-foreground">
-                  AAPL (19.2%), GOOGL (15%), TSLA (12.8%), MSFT, NVDA, TM
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold text-sm">Key Metrics</h3>
-                <p className="text-sm text-muted-foreground">
-                  EV/EBITDA: <strong>0.00</strong> (data gap)<br/>
-                  Net Margin: <strong>23.8%</strong>
-                </p>
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Method</p>
+                <p className="text-sm text-muted-foreground">ETF-weighted; 15 constituents; total weights sum to 1.0</p>
               </div>
             </div>
-            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-amber-600" />
-                <p className="text-sm text-amber-800">
-                  <strong>Notable metric gaps:</strong> P/E, FCF yield, and others unavailable (aggregate level only margins present)
-                </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Top Names by Weight</p>
+                <p className="text-sm text-muted-foreground">MP (9.21%), AAPL (8.36%), NVDA (7.63%), and TSLA (7.09%)</p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Composite Headline Metrics</p>
+                <p className="text-sm text-muted-foreground">EV/EBITDA, Net Margin, and P/E data not available; FCF Yield is 0%</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Composite Fundamentals */}
-        <Card className="trading-panel-enhanced mb-8">
+        <Card className="trading-panel-enhanced mb-6">
           <CardHeader className="flex flex-row items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-trading-green" />
+            <BarChart3 className="h-5 w-5 text-trading-blue" />
             <CardTitle className="text-lg">Composite Fundamentals (TTM/MRQ)</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div>
-                <h3 className="font-semibold text-sm mb-2">Revenue</h3>
-                <div className="text-2xl font-bold">$201B</div>
-                <p className="text-xs text-muted-foreground">TTM Composite</p>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="bg-gradient-to-r from-trading-green/5 to-trading-blue/5 p-4 rounded-lg border">
+                <p className="text-sm font-medium text-muted-foreground">Aggregate Revenue</p>
+                <p className="text-lg font-bold text-red-500">$0</p>
+                <p className="text-xs text-red-500">All reported as $0</p>
               </div>
-              <div>
-                <h3 className="font-semibold text-sm mb-2">EBITDA</h3>
-                <div className="text-2xl font-bold">$37B</div>
-                <p className="text-xs text-muted-foreground">TTM Composite</p>
+              <div className="bg-gradient-to-r from-trading-green/5 to-trading-blue/5 p-4 rounded-lg border">
+                <p className="text-sm font-medium text-muted-foreground">EBITDA</p>
+                <p className="text-lg font-bold text-red-500">$0</p>
+                <p className="text-xs text-red-500">All reported as $0</p>
               </div>
-              <div>
-                <h3 className="font-semibold text-sm mb-2">EBIT</h3>
-                <div className="text-2xl font-bold">$33B</div>
-                <p className="text-xs text-muted-foreground">TTM Composite</p>
+              <div className="bg-gradient-to-r from-trading-green/5 to-trading-blue/5 p-4 rounded-lg border">
+                <p className="text-sm font-medium text-muted-foreground">EBIT</p>
+                <p className="text-lg font-bold text-red-500">$0</p>
+                <p className="text-xs text-red-500">All reported as $0</p>
               </div>
-              <div>
-                <h3 className="font-semibold text-sm mb-2">Net Income</h3>
-                <div className="text-2xl font-bold text-trading-green">$48B</div>
-                <p className="text-xs text-muted-foreground">TTM Composite</p>
+              <div className="bg-gradient-to-r from-trading-green/5 to-trading-blue/5 p-4 rounded-lg border">
+                <p className="text-sm font-medium text-muted-foreground">Net Income</p>
+                <p className="text-lg font-bold text-red-500">$0</p>
+                <p className="text-xs text-red-500">All reported as $0</p>
               </div>
-              <div>
-                <h3 className="font-semibold text-sm mb-2">Operating Margin</h3>
-                <div className="text-2xl font-bold text-trading-green">16.2%</div>
-                <Progress value={64} className="mt-1" />
+              <div className="bg-gradient-to-r from-trading-green/5 to-trading-blue/5 p-4 rounded-lg border">
+                <p className="text-sm font-medium text-muted-foreground">CFO</p>
+                <p className="text-lg font-bold text-red-500">$0</p>
+                <p className="text-xs text-red-500">All reported as $0</p>
               </div>
-              <div>
-                <h3 className="font-semibold text-sm mb-2">Net Margin</h3>
-                <div className="text-2xl font-bold text-trading-green">23.8%</div>
-                <Progress value={95} className="mt-1" />
+              <div className="bg-gradient-to-r from-trading-green/5 to-trading-blue/5 p-4 rounded-lg border">
+                <p className="text-sm font-medium text-muted-foreground">Capex</p>
+                <p className="text-lg font-bold text-red-500">$0</p>
+                <p className="text-xs text-red-500">All reported as $0</p>
               </div>
-              <div>
-                <h3 className="font-semibold text-sm mb-2">EV/EBITDA</h3>
-                <div className="text-2xl font-bold text-muted-foreground">0.00</div>
-                <p className="text-xs text-trading-red">Data gap</p>
+              <div className="bg-gradient-to-r from-trading-green/5 to-trading-blue/5 p-4 rounded-lg border">
+                <p className="text-sm font-medium text-muted-foreground">Market Cap Aggregate</p>
+                <p className="text-lg font-bold text-trading-green">$77.73B</p>
+                <p className="text-xs text-trading-green">Available</p>
               </div>
-              <div>
-                <h3 className="font-semibold text-sm mb-2">Net Debt/EBITDA</h3>
-                <div className="text-2xl font-bold">0.00</div>
-                <p className="text-xs text-muted-foreground">Net cash position</p>
+            </div>
+            
+            <div className="space-y-3">
+              <h3 className="font-semibold">Margins & Ratios</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-gray-50 p-3 rounded-lg border text-center">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Gross Margin</p>
+                  <p className="text-sm font-bold text-red-500">Not reported</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-lg border text-center">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Operating Margin</p>
+                  <p className="text-sm font-bold text-red-500">Not reported</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-lg border text-center">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Net Margin</p>
+                  <p className="text-sm font-bold text-red-500">Not reported</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-gray-50 p-3 rounded-lg border text-center">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">EV/EBITDA</p>
+                  <p className="text-sm font-bold text-red-500">—</p>
+                  <p className="text-xs text-red-400">Not available</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-lg border text-center">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">FCF Yield</p>
+                  <p className="text-sm font-bold text-red-500">—</p>
+                  <p className="text-xs text-red-400">Not available</p>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-lg border text-center">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Net Debt/EBITDA</p>
+                  <p className="text-sm font-bold text-red-500">—</p>
+                  <p className="text-xs text-red-400">Not available</p>
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Valuation & Returns Panel */}
-        <Card className="trading-panel-enhanced mb-8">
+        <Card className="trading-panel-enhanced mb-6">
           <CardHeader className="flex flex-row items-center gap-2">
-            <DollarSign className="h-5 w-5 text-purple-500" />
-            <CardTitle className="text-lg">Valuation & Returns Panel (Weighted Means)</CardTitle>
+            <DollarSign className="h-5 w-5 text-trading-green" />
+            <CardTitle className="text-lg">Valuation & Returns (Weighted Means)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <div className="text-center">
-                <h3 className="font-semibold text-sm">P/E</h3>
-                <div className="text-lg font-bold text-muted-foreground">—</div>
-                <p className="text-xs text-trading-red">Unavailable</p>
-              </div>
-              <div className="text-center">
-                <h3 className="font-semibold text-sm">P/S</h3>
-                <div className="text-lg font-bold text-muted-foreground">—</div>
-                <p className="text-xs text-trading-red">Unavailable</p>
-              </div>
-              <div className="text-center">
-                <h3 className="font-semibold text-sm">EV/EBITDA</h3>
-                <div className="text-lg font-bold text-muted-foreground">—</div>
-                <p className="text-xs text-trading-red">Unavailable</p>
-              </div>
-              <div className="text-center">
-                <h3 className="font-semibold text-sm">Dividend Yield</h3>
-                <div className="text-lg font-bold text-muted-foreground">—</div>
-                <p className="text-xs text-trading-red">Unavailable</p>
-              </div>
-              <div className="text-center">
-                <h3 className="font-semibold text-sm">FCF Yield</h3>
-                <div className="text-lg font-bold text-muted-foreground">—</div>
-                <p className="text-xs text-trading-red">Unavailable</p>
-              </div>
-              <div className="text-center">
-                <h3 className="font-semibold text-sm">ROIC</h3>
-                <div className="text-lg font-bold text-muted-foreground">—</div>
-                <p className="text-xs text-trading-red">Unavailable</p>
-              </div>
-              <div className="text-center">
-                <h3 className="font-semibold text-sm">ROE</h3>
-                <div className="text-lg font-bold text-muted-foreground">—</div>
-                <p className="text-xs text-trading-red">Unavailable</p>
-              </div>
-              <div className="text-center">
-                <h3 className="font-semibold text-sm">Asset Turnover</h3>
-                <div className="text-lg font-bold text-muted-foreground">—</div>
-                <p className="text-xs text-trading-red">Unavailable</p>
-              </div>
-              <div className="text-center">
-                <h3 className="font-semibold text-sm">Interest Coverage</h3>
-                <div className="text-lg font-bold text-muted-foreground">—</div>
-                <p className="text-xs text-trading-red">Unavailable</p>
-              </div>
-              <div className="text-center">
-                <h3 className="font-semibold text-sm">Piotroski F</h3>
-                <div className="text-lg font-bold text-muted-foreground">—</div>
-                <p className="text-xs text-trading-red">Unavailable</p>
-              </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {[
+                'P/E', 'P/S', 'EV/EBITDA', 'Dividend Yield', 'FCF Yield',
+                'ROIC', 'ROE', 'Asset Turnover', 'Interest Coverage', 'Piotroski F'
+              ].map((metric) => (
+                <div key={metric} className="bg-gray-50 p-3 rounded-lg border text-center">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">{metric}</p>
+                  <p className="text-sm font-bold text-red-500">—</p>
+                  <p className="text-xs text-red-400">No data provided</p>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
 
         {/* Top Constituents */}
-        <Card className="trading-panel-enhanced mb-8">
+        <Card className="trading-panel-enhanced mb-6">
           <CardHeader className="flex flex-row items-center gap-2">
-            <Users className="h-5 w-5 text-amber-500" />
+            <Users className="h-5 w-5 text-trading-purple" />
             <CardTitle className="text-lg">Top Constituents (by weight)</CardTitle>
           </CardHeader>
           <CardContent>
@@ -194,78 +170,87 @@ export default function IndustryFundamentals() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="font-semibold">Ticker</TableHead>
-                    <TableHead className="font-semibold">Weight %</TableHead>
-                    <TableHead className="font-semibold">Mcap</TableHead>
-                    <TableHead className="font-semibold">EV/EBITDA</TableHead>
-                    <TableHead className="font-semibold">P/E</TableHead>
-                    <TableHead className="font-semibold">Net Margin</TableHead>
+                    <TableHead>Ticker</TableHead>
+                    <TableHead>Weight %</TableHead>
+                    <TableHead>Market Cap</TableHead>
+                    <TableHead>EV/EBITDA</TableHead>
+                    <TableHead>P/E</TableHead>
+                    <TableHead>Net Margin</TableHead>
+                    <TableHead>ROIC</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   <TableRow>
+                    <TableCell className="font-medium">MP</TableCell>
+                    <TableCell>9.21</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                  </TableRow>
+                  <TableRow>
                     <TableCell className="font-medium">AAPL</TableCell>
-                    <TableCell>19.2</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">GOOGL</TableCell>
-                    <TableCell>15.0</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">TSLA</TableCell>
-                    <TableCell>12.8</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">MSFT</TableCell>
-                    <TableCell>11.8</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
+                    <TableCell>8.36</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">NVDA</TableCell>
-                    <TableCell>11.8</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
+                    <TableCell>7.63</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="font-medium">TM</TableCell>
-                    <TableCell>10.9</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
+                    <TableCell className="font-medium">TSM</TableCell>
+                    <TableCell>7.58</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="font-medium">QCOM</TableCell>
-                    <TableCell>10.6</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
+                    <TableCell className="font-medium">MSFT</TableCell>
+                    <TableCell>7.52</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="font-medium">XPEV</TableCell>
-                    <TableCell>8.0</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
+                    <TableCell className="font-medium">005930.KS</TableCell>
+                    <TableCell>7.24</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">GOOGL</TableCell>
+                    <TableCell>7.22</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                  </TableRow>
+                  <TableRow className="bg-blue-50 border-blue-200">
+                    <TableCell className="font-medium text-trading-blue">TSLA</TableCell>
+                    <TableCell className="font-medium text-trading-blue">7.09</TableCell>
+                    <TableCell className="font-medium text-trading-green">$1.10T</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
+                    <TableCell className="text-red-500">—</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -274,29 +259,41 @@ export default function IndustryFundamentals() {
         </Card>
 
         {/* Coverage & Notes */}
-        <Card className="trading-panel-enhanced mb-8">
+        <Card className="trading-panel-enhanced mb-6">
           <CardHeader className="flex flex-row items-center gap-2">
-            <Target className="h-5 w-5 text-trading-blue" />
+            <AlertTriangle className="h-5 w-5 text-amber-500" />
             <CardTitle className="text-lg">Coverage & Notes</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div>
-              <h3 className="font-semibold mb-2">Universe</h3>
-              <p className="text-sm text-muted-foreground">
-                Top auto/EV/tech-auto names from ETFs DRIV, CARZ, KARS; deduplicated, ETF-weighted.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">Weights sum</h3>
-              <p className="text-sm text-muted-foreground">
-                1.00 with 8 names (small sample; heavily tech-skewed—coverage caveat).
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">Metric coverage</h3>
-              <p className="text-sm text-muted-foreground">
-                Margins present; most valuation/returns ratios unavailable—interpret with caution.
-              </p>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                  <p className="text-sm font-medium text-blue-800 mb-2">Data Universe</p>
+                  <p className="text-sm text-blue-700">
+                    Universe derived from public ETF holdings of CARZ, DRIV, KARS as of 2025-09-13
+                  </p>
+                </div>
+                <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
+                  <p className="text-sm font-medium text-green-800 mb-2">Deduplication Method</p>
+                  <p className="text-sm text-green-700">
+                    Tickers deduplicated and weighted by maximum ETF weight among the three ETFs
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg">
+                  <p className="text-sm font-medium text-purple-800 mb-2">Weight Coverage</p>
+                  <p className="text-sm text-purple-700">
+                    Weights sum exactly to 1.0 over 15 names
+                  </p>
+                </div>
+                <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
+                  <p className="text-sm font-medium text-red-800 mb-2">Data Quality Notice</p>
+                  <p className="text-sm text-red-700">
+                    Many key financial metrics are missing or zero in the reported composite data (likely due to data source or aggregation method)
+                  </p>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -304,121 +301,96 @@ export default function IndustryFundamentals() {
         {/* Industry Fundamentals Analyst Insights */}
         <Card className="trading-panel-enhanced">
           <CardHeader className="flex flex-row items-center gap-2">
-            <Briefcase className="h-5 w-5 text-purple-500" />
+            <Activity className="h-5 w-5 text-trading-green" />
             <CardTitle className="text-lg">Industry Fundamentals Analyst Insights</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="font-semibold">Block</TableHead>
-                    <TableHead className="font-semibold">Metric</TableHead>
-                    <TableHead className="font-semibold">Value</TableHead>
-                    <TableHead className="font-semibold">Basis</TableHead>
-                    <TableHead className="font-semibold">Coverage</TableHead>
-                    <TableHead className="font-semibold">Takeaway</TableHead>
+                    <TableHead>Block</TableHead>
+                    <TableHead>Metric</TableHead>
+                    <TableHead>Value</TableHead>
+                    <TableHead>Basis</TableHead>
+                    <TableHead>Coverage</TableHead>
+                    <TableHead>Takeaway</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   <TableRow>
-                    <TableCell className="font-medium">Flows</TableCell>
-                    <TableCell>Revenue</TableCell>
-                    <TableCell>$201</TableCell>
-                    <TableCell>Composite</TableCell>
-                    <TableCell>TTM (partial), N=8</TableCell>
-                    <TableCell>Low composite scale; unit likely $B</TableCell>
+                    <TableCell className="font-medium">Industry Label</TableCell>
+                    <TableCell>Auto Manufacturers</TableCell>
+                    <TableCell>Defined</TableCell>
+                    <TableCell>ETF holdings (CARZ, DRIV, KARS)</TableCell>
+                    <TableCell>15 names</TableCell>
+                    <TableCell>Auto/electric vehicle focus</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="font-medium">Flows</TableCell>
-                    <TableCell>EBITDA</TableCell>
-                    <TableCell>$37</TableCell>
-                    <TableCell>Composite</TableCell>
-                    <TableCell>TTM, N=8</TableCell>
-                    <TableCell>Margin data only, no per-firm split</TableCell>
+                    <TableCell className="font-medium">Number Constituents</TableCell>
+                    <TableCell>15</TableCell>
+                    <TableCell>15</TableCell>
+                    <TableCell>ETF top holdings</TableCell>
+                    <TableCell>Full coverage</TableCell>
+                    <TableCell>Reasonable universe size</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="font-medium">Flows</TableCell>
-                    <TableCell>EBIT</TableCell>
-                    <TableCell>$33</TableCell>
-                    <TableCell>Composite</TableCell>
-                    <TableCell>TTM, N=8</TableCell>
-                    <TableCell>Margin in industry normal range</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Margin</TableCell>
-                    <TableCell>Operating %</TableCell>
-                    <TableCell>16.2%</TableCell>
-                    <TableCell>Composite</TableCell>
-                    <TableCell>TTM</TableCell>
-                    <TableCell>Healthy blended across tech/auto</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Margin</TableCell>
-                    <TableCell>Net Margin %</TableCell>
-                    <TableCell>23.8%</TableCell>
-                    <TableCell>Composite</TableCell>
-                    <TableCell>TTM</TableCell>
-                    <TableCell>High due to tech/auto cross mix</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Valuation</TableCell>
-                    <TableCell>EV/EBITDA</TableCell>
-                    <TableCell>0.00</TableCell>
-                    <TableCell>Composite</TableCell>
-                    <TableCell>Incomplete</TableCell>
-                    <TableCell>Major data gap (likely missing data)</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Leverage</TableCell>
-                    <TableCell>Net Debt/EBITDA</TableCell>
-                    <TableCell>0.00</TableCell>
-                    <TableCell>Composite</TableCell>
-                    <TableCell>Incomplete</TableCell>
-                    <TableCell>Suggests net cash adjustment or gap</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Top name</TableCell>
-                    <TableCell>AAPL weight</TableCell>
-                    <TableCell>19.2%</TableCell>
-                    <TableCell>ETF Universe</TableCell>
-                    <TableCell>Top 8 fully disclosed</TableCell>
-                    <TableCell>Tech names dominate the sample</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Sample</TableCell>
-                    <TableCell>N names</TableCell>
-                    <TableCell>8</TableCell>
-                    <TableCell>ETF Universes</TableCell>
-                    <TableCell>DRIV, KARS, CARZ</TableCell>
-                    <TableCell>Narrow; concentrated; coverage caveat</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Universe</TableCell>
-                    <TableCell>Weights sum</TableCell>
+                    <TableCell className="font-medium">Weight Sum</TableCell>
                     <TableCell>1.0000</TableCell>
-                    <TableCell>ETF composite</TableCell>
-                    <TableCell>By definition</TableCell>
-                    <TableCell>All major weights mapped</TableCell>
+                    <TableCell>Exact</TableCell>
+                    <TableCell>ETF-weighting</TableCell>
+                    <TableCell>Complete</TableCell>
+                    <TableCell>ETF weighting effective</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="font-medium">Weakness</TableCell>
-                    <TableCell>PE/FCF Data</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>—</TableCell>
-                    <TableCell>No aggregate valuation/return ratios</TableCell>
+                    <TableCell className="font-medium">Top Weight</TableCell>
+                    <TableCell>MP 9.21%</TableCell>
+                    <TableCell>MP highest</TableCell>
+                    <TableCell>ETF max weight</TableCell>
+                    <TableCell>15 names</TableCell>
+                    <TableCell>MP leads industry ETF exposure</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="font-medium">Risk</TableCell>
-                    <TableCell>Tech/Auto mix</TableCell>
+                    <TableCell className="font-medium">Market Cap Aggregate</TableCell>
+                    <TableCell>$77.73B</TableCell>
+                    <TableCell>Scaled sum</TableCell>
+                    <TableCell>Sum over 15 tickers</TableCell>
+                    <TableCell>Partial</TableCell>
+                    <TableCell>Size proxy for auto industry</TableCell>
+                  </TableRow>
+                  <TableRow className="bg-red-50">
+                    <TableCell className="font-medium">Missing Metrics</TableCell>
+                    <TableCell>P/E, EV/EBITDA, Margins</TableCell>
                     <TableCell>—</TableCell>
-                    <TableCell>ETF method</TableCell>
-                    <TableCell>Material</TableCell>
-                    <TableCell>May not reflect pure auto/EV</TableCell>
+                    <TableCell>Data unreported/zeroed</TableCell>
+                    <TableCell>Full universe</TableCell>
+                    <TableCell>Lack of key metrics needs caution</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">FCF Yield</TableCell>
+                    <TableCell>0.00%</TableCell>
+                    <TableCell>Zero</TableCell>
+                    <TableCell>ETF weighted composite</TableCell>
+                    <TableCell>Full universe</TableCell>
+                    <TableCell>Possibly no free cash flow yield</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
+            </div>
+            
+            <div className="mt-6 space-y-4">
+              <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg">
+                <p className="text-sm font-medium text-amber-800 mb-2">Analysis Recommendation</p>
+                <p className="text-sm text-amber-700">
+                  If further refined or alternative data sources are accessible, metrics like EV/EBITDA or margins should be re-checked for better analysis. Current data aggregation reports significant gaps or zeros in fundamentals.
+                </p>
+              </div>
+              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                <p className="text-sm font-medium text-blue-800 mb-2">Next Steps</p>
+                <p className="text-sm text-blue-700">
+                  Please advise if you want to analyze Tesla's standalone fundamentals or seek another approach.
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
