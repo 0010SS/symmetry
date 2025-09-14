@@ -125,8 +125,6 @@ class IndustryFundamentalsData(BaseModel):
 
 # ---------- Company Trends schema ----------
 
-from typing import Union
-
 class _CT_SeasonYear(BaseModel):
     year: int
     start: Union[float, str]
@@ -216,6 +214,104 @@ class CompanyTrendsData(BaseModel):
     insights: List[_CT_TextItem]
     analyst_table: List[_CT_TableRow]
     summary_proposal: _CT_SummaryProposal
+
+# ---------- Market Sentiment (dual-MD → single JSON) ----------
+
+class _MS_Meta(BaseModel):
+    pageTitle: str
+    ticker: str
+    period_start: str
+    period_end: str
+
+class _MS_CompanyBlock(BaseModel):
+    badge: dict                  # {"label": "...", "tone": "green|amber|red"}
+    stock_price: str
+    stock_note: str
+    peak_mentions_range: str
+    peak_note: str
+    key_focus_areas: List[str]
+    market_stability_note: str
+
+class _MS_Breakdown(BaseModel):
+    positive: str | int
+    negative: str | int
+    neutral: str | int
+
+class _MS_Dynamic(BaseModel):
+    icon: str    # "up" | "down" | "warn"
+    text: str
+
+class _MS_IndustryBlock(BaseModel):
+    badge: dict                  # {"label": "...", "tone": "..."}
+    net_score: str
+    breakdown: _MS_Breakdown
+    dynamics: List[_MS_Dynamic]
+    supply_chain_note: str
+
+class _MS_TimelineItem(BaseModel):
+    title: str
+    window: str
+    tone: str     # "pos" | "neg" | "neu"
+    summary: str
+    note: str
+
+class _MS_TableRow(BaseModel):
+    theme: str
+    platform: str
+    source: str
+    date_window: str
+    metric: str
+    value: str
+    confidence: str
+    takeaway: str
+
+class _MS_TextItem(BaseModel):
+    title: str
+    text: str
+
+class _MS_ActionItem(BaseModel):
+    text: str
+
+class _MS_FinalProposal(BaseModel):
+    label: str
+    text: str
+
+class MarketSentimentData(BaseModel):
+    meta: _MS_Meta
+
+    # merged from two MD files:
+    company: _MS_CompanyBlock
+    industry: _MS_IndustryBlock
+
+    timelines: dict              # {"company":[_MS_TimelineItem...], "industry":[_MS_TimelineItem...]}
+
+    company_insights_table: List[_MS_TableRow]
+    industry_insights_table: List[_MS_TableRow]
+
+    company_narratives: dict     # {"non_obvious_insights":[_MS_TextItem...], "action_watchlist":[_MS_ActionItem...] }
+    industry_narratives: dict    # {"key_narratives":[_MS_TextItem...], "action_watchlist":[_MS_ActionItem...] }
+
+    final_proposals: dict        # {"company": _MS_FinalProposal, "industry": _MS_FinalProposal}
+
+# What we expect from the company MD alone:
+class _MS_FromCompanyMD(BaseModel):
+    meta: _MS_Meta
+    company: _MS_CompanyBlock
+    timelines_company: List[_MS_TimelineItem]
+    company_insights_table: List[_MS_TableRow]
+    company_narratives: dict          # same dict shape as final
+
+    final_company: _MS_FinalProposal
+
+# What we expect from the industry MD alone:
+class _MS_FromIndustryMD(BaseModel):
+    meta: _MS_Meta                     # allow it; we'll reconcile with company.meta
+    industry: _MS_IndustryBlock
+    timelines_industry: List[_MS_TimelineItem]
+    industry_insights_table: List[_MS_TableRow]
+    industry_narratives: dict         # same dict shape as final
+
+    final_industry: _MS_FinalProposal
 
 
 # ---------- GPT helper ----------
@@ -391,6 +487,73 @@ def parse_company_trends(markdown_file: str, output_file: str, json_schema: Base
     )
     print(f"✅ Company Trends: Structured data saved to {output_file}")
 
+def _gpt_json(text: str, name: str, schema_model: BaseModel):
+    client = OpenAI()
+    resp = client.chat.completions.create(
+        model="gpt-5-nano",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "Extract structured data from markdown into the required JSON schema. "
+                    "Preserve wording for qualitative fields. If qualitative is missing, add a plausible fill; "
+                    "if quantitative is missing, use 'N/A' or '—'. Do NOT invent precise numbers. "
+                    "Return ONLY JSON matching the schema."
+                )
+            },
+            {"role": "user", "content": f"Markdown:\n\n{text}\n\nReturn ONLY JSON for {name}."}
+        ],
+        response_format={
+            "type": "json_schema",
+            "json_schema": {"name": name, "schema": schema_model.model_json_schema()}
+        }
+    )
+    raw = resp.choices[0].message.content
+    return schema_model.model_validate_json(raw)
+
+def parse_market_sentiment_dual(
+    company_markdown_file: str,
+    industry_markdown_file: str,
+    output_file: str
+):
+    # 1) parse company MD
+    comp_md = Path(company_markdown_file).read_text(encoding="utf-8")
+    comp = _gpt_json(comp_md, "_MS_FromCompanyMD", _MS_FromCompanyMD)
+
+    # 2) parse industry MD
+    ind_md = Path(industry_markdown_file).read_text(encoding="utf-8")
+    ind = _gpt_json(ind_md, "_MS_FromIndustryMD", _MS_FromIndustryMD)
+
+    # 3) reconcile meta (prefer company, fall back to industry where empty)
+    meta = comp.meta
+    for k, v in ind.meta.model_dump().items():
+        if getattr(meta, k, None) in (None, "", "—", "N/A"):
+            setattr(meta, k, v)
+
+    # 4) merge into final MarketSentimentData
+    merged = MarketSentimentData(
+        meta=meta,
+        company=comp.company,
+        industry=ind.industry,
+        timelines={
+            "company": comp.timelines_company,
+            "industry": ind.timelines_industry
+        },
+        company_insights_table=comp.company_insights_table,
+        industry_insights_table=ind.industry_insights_table,
+        company_narratives=comp.company_narratives,
+        industry_narratives=ind.industry_narratives,
+        final_proposals={
+            "company": comp.final_company,
+            "industry": ind.final_industry
+        }
+    )
+
+    Path(output_file).write_text(
+        json.dumps(merged.model_dump(), indent=2),
+        encoding="utf-8"
+    )
+    print(f"✅ Market Sentiment (dual MD): Structured data saved to {output_file}")
 
 
 # ---------- Example run ----------
@@ -399,3 +562,7 @@ if __name__ == "__main__":
     parse_industry_trends("output/analysts/industry_market.md", "tesla_industry_trends.json", IndustryTrendsData)
     parse_industry_fundamentals("output/analysts/industry_fundamentals.md", "tesla_industry_fundamentals.json", IndustryFundamentalsData)
     parse_company_trends("output/analysts/company_market.md", "tesla_company_trends.json", CompanyTrendsData)
+    parse_market_sentiment_dual(company_markdown_file="output/analysts/company_sentiment.md",
+                               industry_markdown_file="output/analysts/industry_sentiment.md",
+                               output_file="tesla_market_sentiment.json")
+    
