@@ -86,6 +86,9 @@ def create_industry_fundamentals_analyst(llm, toolkit):
             f.write(report)
             f.write("\n\n")
 
+        with open("output/analysts/industry_fundamentals.md", "w") as f:
+            f.write(report)
+
         return {
             "messages": [result],
             "industry_fundamentals_report": report,

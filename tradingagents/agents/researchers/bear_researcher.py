@@ -66,6 +66,10 @@ Use this information to deliver a compelling bear argument, refute the bull's cl
             "count": investment_debate_state["count"] + 1,
         }
 
+        # Save the md file to message
+        with open("output/researcher/bear_argument.md", "w") as f:
+            f.write(new_investment_debate_state["history"])
+
         return {"investment_debate_state": new_investment_debate_state}
 
     return bear_node

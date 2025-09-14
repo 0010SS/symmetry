@@ -142,6 +142,9 @@ def create_industry_market_analyst(llm, toolkit):
         except Exception:
             pass
 
+        with open("output/analysts/industry_market.md", "w") as f:
+            f.write(report)
+
         return {
             "messages": [result],
             "industry_market_report": report,

@@ -81,10 +81,8 @@ def create_industry_social_analyst(llm, toolkit):
         if len(getattr(result, "tool_calls", []) or []) == 0:
             report = result.content
 
-        # Store the md file
-        with open(f"industry_social_sentiment_report_{current_date}.md", "w") as f:
+        with open("output/analysts/industry_sentiment.md", "w") as f:
             f.write(report)
-            f.write("\n\n")
 
         return {
             "messages": [result],

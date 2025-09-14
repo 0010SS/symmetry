@@ -16,6 +16,3 @@ ta = TradingAgentsGraph(debug=True, selected_analysts=["industry_cross_signals"]
 # forward propagate
 _, decision = ta.propagate("NVDA", "2024-05-10")
 print(decision)
-
-# Memorize mistakes and reflect
-# ta.reflect_and_remember(1000) # parameter is the position returns

@@ -88,6 +88,9 @@ def create_social_media_analyst(llm, toolkit):
         if len(getattr(result, "tool_calls", []) or []) == 0:
             report = result.content
 
+        with open("output/analysts/company_sentiment.md", "w") as f:
+            f.write(report)
+
         return {
             "messages": [result],
             "sentiment_report": report,

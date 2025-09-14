@@ -90,11 +90,8 @@ def create_industry_cross_signals_analyst(llm, toolkit):
         if len(getattr(result, "tool_calls", []) or []) == 0:
             report = result.content
 
-        # Persist the analysis
-        fname = f"cross_linkage_report_{ticker}_{current_date}.md"
-        with open(fname, "w") as f:
-            f.write(report or "")
-            f.write("\n")
+        with open("output/analysts/industry_cross_signals.md", "w") as f:
+            f.write(report)
 
         return {
             "messages": [result],

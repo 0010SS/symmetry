@@ -37,6 +37,10 @@ def create_trader(llm, memory):
 
         result = llm.invoke(messages)
 
+        # Save the md file to message
+        with open("output/trader/investment_plan.md", "w") as f:
+            f.write(result.content)
+
         return {
             "messages": [result],
             "trader_investment_plan": result.content,
