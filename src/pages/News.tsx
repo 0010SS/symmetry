@@ -1,228 +1,300 @@
-import { ArrowLeft, Newspaper, Clock, TrendingUp, ExternalLink } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, ExternalLink, TrendingUp, TrendingDown, AlertTriangle, Building2, Globe, DollarSign, Scale, Shield } from "lucide-react";
 
-export default function News() {
+const News = () => {
   const navigate = useNavigate();
 
-  const newsItems = [
+  // Data extracted from the company news markdown
+  const macroeconomicContext = [
+    "The U.S. Federal Reserve is widely expected to start cutting interest rates soon, with analysts predicting total cuts of 125 basis points over the next few meetings.",
+    "Asian markets, including Japan's Nikkei and indices in South Korea and China, have surged to record highs driven by Fed easing hopes.",
+    "Political risks in some countries have had limited market impact, but Indonesia's fiscal concerns caused currency volatility.",
+    "U.S. jobs data was revised down by nearly one million jobs year-to-date, making Fed rate cut expectations more cautious.",
+    "Inflation remains above 3%, raising the possibility that the Fed may adjust its official inflation target upward."
+  ];
+
+  const sectorTrends = [
+    "Tesla's U.S. market share dropped to its lowest since 2017, now at around 38%, as rivals gain traction.",
+    "The federal tax credit for EV buyers in the U.S. will expire soon (September 2025).",
+    "Tesla faces increasing competition in China both in cars and robotics, with rivals like BYD warning of a 'bloodbath'.",
+    "Autonomous vehicle tech and robotaxi services are becoming key growth areas with Nevada approvals."
+  ];
+
+  const companyEvents = [
+    "Tesla stock surged about 7% to reach a seven-month high near $395, driven by energy business and robotaxi approvals.",
+    "CEO Elon Musk's board-approved pay package is unprecedented, worth up to $1 trillion contingent on performance targets.",
+    "Tesla's robotaxi app was released to the public in select markets, intensifying competition with Waymo.",
+    "Recent product launches include the Megapack 3 energy storage system receiving positive market attention.",
+    "Tesla's board chair indicated Elon Musk has refocused on Tesla leadership after political engagements.",
+    "A prominent Tesla engineer publicly criticized CEO leadership, suggesting internal discord.",
+    "Despite delivery growth, Tesla faces margin pressures and price competition globally."
+  ];
+
+  const shareholderEvents = [
+    "Tesla CFO Vaibhav Taneja and SVP Xiaotong Zhu sold shares in the last week for tax purposes.",
+    "Elon Musk beneficially owns 714.7 million shares including performance awards.",
+    "Multiple large institutional investors trimmed Tesla holdings during Q1 2025.",
+    "Several law firms announced class action lawsuits citing securities law violations."
+  ];
+
+  const regulatoryLegal = [
+    "Tesla is facing rising regulatory scrutiny with safety concerns raised over vehicle features.",
+    "Numerous shareholder class action lawsuits have been filed, increasing legal risk.",
+    "Tesla is navigating complex regulatory approvals for autonomous vehicle operations expansion."
+  ];
+
+  const analystInsights = [
     {
-      id: 1,
-      title: "Apple Reports Record Q4 Earnings, Beats Analyst Expectations",
-      summary: "Company announces 15% revenue growth and strong iPhone sales, boosting investor confidence ahead of new product cycle.",
+      theme: "Macroeconomic",
+      event: "Anticipated U.S. Fed rate cuts",
+      date: "Sep 2025",
+      magnitude: "125 bps cuts expected",
       source: "Reuters",
-      time: "2 hours ago",
-      impact: "High",
-      sentiment: "Very Positive",
-      category: "Earnings"
+      takeaway: "Supports risk appetite and equity rallies, boosting growth stocks including Tesla"
     },
     {
-      id: 2,
-      title: "New AI Chip Architecture Unveiled at Apple Event",
-      summary: "Revolutionary M4 processor with enhanced neural engine promises 40% performance improvement for AI workloads.",
-      source: "TechCrunch",
-      time: "4 hours ago",
-      impact: "High",
-      sentiment: "Positive",
-      category: "Innovation"
+      theme: "Sector",
+      event: "Tesla U.S. EV market share drops to 38%",
+      date: "Aug 2025",
+      magnitude: "Lowest since 2017",
+      source: "Cox Automotive, Reuters",
+      takeaway: "Intense competition eroding Tesla's dominance; margin and growth pressures"
     },
     {
-      id: 3,
-      title: "Goldman Sachs Upgrades Apple to Strong Buy",
-      summary: "Investment bank raises price target to $175, citing strong fundamentals and growth prospects in services segment.",
-      source: "Bloomberg",
-      time: "6 hours ago",
-      impact: "Medium",
-      sentiment: "Positive",
-      category: "Analyst"
+      theme: "Company",
+      event: "Tesla stock hits 7-month high near $395",
+      date: "Sep 12, 2025",
+      magnitude: "+7% price surge",
+      source: "Yahoo Finance, CNBC",
+      takeaway: "Driven by energy business, robotaxi approvals; technical breakout signaling further upside"
     },
     {
-      id: 4,
-      title: "Apple Announces Major Partnership with OpenAI",
-      summary: "Strategic collaboration to integrate advanced AI capabilities across Apple ecosystem, starting with Siri enhancements.",
-      source: "Wall Street Journal",
-      time: "8 hours ago",
-      impact: "Very High",
-      sentiment: "Very Positive",
-      category: "Partnership"
+      theme: "Company",
+      event: "Elon Musk $1 trillion pay package approved",
+      date: "Sep 2025",
+      magnitude: "Largest CEO package in history",
+      source: "SEC Filings, Yahoo Finance",
+      takeaway: "Controversial; performance-based incentives may align interests but raise governance concerns"
     },
     {
-      id: 5,
-      title: "iPhone Market Share Gains in Emerging Markets",
-      summary: "Strong growth in India and Southeast Asia drives international revenue, with 22% increase in emerging market sales.",
-      source: "Financial Times",
-      time: "12 hours ago",
-      impact: "Medium",
-      sentiment: "Positive",
-      category: "Market Expansion"
+      theme: "Shareholder/Legal",
+      event: "Class action lawsuits announced against Tesla",
+      date: "Sep 2025",
+      magnitude: "Pending legal risk",
+      source: "Multiple law firm announcements",
+      takeaway: "Heightened legal exposure for Tesla investors"
     },
     {
-      id: 6,
-      title: "Apple Services Revenue Hits New Milestone",
-      summary: "App Store, iCloud, and subscription services generate $24B in quarterly revenue, up 18% year-over-year.",
-      source: "CNBC",
-      time: "1 day ago",
-      impact: "Medium",
-      sentiment: "Positive",
-      category: "Services"
+      theme: "Regulatory",
+      event: "Robotaxi expansion approvals in Nevada and California",
+      date: "Sep 2025",
+      magnitude: "Regulatory milestones",
+      source: "Company announcements",
+      takeaway: "Key enabler for Tesla's autonomous vehicle business growth"
     }
   ];
 
-  const marketImpact = {
-    "Very High": "destructive",
-    "High": "sentiment",
-    "Medium": "technical",
-    "Low": "outline"
+  const themeIcons = {
+    "Macroeconomic": Globe,
+    "Sector": Building2,
+    "Company": TrendingUp,
+    "Shareholder/Legal": Scale,
+    "Regulatory": Shield
   };
 
-  const sentimentColors = {
-    "Very Positive": "sentiment",
-    "Positive": "technical",
-    "Neutral": "outline",
-    "Negative": "destructive"
+  const themeColors = {
+    "Macroeconomic": "bg-blue-50 border-blue-200 text-blue-800",
+    "Sector": "bg-purple-50 border-purple-200 text-purple-800", 
+    "Company": "bg-green-50 border-green-200 text-green-800",
+    "Shareholder/Legal": "bg-red-50 border-red-200 text-red-800",
+    "Regulatory": "bg-orange-50 border-orange-200 text-orange-800"
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-surface-1 to-surface-2 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2"
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="mb-8">
+          <Button
+            variant="outline"
+            onClick={() => navigate("/")}
+            className="mb-6"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Dashboard
           </Button>
-          <h1 className="text-3xl font-bold">Market News & Analysis</h1>
+          
+          <h1 className="text-4xl font-bold mb-2">Tesla (TSLA) Market and Company News Analysis</h1>
+          <p className="text-muted-foreground">September 2025 - Comprehensive market intelligence and company-specific developments</p>
         </div>
 
-        {/* News Summary */}
-        <Card className="trading-panel-enhanced mb-8">
+        {/* Executive Summary */}
+        <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-trading-green" />
-              News Impact Summary
+              <TrendingUp className="h-5 w-5" />
+              Executive Summary
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-trading-green mb-2">6</div>
-                <p className="text-sm text-muted-foreground">Total News Items</p>
-                <Badge variant="sentiment" className="mt-2">ACTIVE</Badge>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-trading-blue mb-2">85%</div>
-                <p className="text-sm text-muted-foreground">Positive Sentiment</p>
-                <Badge variant="technical" className="mt-2">BULLISH</Badge>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-amber-500 mb-2">3</div>
-                <p className="text-sm text-muted-foreground">High Impact Events</p>
-                <Badge variant="decision" className="mt-2">SIGNIFICANT</Badge>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-500 mb-2">+2.8%</div>
-                <p className="text-sm text-muted-foreground">Expected Price Impact</p>
-                <Badge variant="outline" className="mt-2">POSITIVE</Badge>
+            <div className="prose max-w-none">
+              <p className="text-foreground leading-relaxed">
+                Tesla remains in a strong growth and innovation phase with surging stock momentum driven by robotics, autonomous vehicle expansion, and energy business developments. However, growing competition in EV markets globally is eroding its U.S. market share to multi-year lows and pressuring margins. The macroeconomic environment favors growth stocks with expected U.S. Fed easing lifting general investor sentiment. CEO Elon Musk's unprecedented $1 trillion pay plan highlights ambitious growth targets but raises shareholder governance concerns. Ongoing and pending class action lawsuits add legal risk. Regulatory approvals for robotaxis represent critical enablers of Tesla's long-term vision beyond traditional automotive.
+              </p>
+              <div className="mt-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                <p className="font-semibold text-blue-800">
+                  FINAL TRANSACTION PROPOSAL: HOLD with close monitoring of legal developments and competitive market share trends before considering new BUY positions.
+                </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* News Feed */}
-        <div className="space-y-6">
-          {newsItems.map((news) => (
-            <Card key={news.id} className="trading-panel-enhanced">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline">{news.category}</Badge>
-                      <Badge variant={marketImpact[news.impact] as any}>
-                        {news.impact} Impact
-                      </Badge>
-                      <Badge variant={sentimentColors[news.sentiment] as any}>
-                        {news.sentiment}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-lg leading-tight mb-2">
-                      {news.title}
-                    </CardTitle>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Newspaper className="h-4 w-4" />
-                        {news.source}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {news.time}
-                      </div>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm" className="ml-4">
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground leading-relaxed">
-                  {news.summary}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+        {/* Category Analysis Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Macroeconomic Context */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                Macroeconomic Context
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {macroeconomicContext.map((item, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
+                    <span className="text-sm text-foreground leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Sector/Industry Trends */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Building2 className="h-5 w-5" />
+                Sector/Industry Trends
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {sectorTrends.map((item, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0" />
+                    <span className="text-sm text-foreground leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Company-Specific Events */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Company-Specific Events
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {companyEvents.map((item, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0" />
+                    <span className="text-sm text-foreground leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Shareholder/Ownership Events */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <DollarSign className="h-5 w-5" />
+                Shareholder/Ownership Events
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {shareholderEvents.map((item, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0" />
+                    <span className="text-sm text-foreground leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Market Analysis */}
-        <Card className="trading-panel-enhanced mt-8">
+        {/* Regulatory & Legal Developments */}
+        <Card className="mb-8">
           <CardHeader>
-            <CardTitle>News-Based Market Analysis</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Scale className="h-5 w-5" />
+              Regulatory & Legal Developments
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div>
-                <h3 className="font-semibold mb-3 text-trading-green">Positive Catalysts</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="p-3 border-l-4 border-trading-green bg-trading-green/5 rounded">
-                    <div className="font-medium">Record Earnings Performance</div>
-                    <div className="text-muted-foreground">15% revenue growth exceeds expectations, demonstrates strong execution</div>
-                  </div>
-                  <div className="p-3 border-l-4 border-trading-blue bg-trading-blue/5 rounded">
-                    <div className="font-medium">AI Technology Leadership</div>
-                    <div className="text-muted-foreground">New chip architecture positions company for AI revolution</div>
-                  </div>
-                  <div className="p-3 border-l-4 border-purple-500 bg-purple-500/5 rounded">
-                    <div className="font-medium">Strategic Partnerships</div>
-                    <div className="text-muted-foreground">OpenAI collaboration accelerates AI integration timeline</div>
-                  </div>
-                </div>
-              </div>
+            <ul className="space-y-3">
+              {regulatoryLegal.map((item, index) => (
+                <li key={index} className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0" />
+                  <span className="text-sm text-foreground leading-relaxed">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
 
-              <div>
-                <h3 className="font-semibold mb-3 text-trading-blue">Market Implications</h3>
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium mb-2">Short-term Impact (1-3 months)</h4>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Analyst upgrades likely to drive institutional buying</li>
-                      <li>• Earnings momentum supports continued price appreciation</li>
-                      <li>• AI partnership creates new growth narrative</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Long-term Outlook (6-12 months)</h4>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Services segment provides recurring revenue stability</li>
-                      <li>• International expansion drives market share gains</li>
-                      <li>• Technology leadership maintains competitive moat</li>
-                    </ul>
-                  </div>
-                </div>
+        {/* News Analyst Insights Table */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5" />
+              News Analyst Insights
+            </CardTitle>
+            <CardDescription>
+              Detailed analysis of key events and their market implications
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <div className="space-y-4">
+                {analystInsights.map((insight, index) => {
+                  const IconComponent = themeIcons[insight.theme] || TrendingUp;
+                  return (
+                    <div key={index} className={`p-4 rounded-lg border-2 ${themeColors[insight.theme]}`}>
+                      <div className="flex items-start gap-4">
+                        <IconComponent className="h-5 w-5 mt-1 flex-shrink-0" />
+                        <div className="flex-1 space-y-2">
+                          <div className="flex flex-wrap gap-2 items-center">
+                            <Badge variant="outline" className="text-xs">
+                              {insight.theme}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">{insight.date}</span>
+                            <span className="text-xs font-medium">{insight.source}</span>
+                          </div>
+                          <h4 className="font-semibold text-sm">{insight.event}</h4>
+                          <p className="text-xs text-muted-foreground">
+                            <strong>Magnitude:</strong> {insight.magnitude}
+                          </p>
+                          <p className="text-sm leading-relaxed">{insight.takeaway}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </CardContent>
@@ -230,4 +302,6 @@ export default function News() {
       </div>
     </div>
   );
-}
+};
+
+export default News;
