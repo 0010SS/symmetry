@@ -1,0 +1,70 @@
+{
+  "pageTitle": "Industry Fundamentals",
+  "header": {
+    "reportTitle": "TSLA Industry Fundamentals Report — Auto Manufacturers",
+    "backPath": "/"
+  },
+  "executiveSummary": {
+    "industry": "Auto Manufacturers",
+    "method": "ETF-weighted; 15 constituents; total weights sum to 1.0",
+    "topNamesByWeight": "MP (9.21%), AAPL (8.36%), NVDA (7.63%), and TSLA (7.09%)",
+    "compositeHeadline": "EV/EBITDA, Net Margin, and P/E data not available; FCF Yield is 0%"
+  },
+  "compositeFundamentals": {
+    "cards": [
+      { "label": "Aggregate Revenue", "value": "$0", "note": "All reported as $0", "tone": "bad" },
+      { "label": "EBITDA", "value": "$0", "note": "All reported as $0", "tone": "bad" },
+      { "label": "EBIT", "value": "$0", "note": "All reported as $0", "tone": "bad" },
+      { "label": "Net Income", "value": "$0", "note": "All reported as $0", "tone": "bad" },
+      { "label": "CFO", "value": "$0", "note": "All reported as $0", "tone": "bad" },
+      { "label": "Capex", "value": "$0", "note": "All reported as $0", "tone": "bad" },
+      { "label": "Market Cap Aggregate", "value": "$77.73B", "note": "Available", "tone": "ok" }
+    ],
+    "marginsRatios": [
+      { "label": "Gross Margin", "value": "Not reported" },
+      { "label": "Operating Margin", "value": "Not reported" },
+      { "label": "Net Margin", "value": "Not reported" }
+    ],
+    "ratioPanel": [
+      { "label": "P/E", "value": "—", "note": "No data provided" },
+      { "label": "P/S", "value": "—", "note": "No data provided" },
+      { "label": "EV/EBITDA", "value": "—", "note": "No data provided" },
+      { "label": "Dividend Yield", "value": "—", "note": "No data provided" },
+      { "label": "FCF Yield", "value": "—", "note": "No data provided" },
+      { "label": "ROIC", "value": "—", "note": "No data provided" },
+      { "label": "ROE", "value": "—", "note": "No data provided" },
+      { "label": "Asset Turnover", "value": "—", "note": "No data provided" },
+      { "label": "Interest Coverage", "value": "—", "note": "No data provided" },
+      { "label": "Piotroski F", "value": "—", "note": "No data provided" }
+    ]
+  },
+  "topConstituents": [
+    { "ticker": "MP", "weightPct": 9.21, "marketCap": null, "evEbitda": null, "pe": null, "netMargin": null, "roic": null },
+    { "ticker": "AAPL", "weightPct": 8.36, "marketCap": null, "evEbitda": null, "pe": null, "netMargin": null, "roic": null },
+    { "ticker": "NVDA", "weightPct": 7.63, "marketCap": null, "evEbitda": null, "pe": null, "netMargin": null, "roic": null },
+    { "ticker": "TSM", "weightPct": 7.58, "marketCap": null, "evEbitda": null, "pe": null, "netMargin": null, "roic": null },
+    { "ticker": "MSFT", "weightPct": 7.52, "marketCap": null, "evEbitda": null, "pe": null, "netMargin": null, "roic": null },
+    { "ticker": "005930.KS", "weightPct": 7.24, "marketCap": null, "evEbitda": null, "pe": null, "netMargin": null, "roic": null },
+    { "ticker": "GOOGL", "weightPct": 7.22, "marketCap": null, "evEbitda": null, "pe": null, "netMargin": null, "roic": null },
+    { "ticker": "TSLA", "weightPct": 7.09, "marketCap": "$1.10T", "evEbitda": "—", "pe": "—", "netMargin": "—", "roic": "—" }
+  ],
+  "coverageNotes": {
+    "dataUniverse": "Universe derived from public ETF holdings of CARZ, DRIV, KARS as of 2025-09-13",
+    "deduplicationMethod": "Tickers deduplicated and weighted by maximum ETF weight among the three ETFs",
+    "weightCoverage": "Weights sum exactly to 1.0 over 15 names",
+    "dataQualityNotice": "Many key financial metrics are missing or zero in the reported composite data (likely due to data source or aggregation method)"
+  },
+  "analystInsights": [
+    { "block": "Industry Label", "metric": "Auto Manufacturers", "value": "Defined", "basis": "ETF holdings (CARZ, DRIV, KARS)", "coverage": "15 names", "takeaway": "Auto/electric vehicle focus" },
+    { "block": "Number Constituents", "metric": "15", "value": "15", "basis": "ETF top holdings", "coverage": "Full coverage", "takeaway": "Reasonable universe size" },
+    { "block": "Weight Sum", "metric": "1.0000", "value": "Exact", "basis": "ETF-weighting", "coverage": "Complete", "takeaway": "ETF weighting effective" },
+    { "block": "Top Weight", "metric": "MP 9.21%", "value": "MP highest", "basis": "ETF max weight", "coverage": "15 names", "takeaway": "MP leads industry ETF exposure" },
+    { "block": "Market Cap Aggregate", "metric": "$77.73B", "value": "Scaled sum", "basis": "Sum over 15 tickers", "coverage": "Partial", "takeaway": "Size proxy for auto industry" },
+    { "block": "Missing Metrics", "metric": "P/E, EV/EBITDA, Margins", "value": "—", "basis": "Data unreported/zeroed", "coverage": "Full universe", "takeaway": "Lack of key metrics needs caution" },
+    { "block": "FCF Yield", "metric": "0.00%", "value": "Zero", "basis": "ETF weighted composite", "coverage": "Full universe", "takeaway": "Possibly no free cash flow yield" }
+  ],
+  "actions": {
+    "analysisRecommendation": "If further refined or alternative data sources are accessible, metrics like EV/EBITDA or margins should be re-checked for better analysis. Current data aggregation reports significant gaps or zeros in fundamentals.",
+    "nextSteps": "Please advise if you want to analyze Tesla's standalone fundamentals or seek another approach."
+  }
+}

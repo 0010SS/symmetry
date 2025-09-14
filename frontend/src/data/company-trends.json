@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "title": "Company Trends Analysis",
+    "ticker": "TSLA",
+    "as_of": "2025-09-12"
+  },
+
+  "seasonality_snapshot": {
+    "heading": "Seasonality Snapshot - September TSLA Returns (2020-2025)",
+    "month": "September",
+    "years": [
+      { "year": 2020, "start": 158.35, "end": 143.0, "return_pct": -9.7, "note": "$158.35 → $143.0" },
+      { "year": 2021, "start": 244.7, "end": 258.49, "return_pct": 5.6, "note": "$244.7 → $258.49" },
+      { "year": 2022, "start": 277.16, "end": 265.25, "return_pct": -4.4, "note": "$277.16 → $265.25" },
+      { "year": 2023, "start": 245.01, "end": 276.04, "return_pct": 12.7, "note": "$245.01 → $276.04" },
+      { "year": 2024, "start": 230.29, "end": 261.63, "return_pct": 13.6, "note": "$230.29 → $261.63" },
+      { "year": 2025, "start": 329.36, "end": 395.94, "return_pct": 20.2, "note": "$329.36 → $395.94 (partial)" }
+    ],
+    "avg_return_pct": 6.3,
+    "sample_note": "Sample size N: 6 years (including partial current year)"
+  },
+
+  "exec_summary": {
+    "yoy_return_pct": 72.2,
+    "absolute_gain_pts": 166.13,
+    "current_close": 395.94,
+    "current_close_date": "2025-09-12",
+    "range_52w": { "low": 218, "high": 480, "above_low_pct": 81.7, "below_high_pct": 17.5 },
+    "key_points": "Above 50-day SMA (328.52) & 200-day SMA (330.80). RSI 74.8, MACD 10.7. ATR 13.75 signals elevated volatility. September shows +6.3% avg return."
+  },
+
+  "trend_levels": {
+    "sma50": 328.52,
+    "sma200": 330.80,
+    "distance_to_50_pts": 20,
+    "distance_to_50_pct": 6.1,
+    "distance_to_200_pts": 65,
+    "distance_to_200_pct": 19.7,
+    "support": "SMA zone 330-335",
+    "resistance": "Near 480",
+    "note": "Recent price breakouts confirmed by volume strength."
+  },
+
+  "momentum_vol": {
+    "macd": 10.7,
+    "rsi": 74.8,
+    "atr": 13.75,
+    "rsi_badge": "Overbought",
+    "atr_badge": "Moderate Volatility"
+  },
+
+  "seasonality": {
+    "september_avg_return_pct": 6.3,
+    "n_years": 6,
+    "note": "September average return +6.3%, N=6 years, supportive for continuation of positive trend in current month."
+  },
+
+  "indicator_panel": [
+    { "name": "close_50_sma", "value": "328.52", "note": "dynamic support" },
+    { "name": "close_200_sma", "value": "330.80", "note": "long-term trend confirmation" },
+    { "name": "rsi", "value": "74.8", "note": "overbought momentum" },
+    { "name": "macd", "value": "10.7", "note": "bullish momentum acceleration" },
+    { "name": "boll (middle band)", "value": "343.28", "note": "bull market benchmark" },
+    { "name": "atr", "value": "13.75", "note": "moderate volatility exposure" }
+  ],
+
+  "scenarios_risks": [
+    { "type": "bullish", "title": "Bullish", "text": "Sustained price > 330 with RSI moderating." },
+    { "type": "risk", "title": "Risk", "text": "RSI above 70 signals short-term overbought correction." },
+    { "type": "invalidated", "title": "Invalidated", "text": "If price falls below 320 (below SMA zone). Watch volume for confirmation or reversal signals." }
+  ],
+
+  "volume_dynamics": [
+    { "title": "Volume Spikes on Rallies", "text": "Volume spikes on rallies bolster bullish trend." },
+    { "title": "Absence of Volume Spikes on Pullbacks", "text": "Absence of volume spikes on pullbacks facilitates trend resilience." }
+  ],
+
+  "insights": [
+    { "title": "Strong Recovery & Momentum", "text": "Strong recovery from oversold conditions seen in prior Septembers, current-year momentum in September far stronger than prior years." },
+    { "title": "SMA Proximity Critical Zone", "text": "Close proximity of 50- and 200-day SMA amplifies support; usually a critical inflection zone for price stability or corrections." }
+  ],
+
+  "analyst_table": [
+    { "theme": "YoY Return", "metric": "Close Price Gain", "value": "+72.2%", "source": "Price History 2024-2025", "takeaway": "Confirmed strong growth momentum" },
+    { "theme": "Trend & Support", "metric": "50 SMA / 200 SMA", "value": "328.52 / 330.80", "source": "Stockstats Indicators", "takeaway": "Indicates robust bullish trend" },
+    { "theme": "Momentum", "metric": "RSI", "value": "74.8", "source": "Stockstats Indicators", "takeaway": "Overbought, watch for possible near-term pullback" },
+    { "theme": "Momentum", "metric": "MACD", "value": "10.7", "source": "Stockstats Indicators", "takeaway": "Bullish momentum accelerating" },
+    { "theme": "Volatility", "metric": "ATR", "value": "13.75", "source": "Stockstats Indicators", "takeaway": "Elevated volatility suggesting potential for swings" },
+    { "theme": "Seasonality", "metric": "September Avg Return", "value": "+6.3%", "source": "Seasonality Calculation", "takeaway": "Historical positive bias in September" },
+    { "theme": "Volume Dynamics", "metric": "Volume Spikes", "value": "167M recent", "source": "Price & Volume Data", "takeaway": "Volume confirms buying strength on rallies" },
+    { "theme": "Volatility Regime", "metric": "ATR (20d)", "value": "$13.8", "source": "Stockstats", "takeaway": "Volatility spike — snapbacks likely; manage risk" },
+    { "theme": "Seasonality", "metric": "Sept. Avg Return", "value": "+8.4% (N=5)", "source": "Yahoo/Calc", "takeaway": "Positive tailwind this month; aligns with upmove" },
+    { "theme": "Volatility-Driven Squeeze", "metric": "Spike+Price Up", "value": "ATR+%chg", "source": "Stockstats/Yahoo", "takeaway": "Squeeze dynamic: Up/more up, then fast correction risk" }
+  ],
+
+  "summary_proposal": {
+    "summary": "TSLA remains fundamentally and technically bullish with impressive YoY gains and strong support from moving averages. Momentum readings signal strong buyer control, though RSI warns of near-term overextension. Seasonality for September is positive, supporting continuation potential. Critical support near 330-335 should hold to sustain the uptrend, while volume patterns validate current price action. Monitor RSI and MACD for early signs of momentum shift and potential pullbacks.",
+    "action_label": "BUY"
+  }
+}
