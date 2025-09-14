@@ -1,5 +1,6 @@
 import { ArrowLeft, TrendingUp, Activity, Target, Zap, AlertTriangle, BarChart3, DollarSign, Calendar, TrendingDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,80 +9,88 @@ import { Progress } from '@/components/ui/progress';
 
 export default function CompanyTrends() {
   const navigate = useNavigate();
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Load JSON from /public/data/...
+  useEffect(() => {
+    fetch('/data/company_trends.tsla.sept.json', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(j => setData(j))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-surface-1 to-surface-2 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-4 mb-8">
+            <Button variant="outline" size="sm" onClick={() => navigate('/')} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+            </Button>
+            <h1 className="text-3xl font-bold">Loading…</h1>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) return null;
+
+  const s = data.seasonality_snapshot;
+  const es = data.exec_summary;
+  const tl = data.trend_levels;
+  const mv = data.momentum_vol;
+  const seas = data.seasonality;
+  const indicators = data.indicator_panel || [];
+  const scenarios = data.scenarios_risks || [];
+  const volumes = data.volume_dynamics || [];
+  const insights = data.insights || [];
+  const tableRows = data.analyst_table || [];
+  const summary = data.summary_proposal?.summary || '';
+  const actionLabel = data.summary_proposal?.action_label || '';
+
+  // helpers
+  const fmtPct = (x) => (typeof x === 'number' ? `${x > 0 ? '+' : ''}${x.toFixed(1)}%` : x);
+  const retColor = (v) => v >= 0 ? 'text-trading-green' : 'text-trading-red';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-surface-1 to-surface-2 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2"
-          >
+          <Button variant="outline" size="sm" onClick={() => navigate('/')} className="flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
           </Button>
-          <h1 className="text-3xl font-bold">Company Trends Analysis</h1>
+          <h1 className="text-3xl font-bold">{data.meta?.title || 'Company Trends Analysis'}</h1>
         </div>
 
         {/* Seasonality Snapshot */}
         <Card className="trading-panel-enhanced mb-8">
           <CardHeader className="flex flex-row items-center gap-2">
             <Calendar className="h-5 w-5 text-amber-500" />
-            <CardTitle className="text-lg">Seasonality Snapshot - September TSLA Returns (2020-2025)</CardTitle>
+            <CardTitle className="text-lg">{s.heading}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground mb-4">Selected close prices at start and end of September each year for return calculation:</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              Selected close prices at start and end of {s.month} each year for return calculation:
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="p-3 border rounded-lg">
-                <div className="flex justify-between">
-                  <span className="font-medium">2020</span>
-                  <span className="text-trading-red font-bold">-9.7%</span>
+              {s.years.map((y) => (
+                <div key={y.year} className="p-3 border rounded-lg">
+                  <div className="flex justify-between">
+                    <span className="font-medium">{y.year}</span>
+                    <span className={`${retColor(y.return_pct)} font-bold`}>{fmtPct(y.return_pct)}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{y.note}</p>
                 </div>
-                <p className="text-xs text-muted-foreground">$158.35 → $143.0</p>
-              </div>
-              <div className="p-3 border rounded-lg">
-                <div className="flex justify-between">
-                  <span className="font-medium">2021</span>
-                  <span className="text-trading-green font-bold">+5.6%</span>
-                </div>
-                <p className="text-xs text-muted-foreground">$244.7 → $258.49</p>
-              </div>
-              <div className="p-3 border rounded-lg">
-                <div className="flex justify-between">
-                  <span className="font-medium">2022</span>
-                  <span className="text-trading-red font-bold">-4.4%</span>
-                </div>
-                <p className="text-xs text-muted-foreground">$277.16 → $265.25</p>
-              </div>
-              <div className="p-3 border rounded-lg">
-                <div className="flex justify-between">
-                  <span className="font-medium">2023</span>
-                  <span className="text-trading-green font-bold">+12.7%</span>
-                </div>
-                <p className="text-xs text-muted-foreground">$245.01 → $276.04</p>
-              </div>
-              <div className="p-3 border rounded-lg">
-                <div className="flex justify-between">
-                  <span className="font-medium">2024</span>
-                  <span className="text-trading-green font-bold">+13.6%</span>
-                </div>
-                <p className="text-xs text-muted-foreground">$230.29 → $261.63</p>
-              </div>
-              <div className="p-3 border rounded-lg">
-                <div className="flex justify-between">
-                  <span className="font-medium">2025</span>
-                  <span className="text-trading-green font-bold">+20.2%</span>
-                </div>
-                <p className="text-xs text-muted-foreground">$329.36 → $395.94 (partial)</p>
-              </div>
+              ))}
             </div>
             <div className="mt-6 p-4 bg-muted rounded-lg">
               <div className="text-center">
-                <h3 className="font-semibold">Average September Return (2020-2025)</h3>
-                <div className="text-2xl font-bold text-trading-green">+6.3%</div>
-                <p className="text-sm text-muted-foreground">Sample size N: 6 years (including partial current year)</p>
+                <h3 className="font-semibold">Average {s.month} Return (2020-2025)</h3>
+                <div className={`text-2xl font-bold ${retColor(s.avg_return_pct)}`}>{fmtPct(s.avg_return_pct)}</div>
+                <p className="text-sm text-muted-foreground">{s.sample_note}</p>
               </div>
             </div>
           </CardContent>
@@ -97,28 +106,27 @@ export default function CompanyTrends() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <h3 className="font-semibold text-sm">YoY Return</h3>
-                <div className="text-xl font-bold text-trading-green">+72.2%</div>
-                <p className="text-xs text-muted-foreground">+166.13 points absolute gain</p>
+                <div className={`text-xl font-bold ${retColor(es.yoy_return_pct)}`}>{fmtPct(es.yoy_return_pct)}</div>
+                <p className="text-xs text-muted-foreground">+{es.absolute_gain_pts} points absolute gain</p>
               </div>
               <div>
                 <h3 className="font-semibold text-sm">Current Close</h3>
-                <div className="text-xl font-bold">$395.94</div>
-                <p className="text-xs text-muted-foreground">2025-09-12</p>
+                <div className="text-xl font-bold">${es.current_close}</div>
+                <p className="text-xs text-muted-foreground">{es.current_close_date}</p>
               </div>
               <div>
                 <h3 className="font-semibold text-sm">52-Week Range</h3>
                 <div className="text-sm">
-                  <span className="text-trading-red">Low: $218</span><br/>
-                  <span className="text-trading-green">High: $480</span>
+                  <span className="text-trading-red">Low: ${es.range_52w.low}</span><br />
+                  <span className="text-trading-green">High: ${es.range_52w.high}</span>
                 </div>
-                <p className="text-xs text-muted-foreground">+81.7% above low, -17.5% below high</p>
+                <p className="text-xs text-muted-foreground">
+                  +{es.range_52w.above_low_pct}% above low, -{es.range_52w.below_high_pct}% below high
+                </p>
               </div>
               <div>
                 <h3 className="font-semibold text-sm">Key Points</h3>
-                <p className="text-xs text-muted-foreground">
-                  Above 50-day SMA (328.52) & 200-day SMA (330.80). RSI 74.8, MACD 10.7. 
-                  ATR 13.75 signals elevated volatility. September shows +6.3% avg return.
-                </p>
+                <p className="text-xs text-muted-foreground">{es.key_points}</p>
               </div>
             </div>
           </CardContent>
@@ -137,14 +145,14 @@ export default function CompanyTrends() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-sm">50-day SMA</span>
-                    <span className="text-sm font-medium">$328.52</span>
+                    <span className="text-sm font-medium">${tl.sma50}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm">200-day SMA</span>
-                    <span className="text-sm font-medium">$330.80</span>
+                    <span className="text-sm font-medium">${tl.sma200}</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    +20 point distance (+6.1%) above 50-day SMA and +65 points (+19.7%) above 200-day SMA.
+                    +{tl.distance_to_50_pts} point distance (+{tl.distance_to_50_pct}%) above 50-day SMA and +{tl.distance_to_200_pts} points (+{tl.distance_to_200_pct}%) above 200-day SMA.
                   </p>
                 </div>
               </div>
@@ -153,15 +161,13 @@ export default function CompanyTrends() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-sm">Support</span>
-                    <span className="text-sm font-medium">SMA zone 330-335</span>
+                    <span className="text-sm font-medium">{tl.support}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm">Resistance</span>
-                    <span className="text-sm font-medium">Near 480</span>
+                    <span className="text-sm font-medium">{tl.resistance}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Recent price breakouts confirmed by volume strength.
-                  </p>
+                  <p className="text-xs text-muted-foreground">{tl.note}</p>
                 </div>
               </div>
             </div>
@@ -178,20 +184,20 @@ export default function CompanyTrends() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <h3 className="font-semibold mb-2">MACD</h3>
-                <div className="text-xl font-bold text-trading-green">10.7</div>
+                <div className="text-xl font-bold text-trading-green">{mv.macd}</div>
                 <p className="text-xs text-muted-foreground">Increasing MACD signals bullish momentum acceleration</p>
               </div>
               <div>
                 <h3 className="font-semibold mb-2">RSI</h3>
-                <div className="text-xl font-bold text-amber-600">74.8</div>
+                <div className="text-xl font-bold text-amber-600">{mv.rsi}</div>
                 <p className="text-xs text-muted-foreground">High RSI above 70; caution for short-term pullbacks</p>
-                <Badge variant="destructive" className="mt-1">Overbought</Badge>
+                <Badge variant="destructive" className="mt-1">{mv.rsi_badge}</Badge>
               </div>
               <div>
                 <h3 className="font-semibold mb-2">ATR</h3>
-                <div className="text-xl font-bold">13.75</div>
+                <div className="text-xl font-bold">{mv.atr}</div>
                 <p className="text-xs text-muted-foreground">ATR indicates higher price variability; expect potential swings</p>
-                <Badge variant="destructive" className="mt-1">Moderate Volatility</Badge>
+                <Badge variant="destructive" className="mt-1">{mv.atr_badge}</Badge>
               </div>
             </div>
           </CardContent>
@@ -207,13 +213,11 @@ export default function CompanyTrends() {
             <div className="flex items-center gap-6">
               <div>
                 <h3 className="font-semibold">September Average Return</h3>
-                <div className="text-xl font-bold text-trading-green">+6.3%</div>
-                <p className="text-sm text-muted-foreground">N=6 years, supportive for continuation of positive trend</p>
+                <div className={`text-xl font-bold ${retColor(seas.september_avg_return_pct)}`}>{fmtPct(seas.september_avg_return_pct)}</div>
+                <p className="text-sm text-muted-foreground">N={seas.n_years} years, supportive for continuation of positive trend</p>
               </div>
               <div className="flex-1">
-                <p className="text-sm text-muted-foreground">
-                  September average return +6.3%, N=6 years, supportive for continuation of positive trend in current month.
-                </p>
+                <p className="text-sm text-muted-foreground">{seas.note}</p>
               </div>
             </div>
           </CardContent>
@@ -221,56 +225,30 @@ export default function CompanyTrends() {
 
         {/* Indicator Panel */}
         <Card className="trading-panel-enhanced mb-8">
-          <CardHeader>
-            <CardTitle>Indicator Panel</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle>Indicator Panel</CardTitle></CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-3">
-                <div className="p-3 border rounded-lg">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-medium">close_50_sma</span>
-                    <span className="font-bold">328.52</span>
+                {indicators.slice(0, 3).map((it, i) => (
+                  <div key={`ind-l-${i}`} className="p-3 border rounded-lg">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-medium">{it.name}</span>
+                      <span className="font-bold">{it.value}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{it.note}</p>
                   </div>
-                  <p className="text-xs text-muted-foreground">dynamic support</p>
-                </div>
-                <div className="p-3 border rounded-lg">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-medium">close_200_sma</span>
-                    <span className="font-bold">330.80</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">long-term trend confirmation</p>
-                </div>
-                <div className="p-3 border rounded-lg">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-medium">rsi</span>
-                    <span className="font-bold text-amber-600">74.8</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">overbought momentum</p>
-                </div>
+                ))}
               </div>
               <div className="space-y-3">
-                <div className="p-3 border rounded-lg">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-medium">macd</span>
-                    <span className="font-bold text-trading-green">10.7</span>
+                {indicators.slice(3).map((it, i) => (
+                  <div key={`ind-r-${i}`} className="p-3 border rounded-lg">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-medium">{it.name}</span>
+                      <span className="font-bold">{it.value}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{it.note}</p>
                   </div>
-                  <p className="text-xs text-muted-foreground">bullish momentum acceleration</p>
-                </div>
-                <div className="p-3 border rounded-lg">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-medium">boll (middle band)</span>
-                    <span className="font-bold">343.28</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">bull market benchmark</p>
-                </div>
-                <div className="p-3 border rounded-lg">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-medium">atr</span>
-                    <span className="font-bold">13.75</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">moderate volatility exposure</p>
-                </div>
+                ))}
               </div>
             </div>
           </CardContent>
@@ -284,24 +262,17 @@ export default function CompanyTrends() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 border-l-4 border-trading-green bg-trading-green/5">
-                <h3 className="font-semibold text-trading-green mb-2">Bullish</h3>
-                <p className="text-sm text-muted-foreground">
-                  Sustained price {">"} 330 with RSI moderating.
-                </p>
-              </div>
-              <div className="p-4 border-l-4 border-amber-500 bg-amber-50">
-                <h3 className="font-semibold text-amber-600 mb-2">Risk</h3>
-                <p className="text-sm text-muted-foreground">
-                  RSI above 70 signals short-term overbought correction.
-                </p>
-              </div>
-              <div className="p-4 border-l-4 border-trading-red bg-trading-red/5">
-                <h3 className="font-semibold text-trading-red mb-2">Invalidated</h3>
-                <p className="text-sm text-muted-foreground">
-                  If price falls below 320 (below SMA zone). Watch volume for confirmation or reversal signals.
-                </p>
-              </div>
+              {scenarios.map((sc, i) => {
+                const tone = sc.type === 'bullish' ? 'border-trading-green bg-trading-green/5 text-trading-green'
+                           : sc.type === 'invalidated' ? 'border-trading-red bg-trading-red/5 text-trading-red'
+                           : 'border-amber-500 bg-amber-50 text-amber-600';
+                return (
+                  <div key={i} className={`p-4 border-l-4 ${tone.replace(' text-',' ').split(' ')[2]}`}>
+                    <h3 className={`font-semibold mb-2 ${tone.includes('text-') ? tone.match(/text-[^ ]+/)?.[0] : ''}`}>{sc.title}</h3>
+                    <p className="text-sm text-muted-foreground">{sc.text}</p>
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
@@ -314,48 +285,32 @@ export default function CompanyTrends() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <h3 className="font-semibold mb-2">Volume Spikes on Rallies</h3>
-                <p className="text-sm text-muted-foreground">
-                  Volume spikes on rallies bolster bullish trend.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Absence of Volume Spikes on Pullbacks</h3>
-                <p className="text-sm text-muted-foreground">
-                  Absence of volume spikes on pullbacks facilitates trend resilience.
-                </p>
-              </div>
+              {volumes.map((v, i) => (
+                <div key={i}>
+                  <h3 className="font-semibold mb-2">{v.title}</h3>
+                  <p className="text-sm text-muted-foreground">{v.text}</p>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
 
         {/* Non-obvious Insights */}
         <Card className="trading-panel-enhanced mb-8">
-          <CardHeader>
-            <CardTitle>Non-obvious Insights</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle>Non-obvious Insights</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <h3 className="font-semibold mb-2">Strong Recovery & Momentum</h3>
-              <p className="text-sm text-muted-foreground">
-                Strong recovery from oversold conditions seen in prior Septembers, current-year momentum in September far stronger than prior years.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">SMA Proximity Critical Zone</h3>
-              <p className="text-sm text-muted-foreground">
-                Close proximity of 50- and 200-day SMA amplifies support; usually a critical inflection zone for price stability or corrections.
-              </p>
-            </div>
+            {insights.map((ins, i) => (
+              <div key={i}>
+                <h3 className="font-semibold mb-2">{ins.title}</h3>
+                <p className="text-sm text-muted-foreground">{ins.text}</p>
+              </div>
+            ))}
           </CardContent>
         </Card>
 
         {/* Market Analyst Insights */}
         <Card className="trading-panel-enhanced mb-8">
-          <CardHeader>
-            <CardTitle>Market Analyst Insights</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle>Market Analyst Insights</CardTitle></CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <Table>
@@ -369,76 +324,15 @@ export default function CompanyTrends() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">YoY Return</TableCell>
-                    <TableCell>Close Price Gain</TableCell>
-                    <TableCell>+72.2%</TableCell>
-                    <TableCell>Price History 2024-2025</TableCell>
-                    <TableCell>Confirmed strong growth momentum</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Trend & Support</TableCell>
-                    <TableCell>50 SMA / 200 SMA</TableCell>
-                    <TableCell>328.52 / 330.80</TableCell>
-                    <TableCell>Stockstats Indicators</TableCell>
-                    <TableCell>Indicates robust bullish trend</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Momentum</TableCell>
-                    <TableCell>RSI</TableCell>
-                    <TableCell>74.8</TableCell>
-                    <TableCell>Stockstats Indicators</TableCell>
-                    <TableCell>Overbought, watch for possible near-term pullback</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Momentum</TableCell>
-                    <TableCell>MACD</TableCell>
-                    <TableCell>10.7</TableCell>
-                    <TableCell>Stockstats Indicators</TableCell>
-                    <TableCell>Bullish momentum accelerating</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Volatility</TableCell>
-                    <TableCell>ATR</TableCell>
-                    <TableCell>13.75</TableCell>
-                    <TableCell>Stockstats Indicators</TableCell>
-                    <TableCell>Elevated volatility suggesting potential for swings</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Seasonality</TableCell>
-                    <TableCell>September Avg Return</TableCell>
-                    <TableCell>+6.3%</TableCell>
-                    <TableCell>Seasonality Calculation</TableCell>
-                    <TableCell>Historical positive bias in September</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Volume Dynamics</TableCell>
-                    <TableCell>Volume Spikes</TableCell>
-                    <TableCell>167M recent</TableCell>
-                    <TableCell>Price & Volume Data</TableCell>
-                    <TableCell>Volume confirms buying strength on rallies</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Volatility Regime</TableCell>
-                    <TableCell>ATR (20d)</TableCell>
-                    <TableCell>$13.8</TableCell>
-                    <TableCell>Stockstats</TableCell>
-                    <TableCell>Volatility spike — snapbacks likely; manage risk</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Seasonality</TableCell>
-                    <TableCell>Sept. Avg Return</TableCell>
-                    <TableCell>+8.4% (N=5)</TableCell>
-                    <TableCell>Yahoo/Calc</TableCell>
-                    <TableCell>Positive tailwind this month; aligns with upmove</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Volatility-Driven Squeeze</TableCell>
-                    <TableCell>Spike+Price Up</TableCell>
-                    <TableCell>ATR+%chg</TableCell>
-                    <TableCell>Stockstats/Yahoo</TableCell>
-                    <TableCell>Squeeze dynamic: Up/more up, then fast correction risk</TableCell>
-                  </TableRow>
+                  {tableRows.map((r, i) => (
+                    <TableRow key={i}>
+                      <TableCell className="font-medium">{r.theme}</TableCell>
+                      <TableCell>{r.metric}</TableCell>
+                      <TableCell>{r.value}</TableCell>
+                      <TableCell>{r.source}</TableCell>
+                      <TableCell>{r.takeaway}</TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </div>
@@ -447,27 +341,21 @@ export default function CompanyTrends() {
 
         {/* Summary & Trading Proposal */}
         <Card className="trading-panel-enhanced">
-          <CardHeader>
-            <CardTitle>Summary & Trading Proposal</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle>Summary & Trading Proposal</CardTitle></CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                TSLA remains fundamentally and technically bullish with impressive YoY gains and strong support from moving averages. 
-                Momentum readings signal strong buyer control, though RSI warns of near-term overextension. Seasonality for September 
-                is positive, supporting continuation potential. Critical support near 330-335 should hold to sustain the uptrend, 
-                while volume patterns validate current price action. Monitor RSI and MACD for early signs of momentum shift and potential pullbacks.
-              </p>
+              <p className="text-sm text-muted-foreground">{summary}</p>
               <div className="flex items-center gap-4">
                 <Badge variant="default" className="text-lg px-4 py-2 bg-trading-green text-white">
                   <DollarSign className="h-4 w-4 mr-2" />
-                  BUY
+                  {actionLabel}
                 </Badge>
                 <span className="text-sm text-muted-foreground">Final transaction proposal</span>
               </div>
             </div>
           </CardContent>
         </Card>
+
       </div>
     </div>
   );
