@@ -1,0 +1,498 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Premium Apple-inspired design system */
+    --background: 0 0% 99%;
+    --foreground: 0 0% 6%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 6%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 6%;
+
+    --primary: 213 94% 58%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 97%;
+    --secondary-foreground: 0 0% 6%;
+
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 42%;
+
+    --accent: 0 0% 97%;
+    --accent-foreground: 0 0% 6%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 92%;
+    --input: 0 0% 97%;
+    --ring: 213 94% 58%;
+
+    --chart-bg: 0 0% 100%;
+    --panel-bg: 0 0% 100%;
+    --panel-border: 0 0% 90%;
+    --panel-hover-border: 213 94% 58%;
+    --trading-green: 142 76% 36%;
+    --trading-red: 0 84% 60%;
+    --trading-blue: 213 94% 58%;
+    --surface-1: 0 0% 100%;
+    --surface-2: 0 0% 99%;
+    
+    /* Premium panel gradients with sophisticated color theory */
+    --sentiment-gradient: linear-gradient(135deg, 142 76% 45% / 0.95, 142 76% 32% / 0.95);
+    --technical-gradient: linear-gradient(135deg, 213 94% 58% / 0.95, 213 94% 42% / 0.95);
+    --decision-gradient: linear-gradient(135deg, 43 96% 56% / 0.95, 43 96% 42% / 0.95);
+    --news-gradient: linear-gradient(135deg, 262 52% 47% / 0.95, 262 52% 35% / 0.95);
+    --fundamentals-gradient: linear-gradient(135deg, 200 98% 39% / 0.95, 200 98% 28% / 0.95);
+    
+    /* Premium glow effects with refined opacity */
+    --glow-sentiment: 0 0 30px hsl(142 76% 36% / 0.25), 0 0 60px hsl(142 76% 36% / 0.1);
+    --glow-technical: 0 0 30px hsl(213 94% 58% / 0.25), 0 0 60px hsl(213 94% 58% / 0.1);
+    --glow-decision: 0 0 30px hsl(43 96% 56% / 0.3), 0 0 60px hsl(43 96% 56% / 0.15);
+    --glow-news: 0 0 30px hsl(262 52% 47% / 0.25), 0 0 60px hsl(262 52% 47% / 0.1);
+    
+    /* Advanced glass morphism with premium aesthetics */
+    --glass-bg: 0 0% 100% / 0.85;
+    --glass-border: 0 0% 100% / 0.25;
+    --backdrop-blur: 16px;
+    
+    /* Sophisticated animated gradients */
+    --gradient-animated: linear-gradient(-45deg, 
+      hsl(213 94% 58% / 0.03), 
+      hsl(142 76% 36% / 0.03), 
+      hsl(43 96% 56% / 0.03), 
+      hsl(262 52% 47% / 0.03));
+    
+    /* Premium shadow system with multiple depth layers */
+    --shadow-elevated: 0 2px 8px hsl(0 0% 0% / 0.04), 0 1px 3px hsl(0 0% 0% / 0.06);
+    --shadow-floating: 0 8px 25px hsl(0 0% 0% / 0.08), 0 3px 10px hsl(0 0% 0% / 0.1);
+    --shadow-premium: 0 20px 40px hsl(0 0% 0% / 0.1), 0 8px 16px hsl(0 0% 0% / 0.06);
+    --shadow-glowing: 0 0 0 1px hsl(var(--panel-hover-border) / 0.12), 0 8px 25px hsl(0 0% 0% / 0.08);
+
+    --radius: 1rem;
+
+    /* Refined typography scale */
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 8%;
+    --sidebar-primary: 213 94% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 8%;
+    --sidebar-border: 0 0% 88%;
+    --sidebar-ring: 213 94% 58%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    font-variation-settings: "opsz" 32;
+    letter-spacing: -0.011em;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .panel-title {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: hsl(var(--foreground));
+    letter-spacing: -0.025em;
+  }
+
+  .trading-panel {
+    background: hsl(var(--panel-bg));
+    border: 1px solid hsl(var(--panel-border));
+    border-radius: var(--radius);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .trading-panel:hover {
+    border-color: hsl(var(--panel-hover-border));
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .chart-container {
+    background: hsl(var(--chart-bg));
+    border: 1px solid hsl(var(--panel-border));
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .strategy-button {
+    background: hsl(var(--panel-bg) / 0.8);
+    border: 1px solid hsl(var(--panel-border));
+    border-radius: calc(var(--radius) - 4px);
+    backdrop-filter: blur(20px);
+    transition: all 0.2s ease;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.375rem 0.75rem;
+  }
+
+  .strategy-button:hover {
+    background: hsl(var(--panel-bg));
+    border-color: hsl(var(--panel-hover-border));
+    transform: translateY(-1px);
+  }
+
+  /* Premium Enhanced Panel Styles */
+  .trading-panel-enhanced {
+    background: hsl(var(--glass-bg));
+    border: 1px solid hsl(var(--panel-border));
+    border-radius: var(--radius);
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    backdrop-filter: blur(var(--backdrop-blur)) saturate(180%);
+    box-shadow: var(--shadow-elevated);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .trading-panel-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    opacity: 0.9;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  .trading-panel-enhanced::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-animated);
+    background-size: 400% 400%;
+    animation: gradientShift 12s ease infinite;
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    z-index: -1;
+  }
+
+  .panel-sentiment::before {
+    background: var(--sentiment-gradient);
+  }
+
+  .panel-technical::before {
+    background: var(--technical-gradient);
+  }
+
+  .panel-decision::before {
+    background: var(--decision-gradient);
+  }
+
+  .panel-news::before {
+    background: var(--news-gradient);
+  }
+
+  .panel-fundamentals::before,
+  .panel-trends::before {
+    background: var(--fundamentals-gradient);
+  }
+
+  .trading-panel-enhanced:hover {
+    border-color: hsl(var(--panel-hover-border));
+    box-shadow: var(--shadow-premium);
+    transform: translateY(-4px) scale(1.015);
+  }
+
+  .trading-panel-enhanced:hover::after {
+    opacity: 0.15;
+  }
+
+  .trading-panel-enhanced:hover::before {
+    opacity: 1;
+    box-shadow: var(--shadow-glowing);
+  }
+
+  /* Premium decision panel with enhanced glow */
+  .panel-decision {
+    box-shadow: var(--shadow-elevated), var(--glow-decision);
+    border: 1px solid hsl(43 96% 56% / 0.2);
+  }
+
+  .panel-decision:hover {
+    box-shadow: var(--shadow-premium), var(--glow-decision);
+    transform: translateY(-5px) scale(1.02);
+    border-color: hsl(43 96% 56% / 0.4);
+  }
+
+  /* Premium icon styling with enhanced visual hierarchy */
+  .panel-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.5rem;
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .panel-sentiment .panel-icon {
+    background: hsl(142 76% 36% / 0.12);
+    color: hsl(142 76% 36%);
+    box-shadow: 0 0 12px hsl(142 76% 36% / 0.2);
+  }
+
+  .panel-technical .panel-icon {
+    background: hsl(213 94% 58% / 0.12);
+    color: hsl(213 94% 58%);
+    box-shadow: 0 0 12px hsl(213 94% 58% / 0.2);
+  }
+
+  .panel-decision .panel-icon {
+    background: hsl(43 96% 56% / 0.12);
+    color: hsl(43 96% 56%);
+    box-shadow: 0 0 12px hsl(43 96% 56% / 0.25);
+  }
+
+  .panel-news .panel-icon {
+    background: hsl(262 52% 47% / 0.12);
+    color: hsl(262 52% 47%);
+    box-shadow: 0 0 12px hsl(262 52% 47% / 0.2);
+  }
+
+  /* Premium confidence badge styling */
+  .confidence-badge {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    letter-spacing: 0.025em;
+    box-shadow: var(--shadow-elevated);
+  }
+
+  /* Enhanced sentiment bar with premium animations */
+  .sentiment-bar {
+    width: 100%;
+    height: 0.375rem;
+    background: hsl(var(--muted));
+    border-radius: 0.1875rem;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 1px 2px hsl(0 0% 0% / 0.1);
+  }
+
+  .sentiment-fill {
+    height: 100%;
+    background: linear-gradient(90deg, hsl(142 76% 36%), hsl(142 76% 45%));
+    border-radius: 0.1875rem;
+    transition: width 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    position: relative;
+    box-shadow: 0 0 8px hsl(142 76% 36% / 0.3);
+  }
+
+  .sentiment-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, hsl(142 76% 60% / 0.4), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  /* Premium typography with advanced font features */
+  .panel-title {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: hsl(var(--foreground));
+    letter-spacing: -0.035em;
+    text-shadow: 0 1px 3px hsl(0 0% 0% / 0.12);
+    font-feature-settings: "cv11", "ss01";
+    line-height: 1.3;
+  }
+
+  .panel-decision .panel-title {
+    color: hsl(43 96% 56%);
+    font-weight: 800;
+    text-shadow: 0 0 12px hsl(43 96% 56% / 0.4);
+    font-size: 1rem;
+  }
+
+  /* Premium trend indicators with sophisticated animations */
+  .trend-indicator {
+    display: inline-block;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    margin-left: 0.5rem;
+    animation: pulse 3s infinite;
+    box-shadow: 0 0 8px currentColor;
+  }
+
+  .trend-up {
+    background: hsl(142 76% 36%);
+    box-shadow: 0 0 10px hsl(142 76% 36% / 0.7), 0 0 20px hsl(142 76% 36% / 0.3);
+  }
+
+  .trend-down {
+    background: hsl(0 84% 60%);
+    box-shadow: 0 0 10px hsl(0 84% 60% / 0.7), 0 0 20px hsl(0 84% 60% / 0.3);
+  }
+
+  .trend-neutral {
+    background: hsl(43 96% 56%);
+    box-shadow: 0 0 10px hsl(43 96% 56% / 0.7), 0 0 20px hsl(43 96% 56% / 0.3);
+  }
+
+  /* Advanced keyframe animations with sophisticated easing */
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateX(100%); opacity: 0; }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.1); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-3px); }
+  }
+
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 8px currentColor; }
+    50% { box-shadow: 0 0 16px currentColor, 0 0 24px currentColor; }
+  }
+
+  /* Premium enhanced chart container */
+  .chart-container {
+    background: hsl(var(--chart-bg));
+    border: 1px solid hsl(var(--panel-border));
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-premium);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(var(--backdrop-blur)) saturate(180%);
+  }
+
+  .chart-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, hsl(213 94% 58%), hsl(142 76% 36%), hsl(43 96% 56%));
+    opacity: 0.9;
+  }
+
+  /* Premium interactive strategy buttons */
+  .strategy-button {
+    background: hsl(var(--panel-bg) / 0.92);
+    border: 1px solid hsl(var(--panel-border));
+    border-radius: calc(var(--radius) - 4px);
+    backdrop-filter: blur(20px) saturate(180%);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-elevated);
+    letter-spacing: -0.01em;
+  }
+
+  .strategy-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.15), transparent);
+    transition: left 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  .strategy-button:hover::before {
+    left: 100%;
+  }
+
+  .strategy-button:hover {
+    background: hsl(var(--panel-bg));
+    border-color: hsl(var(--panel-hover-border));
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-premium);
+  }
+}
