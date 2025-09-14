@@ -122,6 +122,9 @@ Conversation so far: {history}
         new_rds["current_safe_response"] = argument
         new_rds["count"] = rds.get("count",0)+1
 
+        with open("output/risk_manager/conservative_debate.md", "w") as f:
+            f.write(new_rds["history"])
+
         return {
             "risk_debate_state": new_rds,
             "conservative_strategy_packet": packet

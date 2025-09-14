@@ -168,6 +168,9 @@ You have autonomy to **derive** sizing, risk-per-trade, and stop/target logic fr
         new_state["current_risky_response"] = argument
         new_state["count"] = rds.get("count", 0) + 1
 
+        with open("output/risk_manager/aggressive_debate.md", "w") as f:
+            f.write(new_state["history"])
+
         return {
             "risk_debate_state": new_state,
             "aggressive_strategy_packet": packet

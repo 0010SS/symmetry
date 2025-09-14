@@ -47,6 +47,9 @@ Debate History:
             "count": investment_debate_state["count"],
         }
 
+        with open("output/manager/research_final_decision.md", "w") as f:
+            f.write(response.content)
+
         return {
             "investment_debate_state": new_investment_debate_state,
             "investment_plan": response.content,

@@ -5,14 +5,14 @@ from tradingagents.default_config import DEFAULT_CONFIG
 config = DEFAULT_CONFIG.copy()
 config["llm_provider"] = "OpenAI"  # Use a different model
 config["backend_url"] = "https://api.openai.com/v1"  # Use a different backend
-config["deep_think_llm"] = "gpt-4.1-nano"  # Use a different model
-config["quick_think_llm"] = "gpt-4.1-nano"  # Use a different model
+config["deep_think_llm"] = "o4-mini"  # Use a different model
+config["quick_think_llm"] = "gpt-4.1-mini"  # Use a different model
 config["max_debate_rounds"] = 1  # Increase debate rounds
 config["online_tools"] = True  # Increase debate rounds
 
 # Initialize with custom config
-ta = TradingAgentsGraph(debug=True, selected_analysts=["industry_cross_signals"], config=config)
+ta = TradingAgentsGraph(config=config)
 
 # forward propagate
-_, decision = ta.propagate("NVDA", "2024-05-10")
+_, decision = ta.propagate("TSLA", "2025-09-13")
 print(decision)

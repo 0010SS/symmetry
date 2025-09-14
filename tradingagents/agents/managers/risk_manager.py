@@ -242,6 +242,12 @@ E) **Teach forward**: concise lessons learned; what would change your mind.
             "count": rds.get("count", 0),
         }
 
+        with open("output/manager/risk_final_decision.md", "w") as f:
+            f.write(judge_markdown)
+        # Save the full JSON packet for your logs/debugging
+        with open("output/manager/risk_final_packet.json", "w") as f:
+            json.dump(packet, f, indent=2)
+
         # ---- return combined outputs ----
         return {
             "risk_debate_state": new_rds,
