@@ -83,6 +83,9 @@ def create_news_analyst(llm, toolkit):
 
         report = result.content if len(result.tool_calls) == 0 else ""
 
+        with open("output/analysts/company_news.md", "w") as f:
+            f.write(report)
+
         return {
             "messages": [result],
             "news_report": report,

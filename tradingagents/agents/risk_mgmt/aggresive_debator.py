@@ -1,176 +1,233 @@
-# aggresive_debator.py
-import json
+from __future__ import annotations
+from typing import List, Optional, Literal
+from pydantic import BaseModel, Field, field_validator
+import os
 
-def create_risky_debator(llm):
 
-    SOFT_CAPS = {
-        "max_size_pct_portfolio": (0, 25),   # broad sanity ceiling only
-        "risk_per_trade_pct": (0, 2.5)       # broad sanity ceiling only
-    }
+class HorizonSizing(BaseModel):
+    max_size_pct_portfolio: float = Field(..., ge=0, le=100)
+    risk_per_trade_pct: float = Field(..., ge=0, le=100)
+    pyramiding: Literal["none", "ladder", "time-based", "scale-in", "scale-out", "fixed"] = "none"
 
-    def _clip(v, lo, hi):
-        try:
-            x = float(v)
-            return max(lo, min(hi, x))
-        except Exception:
-            return lo
+    class Config:
+        extra = "forbid"
 
-    def _ensure_schema(packet):
-        # Normalize structure without imposing numeric defaults
-        packet.setdefault("debate_text", "")
-        packet.setdefault("assumptions", [])
-        packet.setdefault("confidence", 0.5)
-        packet.setdefault("data_citations", [])
-        packet.setdefault("profile_inference", {})
-        so = packet.setdefault("strategy_outlines", {})
-        for h in ("annual", "swing", "intraday"):
-            p = so.setdefault(h, {})
-            p.setdefault("direction", "hold")
-            p.setdefault("thesis", "")
-            p.setdefault("setup", "trendline")
-            p.setdefault("entry", {"rule": "", "band": "", "conditions": []})
-            p.setdefault("stop", {"rule": "", "level": "", "invalidation": ""})
-            p.setdefault("targets", [])
-            p.setdefault("sizing", {"max_size_pct_portfolio": 0, "risk_per_trade_pct": 0, "pyramiding": "none"})
-            p.setdefault("vol_anchor", "not available")
-            p.setdefault("liquidity", {"min_adv_usd": "", "max_spread_bps": "", "notes": ""})
-            p.setdefault("time", {"review": "", "max_hold": "", "time_stop": None})
-            p.setdefault("contingencies", [])
-            p.setdefault("one_liner", "")
+class HorizonParams(BaseModel):
+    annual: HorizonSizing
+    swing: HorizonSizing
+    intraday: HorizonSizing
 
-            # If hold/wait -> zero out sizing
-            if p["direction"] in ("hold", "wait"):
-                p["sizing"]["max_size_pct_portfolio"] = 0
-                p["sizing"]["risk_per_trade_pct"] = 0
+    class Config:
+        extra = "forbid"
 
-            # Clip to soft caps if model supplied values
-            p["sizing"]["max_size_pct_portfolio"] = _clip(
-                p["sizing"].get("max_size_pct_portfolio", 0),
-                SOFT_CAPS["max_size_pct_portfolio"][0],
-                SOFT_CAPS["max_size_pct_portfolio"][1]
-            )
-            p["sizing"]["risk_per_trade_pct"] = _clip(
-                p["sizing"].get("risk_per_trade_pct", 0),
-                SOFT_CAPS["risk_per_trade_pct"][0],
-                SOFT_CAPS["risk_per_trade_pct"][1]
-            )
-        return packet
+class EntryPlan(BaseModel):
+    rule: str
+    band: str
+    conditions: List[str] = []
 
-    def risky_node(state) -> dict:
-        rds = state["risk_debate_state"]
+    class Config:
+        extra = "forbid"
+
+class StopPlan(BaseModel):
+    rule: str
+    level: str
+    invalidation: str
+
+    class Config:
+        extra = "forbid"
+
+class LiquidityPlan(BaseModel):
+    min_adv_usd: str = "n/a"
+    max_spread_bps: str = "n/a"
+    notes: str = ""
+
+    class Config:
+        extra = "forbid"
+
+class TimePlan(BaseModel):
+    review: str
+    max_hold: str
+    time_stop: Optional[str] = None
+
+    class Config:
+        extra = "forbid"
+
+class SizingPlan(BaseModel):
+    max_size_pct_portfolio: float = Field(..., ge=0, le=100)
+    risk_per_trade_pct: float = Field(..., ge=0, le=100)
+    pyramiding: Literal["none", "ladder", "time-based", "scale-in", "scale-out", "fixed"] = "none"
+
+    class Config:
+        extra = "forbid"
+
+class StrategyOutline(BaseModel):
+    direction: Literal["buy", "sell", "hold", "wait", "reduce", "hedge"] = "wait"
+    thesis: str
+    setup: str
+    entry: EntryPlan
+    stop: StopPlan
+    targets: List[str] = []
+    sizing: SizingPlan
+    vol_anchor: str
+    liquidity: LiquidityPlan
+    time: TimePlan
+    contingencies: List[str] = []
+    one_liner: str
+
+    class Config:
+        extra = "forbid"
+
+
+class StrategyOutlines(BaseModel):
+    annual: StrategyOutline
+    swing: StrategyOutline
+    intraday: StrategyOutline
+
+    class Config:
+        extra = "forbid"
+
+class ProfileInference(BaseModel):
+    alignment_score: float = Field(..., ge=-1.0, le=1.0)
+    volatility_regime: Literal["low", "moderate", "high"] = "moderate"
+    liquidity_class: Literal["thin", "average", "deep"] = "average"
+    event_risk: Literal["low", "moderate", "high"] = "moderate"
+    conviction: float = Field(..., ge=0.0, le=1.0)
+    horizon_params: HorizonParams
+    derivation_notes: str = ""
+
+    class Config:
+        extra = "forbid"
+
+class SafeDebatePackage(BaseModel):
+    debate_text: str = Field(..., description="Short conversational reply by the Safe Analyst.")
+    profile_inference: ProfileInference
+    strategy_outlines: StrategyOutlines
+    assumptions: List[str] = []
+    confidence: float = Field(..., ge=0.0, le=1.0)
+    data_citations: List[str] = []
+
+    class Config:
+        extra = "forbid"
+
+    @field_validator("debate_text")
+    @classmethod
+    def _trim_debate_text(cls, v: str) -> str:
+        return v.strip()
+
+def create_risky_debator(llm, schema=None):
+    """
+    Aggressive Risk Analyst (schema-driven, no fallback).
+
+    Args:
+        llm: LangChain LLM/ChatModel supporting `.with_structured_output(schema=...)`
+        schema: Pydantic BaseModel (e.g., SafeDebatePackage). If not provided,
+                attempts to import from `safe_debator`.
+    """
+    structured_llm = llm.with_structured_output(schema=SafeDebatePackage)
+
+    def _build_prompt(state: dict) -> str:
+        rds = state.get("risk_debate_state", {}) or {}
         history = rds.get("history", "")
-        risky_history = rds.get("risky_history", "")
 
         # Firm inputs
-        market_research_report = state.get("market_report", "")
-        sentiment_report = state.get("sentiment_report", "")
-        news_report = state.get("news_report", "")
-        fundamentals_report = state.get("fundamentals_report", "")
+        market = state.get("market_report", "") or ""
+        senti = state.get("sentiment_report", "") or ""
+        news = state.get("news_report", "") or ""
+        fund = state.get("fundamentals_report", "") or ""
 
         # Industry inputs
-        industry_market_report = state.get("industry_market_report", "")
-        industry_sentiment_report = state.get("industry_sentiment_report", "")
-        industry_fundamentals_report = state.get("industry_fundamentals_report", "")
-        industry_company_relatedness_report = state.get("industry_company_relatedness_report", "")
+        imkt = state.get("industry_market_report", "") or ""
+        isent = state.get("industry_sentiment_report", "") or ""
+        ifund = state.get("industry_fundamentals_report", "") or ""
+        irel = state.get("industry_company_relatedness_report", "") or ""
 
-        # Optional quantitative hints if you later add them
-        vol_metrics = state.get("vol_metrics", "")               # e.g., ATR %, IV rank
-        liquidity_snapshot = state.get("liquidity_snapshot", "") # e.g., ADV$, spread bps
-        event_calendar = state.get("event_calendar", "")         # e.g., earnings/FOMC flags
+        # Optional quants
+        vol = state.get("vol_metrics", "") or ""
+        liq = state.get("liquidity_snapshot", "") or ""
+        events = state.get("event_calendar", "") or ""
 
-        trader_plan = state.get("trader_investment_plan") or state.get("investment_plan", "")
+        plan = state.get("trader_investment_plan") or state.get("investment_plan", "") or ""
 
-        prompt = f"""
-You are the **Aggressive Risk Analyst**. Your job is to maximize upside capture while managing downside with asymmetric tactics.
-You have autonomy to **derive** sizing, risk-per-trade, and stop/target logic from the evidence. Do **not** rely on static defaults.
+        return f"""You are the **Aggressive Risk Analyst**.
+Maximize upside capture while containing downside with **asymmetric tactics** (tight risk, staged adds, pyramids when warranted).
+Derive sizing/stops/targets from evidence—**no static defaults**.
 
-### Evidence (Firm & Industry)
-- Trader plan: {trader_plan}
-- Firm Market: {market_research_report}
-- Firm Sentiment: {sentiment_report}
-- Firm News: {news_report}
-- Firm Fundamentals: {fundamentals_report}
-- Industry Market: {industry_market_report}
-- Industry Sentiment: {industry_sentiment_report}
-- Industry Fundamentals: {industry_fundamentals_report}
-- Industry Relatedness (pairs/comps/hedges): {industry_company_relatedness_report}
-- Volatility metrics (if any): {vol_metrics}
-- Liquidity snapshot (if any): {liquidity_snapshot}
-- Event calendar / risks (if any): {event_calendar}
-- Conversation so far: {history}
+Inputs:
+- Trader Plan: {plan}
+- Firm — Market: {market}
+- Firm — Sentiment: {senti}
+- Firm — News: {news}
+- Firm — Fundamentals: {fund}
+- Industry — Market: {imkt}
+- Industry — Sentiment: {isent}
+- Industry — Fundamentals: {ifund}
+- Industry — Relatedness/Exposures (pairs/hedges/comps): {irel}
+- Volatility Metrics: {vol}
+- Liquidity Snapshot: {liq}
+- Event Calendar: {events}
+- Conversation History: {history}
 
-### Derive first (explicit):
-1) Score **firm–industry alignment** on [-2..+2] (divergent to strongly aligned).
-2) Classify **volatility regime**: low / normal / high (brief note).
-3) Classify **liquidity**: poor / average / good (use ADV/spread hints or infer from text).
-4) Classify **event risk** next 2–6 weeks: low / medium / high (earnings, macro, litigation, policy).
-5) Produce a **conviction score** [0..1] and a short rationale tying the above together.
-6) Using your aggressive bias, **propose** sizing and risk-per-trade for each horizon (annual, swing, intraday).
-   - Make them data-driven via your scores (e.g., increase with alignment & liquidity, decrease with event risk & extreme vol).
-   - Include whether pyramiding is appropriate and why.
+Produce a **single valid {SafeDebatePackage.__name__}** with:
+- debate_text: concise persuasive case for the aggressive stance (no special formatting).
+- profile_inference:
+  • alignment_score (−1..+1 typical; use sign to reflect firm–industry alignment strength),
+    volatility_regime, liquidity_class, event_risk,
+    conviction ∈ [0,1] with rationale,
+    horizon_params for annual/swing/intraday (max_size_pct_portfolio, risk_per_trade_pct, pyramiding).
+- strategy_outlines (annual, swing, intraday):
+  • direction, thesis, setup,
+    entry {{rule, band, conditions[]}},
+    stop {{rule, level, invalidation}},
+    targets[],
+    sizing {{max_size_pct_portfolio, risk_per_trade_pct, pyramiding}},
+    vol_anchor, liquidity {{min_adv_usd, max_spread_bps, notes}},
+    time {{review, max_hold, time_stop?}},
+    contingencies (gaps, events, hedge/pair ideas),
+    one_liner.
+- assumptions: key drivers/omissions.
+- confidence: [0,1].
+- data_citations: reference which inputs informed choices.
 
-### Then build three strategy outlines (annual / swing / intraday):
-- direction, thesis, setup
-- entry {{rule, band (price/%/anchor), conditions[]}}
-- stop {{rule, level, invalidation}}
-- targets[] as {{level, scale}}
-- sizing {{max_size_pct_portfolio, risk_per_trade_pct, pyramiding}} ← use your derived values
-- vol_anchor (ATR/IV/σ if you used it)
-- liquidity {{min_adv_usd, max_spread_bps, notes}}
-- time {{review, max_hold, time_stop (for intraday)}}
-- contingencies (event handling, gaps, and **hedges/pairs** suggested by relatedness)
-- one_liner (plain English)
+Constraints for aggressive posture:
+- Scale risk with alignment & liquidity; down-weight on high event risk or extreme vol.
+- Favor **confirmation-based adds** and **pyramiding** when trend/ breadth/ volume align.
+- Be explicit and within schema bounds. Do not fabricate other analysts' quotes.
+"""
 
-### Output STRICT JSON ONLY (no extra text):
-{{
-  "debate_text": "your concise persuasive case for the aggressive stance",
-  "profile_inference": {{
-    "alignment_score": -2..2,
-    "volatility_regime": "low|normal|high",
-    "liquidity_class": "poor|average|good",
-    "event_risk": "low|medium|high",
-    "conviction": 0..1,
-    "horizon_params": {{
-      "annual": {{"max_size_pct_portfolio": number, "risk_per_trade_pct": number, "pyramiding": "none|ladder|time-based"}},
-      "swing":  {{"max_size_pct_portfolio": number, "risk_per_trade_pct": number, "pyramiding": "none|ladder|time-based"}},
-      "intraday": {{"max_size_pct_portfolio": number, "risk_per_trade_pct": number, "pyramiding": "none|ladder|time-based"}}
-    }},
-    "derivation_notes": "brief bullets explaining how evidence shaped these numbers"
-  }},
-  "strategy_outlines": {{
-    "annual": {{...}},
-    "swing": {{...}},
-    "intraday": {{...}}
-  }},
-  "assumptions": ["any missing data or inference you had to make"],
-  "confidence": 0..1,
-  "data_citations": ["which reports/sections you leaned on"]
-}}
-""".strip()
+    def risky_node(state) -> dict:
+        rds = dict(state.get("risk_debate_state", {}) or {})
+        history = rds.get("history", "")
+        risky_history = rds.get("risky_history", "")
+        count = rds.get("count", 0)
 
-        raw = getattr(llm.invoke(prompt), "content", "")
-        # Best-effort JSON extraction
-        start, end = raw.find("{"), raw.rfind("}")
-        payload = raw[start:end+1] if start != -1 and end != -1 else "{}"
-        try:
-            packet = json.loads(payload)
-        except Exception:
-            packet = {"debate_text": "JSON parse error", "strategy_outlines": {"annual": {}, "swing": {}, "intraday": {}}}
+        prompt = _build_prompt(state)
 
-        packet = _ensure_schema(packet)
+        # Strict schema: returns a Pydantic instance or raises.
+        package = structured_llm.invoke(prompt)
+        if isinstance(package, dict):
+            package = SafeDebatePackage(**package)
 
-        # Update history
-        argument = f"Risky Analyst: {packet.get('debate_text','')}"
-        new_state = dict(rds)
-        new_state["history"] = (rds.get("history","") + "\n" + argument).strip()
-        new_state["risky_history"] = (rds.get("risky_history","") + "\n" + argument).strip()
-        new_state["latest_speaker"] = "Risky"
-        new_state["current_risky_response"] = argument
-        new_state["count"] = rds.get("count", 0) + 1
+        argument = f"Risky Analyst: {package.debate_text}"
+
+        new_rds = {
+            **rds,
+            "history": (history + ("\n" if history else "") + argument),
+            "risky_history": (risky_history + ("\n" if risky_history else "") + argument),
+            "latest_speaker": "Risky",
+            "current_risky_response": argument,
+            "count": count + 1,
+            "risky_structured": package.model_dump(mode='python'),
+        }
+
+        # Persist transcript safely
+        out_path = os.path.join("output", "risk_manager", "aggressive_debate.md")
+        os.makedirs(os.path.dirname(out_path), exist_ok=True)
+        with open(out_path, "w", encoding="utf-8") as f:
+            f.write(new_rds["history"])
 
         return {
-            "risk_debate_state": new_state,
-            "aggressive_strategy_packet": packet
+            "risk_debate_state": new_rds,
+            "aggressive_strategy_packet": package.model_dump(mode="python"),
         }
 
     return risky_node

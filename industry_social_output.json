@@ -1,231 +1,175 @@
 {
-  "ticker": "NVDA",
-  "industry": "Semiconductors",
-  "from_date": "2024-05-03",
-  "to_date": "2024-05-10",
+  "ticker": "TSLA",
+  "industry": "Auto Manufacturers (Automobiles & Auto Parts / Consumer Cyclical)",
+  "from_date": "2025-09-06",
+  "to_date": "2025-09-13",
   "items": [
     {
-      "headline": "SIA/BCG report: U.S. fab capacity projected to triple by 2032",
-      "source": "Semiconductor Industry Association (SIA)",
-      "platform": "News site / industry report",
-      "url": "https://www.semiconductors.org/emerging-resilience-in-the-semiconductor-supply-chain/",
-      "published_at": "2024-05-08",
+      "headline": "U.S. EV sales spike ahead of $7,500 federal tax credit expiry",
+      "source": "The Washington Post",
+      "platform": "News site (reports social/industry reaction)",
+      "url": "https://www.washingtonpost.com/climate-solutions/2025/09/08/electric-car-sales-boom-tax-credit-deadline/",
+      "published_at": "2025-09-08T00:00:00Z",
       "numbers": null,
-      "summary": "SIA and BCG released a May 8 report projecting U.S. wafer-fab capacity will increase ~203% by 2032, framing CHIPS-driven reshoring as an industry-wide capacity shift.",
+      "summary": "U.S. EV purchases surged ahead of the federal $7,500 credit's Sept. 30 expiry, creating a short-term sales spike and broad industry chatter about demand cliffs and incentive-driven buying. citeturn0news13",
       "sentiment": {
-        "label": "positive",
-        "score": 0.6
+        "label": "negative",
+        "score": -0.45
       }
     },
     {
-      "headline": "Emerging Resilience in the Semiconductor Supply Chain (BCG commentary)",
-      "source": "Boston Consulting Group",
-      "platform": "News site / consultancy article",
-      "url": "https://www.bcg.com/publications/2024/emerging-resilience-in-semiconductor-supply-chain",
-      "published_at": "2024-05-08",
+      "headline": "Tesla's U.S. EV market share falls to its lowest since 2017 as competition intensifies",
+      "source": "Reuters",
+      "platform": "News site (reports market & social reaction)",
+      "url": "https://www.reuters.com/business/autos-transportation/tesla-market-share-us-drops-lowest-since-2017-competition-heats-up-2025-09-08/",
+      "published_at": "2025-09-08T00:00:00Z",
       "numbers": null,
-      "summary": "BCG published analysis (May 8) reinforcing SIA findings that global fab capex will diversify beyond Taiwan/SK, affecting global supply-chain footprints and capex flows.",
+      "summary": "Data showed Tesla's U.S. EV share declined (to ~38% in August), fueling industry conversations on legacy automakers' aggressive pricing and incentives pressuring incumbent EV leaders. citeturn0news14",
       "sentiment": {
-        "label": "neutral",
-        "score": 0.1
+        "label": "negative",
+        "score": -0.35
       }
     },
     {
-      "headline": "Nvdia: CHIPS Act to triple U.S. semiconductor manufacturing capacity by 2032",
-      "source": "r/wallstreetbets (Reddit post linking SIA/BCG report)",
-      "platform": "Reddit (r/wallstreetbets)",
-      "url": "https://www.reddit.com/r/wallstreetbets/comments/1cn62sp",
-      "published_at": "2024-05-08",
-      "numbers": {
-        "ups": 115,
-        "comments": 432
-      },
-      "summary": "Reddit users amplified the SIA/BCG findings (May 8), discussing CHIPS-driven capacity growth and potential sector winners (semiconductor suppliers and design firms).",
-      "sentiment": {
-        "label": "positive",
-        "score": 0.5
-      }
-    },
-    {
-      "headline": "America projected to triple semiconductor manufacturing capacity — industry write-up",
-      "source": "Circuits Assembly",
-      "platform": "News site",
-      "url": "https://circuitsassembly.com/ca/editorial/menu-news/40613-america-projected-to-triple-semiconductor-manufacturing-capacity-by-2032-sia-reports.html",
-      "published_at": "2024-05-08",
+      "headline": "CATL's Yichun lithium mine expected to resume production, easing shortage fears",
+      "source": "Reuters",
+      "platform": "News site (commodity / industry coverage)",
+      "url": "https://www.reuters.com/markets/commodities/catls-yichun-lithium-mine-expected-resume-production-soon-securities-times-2025-09-09/",
+      "published_at": "2025-09-09T00:00:00Z",
       "numbers": null,
-      "summary": "Trade press (May 8) summarized the SIA/BCG report, emphasizing CHIPS-backed private investments and U.S. fab-capacity reshoring implications for equipment and packaging suppliers.",
+      "summary": "Reports that CATL will restart a Yichun mine (≈6–8% of global supply) shifted social and market discussion toward easing lithium shortages and downward pressure on raw-material prices. citeturn6news13",
       "sentiment": {
-        "label": "neutral",
-        "score": 0.0
+        "label": "negative",
+        "score": -0.3
       }
     },
     {
-      "headline": "Breaking Down $545 Billion Semiconductor (infographic) — industry map and ASML dependency",
-      "source": "r/Infographics (Reddit)",
-      "platform": "Reddit (r/Infographics)",
-      "url": "https://www.reddit.com/r/Infographics/comments/1cmijiv",
-      "published_at": "2024-05-07",
+      "headline": "Lithium and mining stocks fall after CATL restart news (market reaction)",
+      "source": "Barron's",
+      "platform": "News site (market reaction summary)",
+      "url": "https://www.barrons.com/articles/china-ev-lithiium-albemarle-stock-price-144b07b3",
+      "published_at": "2025-09-10T00:00:00Z",
       "numbers": {
-        "ups": 328,
-        "comments": 0
+        "ALB_share_move": null
       },
-      "summary": "Highly-upvoted infographic (May 7) circulated across subs showing industry structure, capex flows, and single points-of-failure (e.g., ASML/EUV), driving cross-company supply-chain discussion.",
+      "summary": "Market and social threads flagged Albemarle and other lithium miners' sell-offs after CATL restart reports, highlighting industry-wide input-price volatility for battery supply chains. citeturn6news12",
       "sentiment": {
-        "label": "neutral",
-        "score": 0.0
+        "label": "negative",
+        "score": -0.55
       }
     },
     {
-      "headline": "CHIPS for America issues $285M NOFO for a digital-twin Manufacturing USA institute",
-      "source": "U.S. Department of Commerce / NIST press release",
-      "platform": "Government press release",
-      "url": "https://www.commerce.gov/news/press-releases/2024/05/chips-america-announces-285-million-funding-opportunity-digital-twin",
-      "published_at": "2024-05-06",
+      "headline": "Amazon-owned Zoox launches free public robotaxi service in Las Vegas",
+      "source": "Reuters",
+      "platform": "News site (autonomy/AV industry coverage)",
+      "url": "https://www.reuters.com/business/autos-transportation/amazons-zoox-robotaxi-opens-public-with-free-service-las-vegas-2025-09-10/",
+      "published_at": "2025-09-10T00:00:00Z",
+      "numbers": {
+        "fleet_estimate": 50
+      },
+      "summary": "Zoox began free robotaxi rides on the Las Vegas Strip, prompting wide social discussion about AV competition and adoption among Waymo, Tesla Robotaxi, and other robotaxi entrants. citeturn10news14",
+      "sentiment": {
+        "label": "positive",
+        "score": 0.55
+      }
+    },
+    {
+      "headline": "EV sales surge record volumes ahead of tax-credit deadline, but Tesla sees limited benefit",
+      "source": "Business Insider",
+      "platform": "News site (industry analysis referencing social/market chatter)",
+      "url": "https://www.businessinsider.com/ev-sales-are-setting-records-it-isnt-helping-tesla-2025-9",
+      "published_at": "2025-09-12T00:00:00Z",
       "numbers": null,
-      "summary": "Federal CHIPS NOFO (May 6) offered ~$285M to build a digital-twin Manufacturing USA institute, prompting social discussion about R&D, workforce, and domestic process modernization across the semiconductor ecosystem.",
+      "summary": "Reports showed record U.S. EV volumes in August with many OEMs benefiting from incentive-driven demand, while commentary on social platforms noted Tesla lagging behind peers on the rebate-driven sales bump. citeturn11news14",
       "sentiment": {
-        "label": "positive",
-        "score": 0.6
+        "label": "negative",
+        "score": -0.25
       }
     },
     {
-      "headline": "Reddit thread: Biden admin to fund $285M for digital twin semiconductors",
-      "source": "r/JoeBiden (Reddit post linking Commerce NOFO)",
-      "platform": "Reddit (r/JoeBiden)",
-      "url": "https://www.reddit.com/r/JoeBiden/comments/1clmtsf",
-      "published_at": "2024-05-06",
-      "numbers": {
-        "ups": 44,
-        "comments": null
-      },
-      "summary": "Community post (May 6) circulated Commerce/NIST NOFO details, highlighting industry-wide R&D and workforce implications for U.S. semiconductor manufacturing.",
-      "sentiment": {
-        "label": "positive",
-        "score": 0.4
-      }
-    },
-    {
-      "headline": "Tata Electronics begins exporting semiconductor chip samples from Bengaluru centre",
-      "source": "Times of India / Economic Times coverage",
-      "platform": "News site",
-      "url": "https://timesofindia.indiatimes.com/business/india-business/boost-for-indias-semiconductor-prowess-tata-electronics-starts-exporting-chip-samples-to-partners-in-japan-us-europe/articleshow/109900940.cms",
-      "published_at": "2024-05-07",
+      "headline": "GM slows or pauses some EV production as tax-credit-driven demand timing shifts",
+      "source": "The Verge",
+      "platform": "News site (industry operations coverage)",
+      "url": "https://www.theverge.com/news/773492/gm-cuts-ev-production-tax-credit",
+      "published_at": "2025-09-08T00:00:00Z",
       "numbers": null,
-      "summary": "Indian press (May 7–8) reported Tata Electronics shipped limited packaged chip samples abroad, fueling social debate on India’s emergence in packaging/foundry supply chains.",
+      "summary": "Legacy OEM GM signaled production adjustments tied to changing incentive dynamics, stirring supplier and OEM communities about near-term capacity planning across the EV supply chain. citeturn8news13",
       "sentiment": {
-        "label": "positive",
-        "score": 0.5
+        "label": "negative",
+        "score": -0.4
       }
     },
     {
-      "headline": "Reddit: 'Make in India' — Tata Electronics starts exporting chip samples (community discussion)",
-      "source": "r/IndiaSpeaks (Reddit post linking Tata news)",
-      "platform": "Reddit (r/IndiaSpeaks)",
-      "url": "https://www.reddit.com/r/IndiaSpeaks/comments/1cmi5gd",
-      "published_at": "2024-05-07",
-      "numbers": {
-        "ups": 75,
-        "comments": null
-      },
-      "summary": "Reddit discussion (May 7) amplified coverage of Tata Electronics' sample exports, framing it as an industry-level step toward distributed ATP (assembly/test/packaging) capacity.",
-      "sentiment": {
-        "label": "positive",
-        "score": 0.4
-      }
-    },
-    {
-      "headline": "Tata Electronics chip exports discussed in Geopolitics sub (regional supply-chain angle)",
-      "source": "r/GeopoliticsIndia (Reddit post)",
-      "platform": "Reddit (r/GeopoliticsIndia)",
-      "url": "https://www.reddit.com/r/GeopoliticsIndia/comments/1cmdoxh",
-      "published_at": "2024-05-07",
-      "numbers": {
-        "ups": 60,
-        "comments": null
-      },
-      "summary": "Community post (May 7) placed Tata's sample exports in a geopolitical context, discussing regional fab/packaging investment and supply-chain diversification away from China/Taiwan.",
+      "headline": "EY report: BEVs expected to exceed half of new light-vehicle sales in Europe by 2032 (industry forecast)",
+      "source": "Reuters (reporting EY)",
+      "platform": "News site (industry forecast reporting)",
+      "url": "https://www.reuters.com/markets/europe/europes-bev-sales-expected-exceed-half-new-light-vehicle-sales-by-2032-study-2025-09-08/",
+      "published_at": "2025-09-08T00:00:00Z",
+      "numbers": null,
+      "summary": "An EY study, widely discussed on professional networks and forums, projects Europe BEV share >50% by 2032—fueling industry debate about regional strategy and OEM product pipelines. citeturn11news12",
       "sentiment": {
         "label": "positive",
         "score": 0.3
       }
     },
     {
-      "headline": "Academic / workforce post: why pursue semiconductor careers (student survey invite)",
-      "source": "r/ECE (Reddit post)",
-      "platform": "Reddit (r/ECE)",
-      "url": "https://www.reddit.com/r/ECE/comments/1cmvu1v",
-      "published_at": "2024-05-08",
-      "numbers": {
-        "ups": 8,
-        "comments": null
-      },
-      "summary": "A May 8 academic post solicited ECE participants for a semiconductor-career survey, highlighting industry concerns about talent pipelines and workforce shortages across companies and fabs.",
+      "headline": "S&P Global Mobility: September commentary — BEV trends and supply/demand dynamics",
+      "source": "S&P Global (Daily Update)",
+      "platform": "News site (industry research)",
+      "url": "https://www.spglobal.com/en/research-insights/market-insights/daily-update-sep-09-20251",
+      "published_at": "2025-09-09T00:00:00Z",
+      "numbers": null,
+      "summary": "S&P commentary circulated on industry channels noting stabilizing dealer inventories, ongoing affordability headwinds, and continued BEV share gains—shaping dealer/OEM & supplier planning discussions. citeturn12search0",
       "sentiment": {
         "label": "neutral",
-        "score": 0.0
+        "score": 0.05
       }
     },
     {
-      "headline": "Yahoo Finance: U.S. chip manufacturing capacity projected to triple by 2032 (SIA/BCG coverage)",
-      "source": "Yahoo Finance",
-      "platform": "News site",
-      "url": "https://finance.yahoo.com/news/us-chip-manufacturing-capacity-projected-to-triple-by-2032-fueled-by-chips-act-industry-leader-142127075.html",
-      "published_at": "2024-05-08",
+      "headline": "Market commentary: CATL restart stories pressure Australian miners and lithium futures",
+      "source": "Nasdaq / Investing News Network",
+      "platform": "News site (market reaction summary)",
+      "url": "https://www.nasdaq.com/articles/catl-mine-restart-pressures-australian-lithium-market",
+      "published_at": "2025-09-10T15:05:00Z",
       "numbers": null,
-      "summary": "Business press (May 8) echoed SIA/BCG findings, catalyzing social discussion about winners across equipment, packaging, and design companies.",
+      "summary": "Market write-ups and social threads emphasized the global lithium-price impact of Yichun restart reporting, pressuring miners and stirring supply-chain risk discussions across EV battery makers. citeturn6search1",
       "sentiment": {
-        "label": "positive",
-        "score": 0.4
+        "label": "negative",
+        "score": -0.4
       }
     },
     {
-      "headline": "Make in India: Tata Electronics begins limited export of semiconductor chips (IBEF summary)",
-      "source": "India Brand Equity Foundation (IBEF)",
-      "platform": "News/industry summary",
-      "url": "https://www.ibef.org/news/make-in-india-tata-electronics-begins-limited-export-of-semiconductor-chips",
-      "published_at": "2024-05-08",
+      "headline": "Broader industry reaction to robotaxi rollouts highlights regulatory scrutiny and public safety debates",
+      "source": "Car & Driver / AP reporting (industry coverage)",
+      "platform": "News site (coverage of AV rollouts and public reaction)",
+      "url": "https://www.caranddriver.com/news/a66068584/amazon-zoox-autonomous-ride-hailing-las-vegas/",
+      "published_at": "2025-09-10T00:00:00Z",
       "numbers": null,
-      "summary": "May 8 industry summary framed Tata’s sample exports as a milestone for India's ATP and foundry ambitions, prompting cross-company commentary about regional supply-chain entrants.",
-      "sentiment": {
-        "label": "positive",
-        "score": 0.3
-      }
-    },
-    {
-      "headline": "Business Standard: Make in India — Tata begins limited exports of chip samples",
-      "source": "Business Standard",
-      "platform": "News site",
-      "url": "https://www.business-standard.com/companies/news/make-in-india-tata-electronics-begin-limited-export-of-semiconductor-chips-124050700232_1.html",
-      "published_at": "2024-05-07",
-      "numbers": null,
-      "summary": "Trade press (May 7) covered Tata Electronics' exports and planned packaging/foundry projects, fueling sector conversation about non-traditional regional entrants to packaging and foundry services.",
-      "sentiment": {
-        "label": "positive",
-        "score": 0.3
-      }
-    },
-    {
-      "headline": "Reddit: 'Makes you wonder…' — Palantir / digital-twin discussion referencing CHIPS NOFO",
-      "source": "r/palantir (Reddit post referencing CHIPS digital-twin NOFO)",
-      "platform": "Reddit (r/palantir)",
-      "url": "https://www.reddit.com/r/palantir/comments/1clh8tq",
-      "published_at": "2024-05-06",
-      "numbers": {
-        "ups": 8,
-        "comments": null
-      },
-      "summary": "Community thread (May 6) connected the CHIPS digital-twin funding to enterprise software vendors (e.g., Palantir), underscoring cross-industry implications for software/EDA/tooling vendors.",
+      "summary": "Coverage of Zoox's Las Vegas launch amplified social and regulatory discussions about safety, approvals, and competing robotaxi business models across multiple AV vendors. citeturn10news12turn10news14",
       "sentiment": {
         "label": "neutral",
-        "score": 0.0
+        "score": -0.05
+      }
+    },
+    {
+      "headline": "Industry & investor threads react to miner/commodity moves and EV policy shifts",
+      "source": "Barron's / market reporting",
+      "platform": "News site (markets + social reaction)",
+      "url": "https://www.barrons.com/articles/china-ev-lithiium-albemarle-stock-price-144b07b3",
+      "published_at": "2025-09-10T00:00:00Z",
+      "numbers": null,
+      "summary": "Investor forums and social channels amplified coverage of miner sell-offs and policy changes, spotlighting cross-company exposure to lithium-price volatility and geopolitical trade friction. citeturn6news12turn6search1",
+      "sentiment": {
+        "label": "negative",
+        "score": -0.5
       }
     }
   ],
-  "window_summary": "Social conversation was dominated by the SIA/BCG CHIPS report and CHIPS funding (digital-twin NOFO), highlighting U.S. fab expansion, R&D funding, and India’s early packaging exports.",
+  "window_summary": "Sept 6–13 social and industry discussion centered on an EV demand spike before federal tax-credit expiry, lithium-supply volatility from CATL, and growing robotaxi/autonomy competition.",
   "window_sentiment": {
-    "positive": 10,
-    "negative": 0,
-    "neutral": 5,
-    "net_score": 0.33
+    "positive": 2,
+    "negative": 8,
+    "neutral": 3,
+    "net_score": -0.37
   }
 }

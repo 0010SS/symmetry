@@ -103,9 +103,6 @@ def create_fundamentals_analyst(llm, toolkit):
             "# Do not copy any example rows. Determine 'Signal' per evidence; if unclear, use 'Uncertain (?)'.\n"
         )
 
-        
-
-
         prompt = ChatPromptTemplate.from_messages(
             [
                 (
@@ -136,6 +133,9 @@ def create_fundamentals_analyst(llm, toolkit):
 
         if len(result.tool_calls) == 0:
             report = result.content
+
+        with open("output/analysts/company_fundamentals.md", "w") as f:
+            f.write(report)
 
         return {
             "messages": [result],

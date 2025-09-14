@@ -1,63 +1,151 @@
 # risk_manager.py
+from __future__ import annotations
+
+import os
 import json
-import time
+from typing import List, Literal, Optional, Type
+
+# Reuse your existing building blocks (adjust import if needed)
+# These are the ones you defined for the debators.
+from pydantic import BaseModel, Field
+
+class EntryPlan(BaseModel):
+    rule: str
+    band: str
+    conditions: List[str] = []
+
+    class Config:
+        extra = "forbid"
+
+class StopPlan(BaseModel):
+    rule: str
+    level: str
+    invalidation: str
+
+    class Config:
+        extra = "forbid"
+
+class LiquidityPlan(BaseModel):
+    min_adv_usd: str = "n/a"
+    max_spread_bps: str = "n/a"
+    notes: str = ""
+
+    class Config:
+        extra = "forbid"
+
+class TimePlan(BaseModel):
+    review: str
+    max_hold: str
+    time_stop: Optional[str] = None
+
+    class Config:
+        extra = "forbid"
+
+# ============================
+# Manager-specific schema
+# ============================
+
+class ManagerSizingPlan(BaseModel):
+    """Stricter portfolio ceilings for the manager synthesis layer."""
+    max_size_pct_portfolio: float = Field(..., ge=0, le=30)  # manager soft-cap
+    risk_per_trade_pct: float = Field(..., ge=0, le=3)       # manager soft-cap
+    pyramiding: Literal["none", "ladder", "time-based", "scale-in", "scale-out", "fixed"] = "none"
+
+    class Config:
+        extra = "forbid"
+
+
+class ManagerStrategyOutline(BaseModel):
+    direction: Literal["buy", "sell", "hold", "wait", "reduce", "hedge"] = "wait"
+    thesis: str
+    setup: str
+    entry: EntryPlan
+    stop: StopPlan
+    targets: List[str] = []
+    sizing: ManagerSizingPlan                    # <- stricter constraints here
+    vol_anchor: str
+    liquidity: LiquidityPlan
+    time: TimePlan
+    contingencies: List[str] = []
+    one_liner: str
+
+    class Config:
+        extra = "forbid"
+
+
+class ManagerStrategyTrio(BaseModel):
+    annual: ManagerStrategyOutline
+    swing: ManagerStrategyOutline
+    intraday: ManagerStrategyOutline
+
+    class Config:
+        extra = "forbid"
+
+
+class StrategyMatrix(BaseModel):
+    aggressive: ManagerStrategyTrio
+    neutral: ManagerStrategyTrio
+    conservative: ManagerStrategyTrio
+
+    class Config:
+        extra = "forbid"
+
+
+class ExecutionTicket(BaseModel):
+    instrument: str
+    side: Literal["buy", "sell", "short", "none"]
+    entry_method: str  # e.g., "limit|stop|market + conditions"
+    initial_size_plan: str
+    max_slippage_bps: str
+    time_in_force: Literal["DAY", "GTC", "IOC"]
+    monitoring_checklist: List[str] = []
+
+    class Config:
+        extra = "forbid"
+
+
+class RiskBudgetSummary(BaseModel):
+    exposure_after_trade: str
+    position_risk: str
+    portfolio_risk_considerations: List[str] = []
+    hard_constraints: List[str] = []
+
+    class Config:
+        extra = "forbid"
+
+
+class RiskManagerPackage(BaseModel):
+    decision: Literal["Buy", "Sell", "Hold"]
+    decision_rationale: str
+    strategy_matrix: StrategyMatrix
+    conflicts_and_resolutions: List[str] = []
+    execution_ticket: ExecutionTicket
+    risk_budget_summary: RiskBudgetSummary
+    what_would_change_my_mind: List[str] = []
+    lessons_learned: List[str] = []
+
+    class Config:
+        extra = "forbid"
+
+
+# ============================
+# Factory
+# ============================
 
 def create_risk_manager(llm, memory):
     """
     Portfolio/Risk manager that:
       1) reads three debaters' structured packets,
-      2) asks the LLM to reconcile them into a 3x3 Strategy Matrix,
+      2) asks the LLM to reconcile them into a 3×3 Strategy Matrix,
       3) issues a final Buy/Sell/Hold with rationale,
       4) provides an execution ticket + risk budget,
       5) writes back lessons learned for future recall,
       6) preserves existing debate history plumbing.
 
-    No wrappers, same node style.
+    Uses model-native structured output with Pydantic (no fallback).
     """
 
-    # ---- helpers (lightweight schema normalization & clipping) ----
-    SOFT_CAPS = {
-        "max_size_pct_portfolio": (0.0, 30.0),   # broad ceilings only
-        "risk_per_trade_pct": (0.0, 3.0)
-    }
-
-    def _clip_num(v, lo, hi):
-        try:
-            x = float(v)
-            return max(lo, min(hi, x))
-        except Exception:
-            return 0.0
-
-    def _ensure_plan_schema(plan: dict) -> dict:
-        plan = plan or {}
-        plan.setdefault("direction", "hold")
-        plan.setdefault("thesis", "")
-        plan.setdefault("setup", "trendline")
-        plan.setdefault("entry", {"rule": "", "band": "", "conditions": []})
-        plan.setdefault("stop", {"rule": "", "level": "", "invalidation": ""})
-        plan.setdefault("targets", [])
-        sizing = plan.setdefault("sizing", {"max_size_pct_portfolio": 0, "risk_per_trade_pct": 0, "pyramiding": "none"})
-        sizing["max_size_pct_portfolio"] = _clip_num(sizing.get("max_size_pct_portfolio", 0), *SOFT_CAPS["max_size_pct_portfolio"])
-        sizing["risk_per_trade_pct"] = _clip_num(sizing.get("risk_per_trade_pct", 0), *SOFT_CAPS["risk_per_trade_pct"])
-        plan.setdefault("vol_anchor", "not available")
-        plan.setdefault("liquidity", {"min_adv_usd": "", "max_spread_bps": "", "notes": ""})
-        plan.setdefault("time", {"review": "", "max_hold": "", "time_stop": None})
-        plan.setdefault("contingencies", [])
-        plan.setdefault("one_liner", "")
-        # If it's hold/wait, zero out sizing for safety
-        if plan["direction"] in ("hold", "wait"):
-            plan["sizing"]["max_size_pct_portfolio"] = 0
-            plan["sizing"]["risk_per_trade_pct"] = 0
-        return plan
-
-    def _ensure_matrix_schema(matrix: dict) -> dict:
-        matrix = matrix or {}
-        for profile in ("aggressive", "neutral", "conservative"):
-            prof = matrix.setdefault(profile, {})
-            prof["annual"]   = _ensure_plan_schema(prof.get("annual", {}))
-            prof["swing"]    = _ensure_plan_schema(prof.get("swing", {}))
-            prof["intraday"] = _ensure_plan_schema(prof.get("intraday", {}))
-        return matrix
+    structured_llm = llm.with_structured_output(schema=RiskManagerPackage)
 
     def _stringify(obj, fallback="{}"):
         try:
@@ -65,34 +153,33 @@ def create_risk_manager(llm, memory):
         except Exception:
             return fallback
 
-    # ---- main node ----
-    def risk_manager_node(state) -> dict:
+    def _build_prompt(state: dict) -> str:
         company_name = state.get("company_of_interest", "")
 
-        rds = state["risk_debate_state"]
+        rds = state.get("risk_debate_state", {}) or {}
         history = rds.get("history", "")
 
-        # Firm-level evidence (fix: fundamentals from correct key)
-        market_research_report = state.get("market_report", "")
-        sentiment_report       = state.get("sentiment_report", "")
-        news_report            = state.get("news_report", "")
-        fundamentals_report    = state.get("fundamentals_report", "")  # fixed
+        # Firm evidence
+        market_research_report = state.get("market_report", "") or ""
+        sentiment_report       = state.get("sentiment_report", "") or ""
+        news_report            = state.get("news_report", "") or ""
+        fundamentals_report    = state.get("fundamentals_report", "") or ""
 
-        # Industry-level evidence (optional but helpful context)
-        industry_market_report         = state.get("industry_market_report", "")
-        industry_sentiment_report      = state.get("industry_sentiment_report", "")
-        industry_fundamentals_report   = state.get("industry_fundamentals_report", "")
-        industry_company_relatedness   = state.get("industry_company_relatedness_report", "")
+        # Industry evidence
+        industry_market_report       = state.get("industry_market_report", "") or ""
+        industry_sentiment_report    = state.get("industry_sentiment_report", "") or ""
+        industry_fundamentals_report = state.get("industry_fundamentals_report", "") or ""
+        industry_company_relatedness = state.get("industry_company_relatedness_report", "") or ""
 
-        # Debaters' structured packets
-        packet_aggr = state.get("aggressive_strategy_packet", {})
-        packet_neut = state.get("neutral_strategy_packet", {})
-        packet_cons = state.get("conservative_strategy_packet", {})
+        # Debaters' packets (already-structured dicts)
+        packet_aggr = state.get("aggressive_strategy_packet", {}) or {}
+        packet_neut = state.get("neutral_strategy_packet", {}) or {}
+        packet_cons = state.get("conservative_strategy_packet", {}) or {}
 
-        # Plan (prefer trader_investment_plan; fallback to investment_plan)
-        trader_plan = state.get("trader_investment_plan") or state.get("investment_plan", "")
+        # Plan
+        trader_plan = state.get("trader_investment_plan") or state.get("investment_plan", "") or ""
 
-        # Past memories (lessons)
+        # Past memories
         curr_situation = "\n\n".join([
             market_research_report, sentiment_report, news_report, fundamentals_report,
             industry_market_report, industry_sentiment_report, industry_fundamentals_report
@@ -100,20 +187,16 @@ def create_risk_manager(llm, memory):
         past_memories = memory.get_memories(curr_situation, n_matches=3)
         past_memory_str = ""
         for rec in past_memories or []:
-            # expects {"recommendation": "..."} style — unchanged from your current code
             past_memory_str += (rec.get("recommendation", "") + "\n\n")
 
-        # ==== PROMPT: judge + portfolio/risk integration ====
-        prompt = f"""
-You are the **Portfolio & Risk Manager** for {company_name}.
-Your job: reconcile three risk-profile strategy packets (Aggressive, Neutral, Conservative) into:
-  1) a final **Buy/Sell/Hold** decision,
-  2) a unified **3×3 Strategy Matrix** (profiles × horizons),
-  3) an **Execution Ticket** (how to place/monitor the trade),
-  4) a **Risk Budget Summary** (exposure & constraints),
-  5) **Lessons Learned** and **What Would Change My Mind**.
+        # Prompt
+        return f"""You are the **Portfolio & Risk Manager** for {company_name}.
+Synthesize the Aggressive, Neutral, and Conservative debators' structured packets into a final, coherent plan with strict risk discipline.
+Prioritize internal consistency (direction ↔ entry/stop/targets), adherence to liquidity/event constraints, and business-limit sizing.
 
-Use evidence from firm & industry reports. Favor clarity, decisiveness, and internal consistency (stops, targets, sizing).
+Key ceilings for synthesized sizing:
+- max_size_pct_portfolio ≤ 30
+- risk_per_trade_pct ≤ 3
 
 ### Evidence (firm)
 - Market: {market_research_report}
@@ -125,7 +208,7 @@ Use evidence from firm & industry reports. Favor clarity, decisiveness, and inte
 - Industry Market: {industry_market_report}
 - Industry Sentiment: {industry_sentiment_report}
 - Industry Fundamentals: {industry_fundamentals_report}
-- Industry Relatedness (pairs/comps/hedges): {industry_company_relatedness}
+- Relatedness (pairs/comps/hedges): {industry_company_relatedness}
 
 ### Trader plan
 {trader_plan}
@@ -135,103 +218,83 @@ Use evidence from firm & industry reports. Favor clarity, decisiveness, and inte
 - Neutral: {_stringify(packet_neut)}
 - Conservative: {_stringify(packet_cons)}
 
-### Debate transcript (for citations)
+### Debate transcript (citations)
 {history}
 
-### Past lessons (for reflection & bias checks)
+### Past lessons
 {past_memory_str}
 
-### Your tasks
-A) **Synthesize** the three packets. Where they conflict, choose the best plan or construct a hybrid; record the rationale.
-B) **Validate** for coherence: direction ↔ entry/stop/targets, sizing within sensible limits, liquidity & event constraints acknowledged.
-C) **Decide**: Buy/Sell/Hold (avoid Hold unless truly warranted by evidence).
-D) **Plan for execution**: ticket details and monitoring checklist.
-E) **Teach forward**: concise lessons learned; what would change your mind.
+### Tasks
+A) **Reconcile** the three packets; when in conflict, select or hybridize with rationale.
+B) **Validate** coherence (direction, entries, stops, targets), and enforce sizing soft-caps.
+C) **Decide** Buy/Sell/Hold (avoid Hold unless truly warranted).
+D) **Execution**: produce a ticket and monitoring checklist.
+E) **Teach forward**: lessons learned & what would change your mind.
 
-### STRICT JSON OUTPUT ONLY (no prose outside JSON)
-{{
-  "decision": "Buy|Sell|Hold",
-  "decision_rationale": "short narrative citing key arguments/evidence and why chosen over alternatives",
-  "strategy_matrix": {{
-    "aggressive": {{"annual": {{}}, "swing": {{}}, "intraday": {{}}}},
-    "neutral":    {{"annual": {{}}, "swing": {{}}, "intraday": {{}}}},
-    "conservative": {{"annual": {{}}, "swing": {{}}, "intraday": {{}}}}
-  }},
-  "conflicts_and_resolutions": [
-    "Bulleted notes explaining major disagreements and how you resolved them for each horizon."
-  ],
-  "execution_ticket": {{
-    "instrument": "{company_name}",
-    "side": "buy|sell|short|none",
-    "entry_method": "limit|stop|market + conditions",
-    "initial_size_plan": "use % of portfolio or notional; justify via liquidity/volatility",
-    "max_slippage_bps": "number or rule",
-    "time_in_force": "DAY|GTC|IOC",
-    "monitoring_checklist": [
-      "what to watch intraday/daily (breadth, volume, levels, news catalysts)"
-    ]
-  }},
-  "risk_budget_summary": {{
-    "exposure_after_trade": "qualitative if full portfolio unknown",
-    "position_risk": "stop distance, R multiple plan",
-    "portfolio_risk_considerations": [
-      "concentration, correlation, macro/event gates, hedges/overlays"
-    ],
-    "hard_constraints": [
-      "e.g., no overnight for intraday; earnings blackout; liquidity floors"
-    ]
-  }},
-  "what_would_change_my_mind": [
-    "clear invalidation triggers (price, time, news, macro)"
-  ],
-  "lessons_learned": [
-    "succinct, portable lessons tying to past memory and today’s decision"
-  ]
-}}
+Produce a **single valid RiskManagerPackage** object:
+- decision: Buy|Sell|Hold
+- decision_rationale: short narrative citing key arguments/evidence
+- strategy_matrix: aggressive/neutral/conservative × (annual/swing/intraday),
+  each outline with: direction, thesis, setup, entry(rule/band/conditions), stop(rule/level/invalidation),
+  targets, sizing(max_size_pct_portfolio, risk_per_trade_pct, pyramiding) ← respect caps,
+  vol_anchor, liquidity(min_adv_usd, max_spread_bps, notes),
+  time(review, max_hold, time_stop?), contingencies, one_liner
+- conflicts_and_resolutions: bullet points of major disagreements and resolutions
+- execution_ticket: instrument, side, entry_method, initial_size_plan, max_slippage_bps, time_in_force, monitoring_checklist[]
+- risk_budget_summary: exposure_after_trade, position_risk, portfolio_risk_considerations[], hard_constraints[]
+- what_would_change_my_mind: explicit invalidation triggers
+- lessons_learned: concise, portable takeaways
+
+Only output a valid RiskManagerPackage instance (no extra text).
 """
 
-        # ---- call LLM & parse JSON ----
-        raw = getattr(llm.invoke(prompt), "content", "")
-        start, end = raw.find("{"), raw.rfind("}")
-        payload = raw[start:end+1] if start != -1 and end != -1 else "{}"
-        try:
-            packet = json.loads(payload)
-        except Exception:
-            packet = {
-                "decision": "Hold",
-                "decision_rationale": "JSON parse error from model; defaulting to Hold.",
-                "strategy_matrix": {},
-                "execution_ticket": {},
-                "risk_budget_summary": {},
-                "conflicts_and_resolutions": [],
-                "what_would_change_my_mind": [],
-                "lessons_learned": []
-            }
+    def risk_manager_node(state) -> dict:
+        # Invoke structured output (raises on invalid)
+        prompt = _build_prompt(state)
+        package: RiskManagerPackage = structured_llm.invoke(prompt)
+        if isinstance(package, dict):
+            package = RiskManagerPackage(**package)
 
-        # ---- normalize the 3x3 matrix and light sanity clipping ----
-        packet["strategy_matrix"] = _ensure_matrix_schema(packet.get("strategy_matrix", {}))
+        # Build a concise human-facing markdown summary like your original
+        rds = dict(state.get("risk_debate_state", {}) or {})
+        history = rds.get("history", "")
 
-        # ---- produce a human-facing summary (Markdown-ish) for backward compatibility ----
-        decision = packet.get("decision", "Hold")
-        rationale = packet.get("decision_rationale", "")
-        summary_lines = [f"# Final decision: **{decision}**", "", rationale, "", "## Strategy Matrix (snapshot)"]
-        sm = packet["strategy_matrix"]
-        for profile in ("aggressive", "neutral", "conservative"):
-            for horizon in ("annual", "swing", "intraday"):
-                p = sm[profile][horizon]
-                summary_lines.append(
-                    f"- **{profile.title()} / {horizon.title()}** → {p['direction']} | "
-                    f"Entry: {p['entry']['rule']} {p['entry']['band']} | "
-                    f"Stop: {p['stop']['level']} | "
-                    f"Target1: {p['targets'][0]['level'] if p['targets'] else 'n/a'} | "
-                    f"Size: {p['sizing']['max_size_pct_portfolio']}% / {p['sizing']['risk_per_trade_pct']}%"
+        sm = package.strategy_matrix
+        lines = [
+            f"# Final decision: **{package.decision}**",
+            "",
+            package.decision_rationale,
+            "",
+            "## Strategy Matrix (snapshot)",
+        ]
+
+        def _add(profile_name: str, trio: ManagerStrategyTrio):
+            for horizon, plan in (("annual", trio.annual), ("swing", trio.swing), ("intraday", trio.intraday)):
+                lines.append(
+                    f"- **{profile_name.title()} / {horizon.title()}** → {plan.direction} | "
+                    f"Entry: {plan.entry.rule} {plan.entry.band} | "
+                    f"Stop: {plan.stop.level} | "
+                    f"Target1: {plan.targets[0] if plan.targets else 'n/a'} | "
+                    f"Size: {plan.sizing.max_size_pct_portfolio}% / {plan.sizing.risk_per_trade_pct}%"
                 )
-        judge_markdown = "\n".join(summary_lines)
 
-        # ---- update debate state (preserve your structure) ----
+        _add("aggressive", sm.aggressive)
+        _add("neutral", sm.neutral)
+        _add("conservative", sm.conservative)
+
+        judge_markdown = "\n".join(lines)
+
+        # Persist outputs
+        os.makedirs("output/manager", exist_ok=True)
+        with open("output/manager/risk_final_decision.md", "w", encoding="utf-8") as f:
+            f.write(judge_markdown)
+        with open("output/manager/risk_final_packet.json", "w", encoding="utf-8") as f:
+            json.dump(package.model_dump(mode="python"), f, indent=2, ensure_ascii=False)
+
+        # Update debate state (preserve your structure)
         new_rds = {
             "judge_decision": judge_markdown,
-            "history": rds.get("history", ""),
+            "history": history,
             "risky_history": rds.get("risky_history", ""),
             "safe_history": rds.get("safe_history", ""),
             "neutral_history": rds.get("neutral_history", ""),
@@ -242,14 +305,18 @@ E) **Teach forward**: concise lessons learned; what would change your mind.
             "count": rds.get("count", 0),
         }
 
-        # ---- return combined outputs ----
+        # Optionally write back “lessons” to memory (if your memory supports it)
+        # Example (commented; adapt to your memory API):
+        # memory.save({
+        #     "situation": "...", "recommendation": package.decision_rationale,
+        #     "lessons": package.lessons_learned
+        # })
+
         return {
             "risk_debate_state": new_rds,
-            # human-readable for your logs/UI:
-            "final_trade_decision": judge_markdown,
-            # machine-usable for downstream execution/simulation:
-            "final_trade_packet": packet,
-            "strategy_matrix": packet.get("strategy_matrix", {}),
+            "final_trade_decision": judge_markdown,                 # human-readable
+            "final_trade_packet": package.model_dump(mode="python"),# machine-usable
+            "strategy_matrix": package.strategy_matrix.model_dump(mode="python"),
         }
 
     return risk_manager_node

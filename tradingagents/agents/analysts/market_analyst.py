@@ -116,6 +116,9 @@ def create_market_analyst(llm, toolkit):
         report = ""
         if len(getattr(result, "tool_calls", []) or []) == 0:
             report = result.content
+        
+        with open("output/analysts/company_market.md", "w") as f:
+            f.write(report)
 
         return {
             "messages": [result],

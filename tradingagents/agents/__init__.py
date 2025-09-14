@@ -14,6 +14,7 @@ from .analysts.industry_cross_signal_analyst import create_industry_cross_signal
 from .researchers.bear_researcher import create_bear_researcher
 from .researchers.bull_researcher import create_bull_researcher
 
+from .risk_mgmt.conservative_debator import SafeDebatePackage
 from .risk_mgmt.aggresive_debator import create_risky_debator
 from .risk_mgmt.conservative_debator import create_safe_debator
 from .risk_mgmt.neutral_debator import create_neutral_debator
@@ -45,5 +46,6 @@ __all__ = [
     "create_industry_social_analyst",
     "create_industry_market_analyst",
     "create_industry_fundamentals_analyst",
-    "create_industry_cross_signals_analyst"
+    "create_industry_cross_signals_analyst",
+    "SafeDebatePackage",
 ]
