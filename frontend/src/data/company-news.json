@@ -1,5 +1,8 @@
 {
-  "meta": {},
+  "meta": {
+    "title": "Tesla Company News Analysis",
+    "asOf": "2025-09-12"
+  },
   "one_sentence_summary": "Tesla is pursuing aggressive growth in robotics and energy while contending with intensifying EV competition, margin pressure, and governance/regulatory headwinds.",
   "macroeconomicContext": [
     "The U.S. Federal Reserve is widely expected to start cutting interest rates soon, with analysts predicting total cuts of 125 basis points over the next few meetings. This has led to declining Treasury yields and a broad global stock rally.",
