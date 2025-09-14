@@ -3,6 +3,8 @@ __pycache__/
 .DS_Store
 *.csv
 src/
+!frontend/src/data/
+!frontend/src/data/**
 eval_results/
 eval_data/
 *.egg-info/

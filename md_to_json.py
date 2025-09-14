@@ -148,4 +148,4 @@ def parse_industry_trends(markdown_file: str, output_file: str, json_schema: Bas
 # ---------- Example run ----------
 if __name__ == "__main__":
     parse_news("output/analysts/company_news.md", "tesla_news.json", NewsData)
-    parse_industry_trends("output/analysts/industry_trends.md", "tesla_industry_trends.json", IndustryTrendsData)
+    parse_industry_trends("output/analysts/industry_market.md", "tesla_industry_trends.json", IndustryTrendsData)
