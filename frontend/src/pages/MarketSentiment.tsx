@@ -6,16 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
+import sentiment from "@/data/market-sentiment.json";
 
 export default function MarketSentiment() {
   const navigate = useNavigate();
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    fetch('/data/market_sentiment.tsla.2025-09-06_13.json', { cache: 'no-store' })
-      .then(r => r.json())
-      .then(j => setData(j));
-  }, []);
+  const data = sentiment;;
 
   if (!data) {
     return (

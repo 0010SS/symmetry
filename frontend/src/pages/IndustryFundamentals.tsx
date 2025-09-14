@@ -4,26 +4,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import data from "@/data/industry-fundamentals.json";
 
 export default function IndustryFundamentals() {
   const navigate = useNavigate();
   const { symbol = "TSLA" } = useParams();
-  const [data, setData] = useState(null as any);
-  const [err, setErr] = useState(null as any);
 
-  useEffect(() => {
-    // Served as static assets; ensure this folder is publicly served
-    const url = `/frontend-src-data/industry_fundamentals_${symbol}.json`;
-    fetch(url)
-      .then((r) => {
-        if (!r.ok) throw new Error(`Failed to load ${url}`);
-        return r.json();
-      })
-      .then(setData)
-      .catch((e) => setErr(e.message));
-  }, [symbol]);
-
-  if (err) return <div className="p-6 text-red-600">Failed to load: {String(err)}</div>;
   if (!data) return <div className="p-6">Loading…</div>;
 
   const toneClass = (tone?: string) =>

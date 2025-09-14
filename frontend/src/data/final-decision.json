@@ -1,0 +1,209 @@
+{
+  "meta": {
+    "pageTitle": "Final decision: Hold",
+    "ticker": "\u2014"
+  },
+  "decision": "hold",
+  "decision_rationale": "Despite strong bullish momentum, positive seasonality, and technical support near $330-$335, significant risks including intensified competition, regulatory and legal uncertainties, valuation concerns, and near-term overbought conditions advise caution. Synthesizing all views favors maintaining existing positions without new purchases, employing risk controls and monitoring key technical and fundamental signals.",
+  "strategy_matrix": {
+    "aggressive": {
+      "annual": {
+        "direction": "buy",
+        "entry": {
+          "rule": "Enter on confirmed price strength near/above support 330-335 with volume confirmation and RSI moderating from extreme levels.",
+          "band": "330-335 zone"
+        },
+        "stop": {
+          "level": "Below 320"
+        },
+        "targets": [
+          "350",
+          "380",
+          "420"
+        ],
+        "sizing": {
+          "max_size_pct_portfolio": 30.0,
+          "risk_per_trade_pct": 3.0
+        },
+        "one_liner": "Capture upside with disciplined scaling amid strong bullish trend"
+      },
+      "swing": {
+        "direction": "buy",
+        "entry": {
+          "rule": "Buy on dip towards 335 with stable volume and RSI \u2264 70",
+          "band": "332-338"
+        },
+        "stop": {
+          "level": "325"
+        },
+        "targets": [
+          "370",
+          "400"
+        ],
+        "sizing": {
+          "max_size_pct_portfolio": 20.0,
+          "risk_per_trade_pct": 2.0
+        },
+        "one_liner": "Exploit favorable seasonality with disciplined risk control"
+      },
+      "intraday": {
+        "direction": "hold",
+        "entry": {
+          "rule": "No new intraday entries recommended",
+          "band": ""
+        },
+        "stop": {
+          "level": "Within 1% below entry"
+        },
+        "targets": [
+          "Intraday scalps not favored"
+        ],
+        "sizing": {
+          "max_size_pct_portfolio": 5.0,
+          "risk_per_trade_pct": 0.5
+        },
+        "one_liner": "Avoid initiating new intraday positions without clear momentum confirmation"
+      }
+    },
+    "neutral": {
+      "annual": {
+        "direction": "hold",
+        "entry": {
+          "rule": "No new annual entries; maintain current exposure",
+          "band": ""
+        },
+        "stop": {
+          "level": "330"
+        },
+        "targets": [],
+        "sizing": {
+          "max_size_pct_portfolio": 15.0,
+          "risk_per_trade_pct": 1.0
+        },
+        "one_liner": "Preserve capital with cautious stance amid uncertainty"
+      },
+      "swing": {
+        "direction": "hold",
+        "entry": {
+          "rule": "No new swing entries; monitor and manage existing positions prudently",
+          "band": ""
+        },
+        "stop": {
+          "level": "325"
+        },
+        "targets": [],
+        "sizing": {
+          "max_size_pct_portfolio": 10.0,
+          "risk_per_trade_pct": 1.0
+        },
+        "one_liner": "Manage risk actively, hold positions with caution"
+      },
+      "intraday": {
+        "direction": "hold",
+        "entry": {
+          "rule": "No new intraday positions",
+          "band": ""
+        },
+        "stop": {
+          "level": "Within 0.5%"
+        },
+        "targets": [],
+        "sizing": {
+          "max_size_pct_portfolio": 2.0,
+          "risk_per_trade_pct": 0.3
+        },
+        "one_liner": "Avoid new intraday risk exposure"
+      }
+    },
+    "conservative": {
+      "annual": {
+        "direction": "hold",
+        "entry": {
+          "rule": "No new annual buys until clear risk resolution",
+          "band": ""
+        },
+        "stop": {
+          "level": "325"
+        },
+        "targets": [],
+        "sizing": {
+          "max_size_pct_portfolio": 8.0,
+          "risk_per_trade_pct": 1.0
+        },
+        "one_liner": "Protect capital amid uncertainty"
+      },
+      "swing": {
+        "direction": "hold",
+        "entry": {
+          "rule": "No new swing entries recommended",
+          "band": ""
+        },
+        "stop": {
+          "level": "320-325"
+        },
+        "targets": [],
+        "sizing": {
+          "max_size_pct_portfolio": 5.0,
+          "risk_per_trade_pct": 0.5
+        },
+        "one_liner": "Hold with caution, focus on downside protection"
+      },
+      "intraday": {
+        "direction": "hold",
+        "entry": {
+          "rule": "No new intraday entries",
+          "band": ""
+        },
+        "stop": {
+          "level": "Within 0.3%"
+        },
+        "targets": [],
+        "sizing": {
+          "max_size_pct_portfolio": 1.0,
+          "risk_per_trade_pct": 0.2
+        },
+        "one_liner": "Focus strictly on capital preservation"
+      }
+    }
+  },
+  "conflicts_and_resolutions": [],
+  "execution_ticket": {
+    "instrument": "\u2014",
+    "side": "hold",
+    "entry_method": "\u2014",
+    "initial_size_plan": "\u2014",
+    "max_slippage_bps": "\u2014",
+    "time_in_force": "\u2014",
+    "monitoring_checklist": []
+  },
+  "what_would_change_my_mind": [
+    "A clear reduction in risk signals (e.g., improved risk-reward metrics) or favorable regulatory clarity would shift the stance toward more proactive actions.",
+    "A sustained break above or below significant levels with corroborating volume and fundamentals would change the view.",
+    "Deterioration in fundamentals or a sharp uptick in valuation concerns without balance from positive signals would prompt action.",
+    "A move to a more favorable risk-reward setup (e.g., pullbacks with strong volume and improving RSI) could prompt re-evaluation."
+  ],
+  "risk_budget_summary": {
+    "exposure_after_trade": "Exposure remains unchanged; no new purchases.",
+    "position_risk": "Moderate",
+    "portfolio_risk_considerations": [
+      "Maintain diversification and monitor sector/asset correlations.",
+      "Ensure risk controls and stop-loss guidelines are in place.",
+      "Monitor key technical signals and fundamental drivers (seasonality, momentum, valuations)."
+    ],
+    "hard_constraints": [
+      "No new annual buys until risk resolves.",
+      "Maintain existing positions; avoid overexposure.",
+      "Implement risk controls and ongoing monitoring."
+    ]
+  },
+  "lessons_learned": [
+    "In the presence of strong momentum and favorable seasonality, risk controls and disciplined monitoring remain essential.",
+    "A cautious stance can be preserved even when multiple signals are bullish if there are significant headwinds (competition, regulation, valuation)."
+  ],
+  "summary_cards": {
+    "action": "HOLD",
+    "support_zone": "near $330-$335",
+    "target_range": "\u2014",
+    "stop_level": "\u2014"
+  }
+}

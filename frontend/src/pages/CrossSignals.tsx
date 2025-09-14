@@ -6,16 +6,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowLeft, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Target, Shield, Activity, BarChart3, ExternalLink, Network, Zap, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import data from "@/data/cross-signals.json";
 
 const CrossSignals = () => {
   const navigate = useNavigate();
-  const [d, setD] = useState<any>(null);
-
-  useEffect(() => {
-    fetch("/data/cross_signals.tsla.json", { cache: "no-store" })
-      .then(r => r.json())
-      .then(setD);
-  }, []);
+  const d = data;
 
   const getConfidenceBadge = (confidence: string) => {
     if (confidence === "High") return <Badge variant="destructive">High</Badge>;
