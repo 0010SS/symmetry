@@ -70,8 +70,8 @@ class AgentState(MessagesState):
     industry_fundamentals_report: Annotated[
         str, "Report from the Industry Fundamentals Analyst"
     ]
-    industry_company_relatedness_report: Annotated[
-        str, "Report from the Industry Company Relatedness Analyst"
+    industry_cross_signals_report: Annotated[
+        str, "Report from the Industry Cross-Signals Analyst"
     ]
 
     # researcher team discussion step

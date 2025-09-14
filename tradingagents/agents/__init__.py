@@ -9,6 +9,7 @@ from .analysts.social_media_analyst import create_social_media_analyst
 from .analysts.industry_social_media_analyst import create_industry_social_analyst
 from .analysts.industry_market_analyst import create_industry_market_analyst
 from .analysts.industry_fundamentals_analyst import create_industry_fundamentals_analyst
+from .analysts.industry_cross_signal_analyst import create_industry_cross_signals_analyst
 
 from .researchers.bear_researcher import create_bear_researcher
 from .researchers.bull_researcher import create_bull_researcher
@@ -44,4 +45,5 @@ __all__ = [
     "create_industry_social_analyst",
     "create_industry_market_analyst",
     "create_industry_fundamentals_analyst",
+    "create_industry_cross_signals_analyst"
 ]

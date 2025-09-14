@@ -40,7 +40,9 @@ class GraphSetup:
         self.risk_manager_memory = risk_manager_memory
         self.conditional_logic = conditional_logic
 
-    def setup_graph(self, selected_analysts=["market", "social", "news", "fundamentals", "industry_social", "industry_market", "industry_fundamentals"]) -> StateGraph:
+    def setup_graph(self, selected_analysts=[
+        "market", "social", "news", "fundamentals", "industry_social", "industry_market", "industry_fundamentals", "industry_cross_signals"]
+        ) -> StateGraph:
         if len(selected_analysts) == 0:
             raise ValueError("Trading Agents Graph Setup Error: no analysts selected!")
 
@@ -69,11 +71,6 @@ class GraphSetup:
             analyst_nodes["industry_social"] = create_industry_social_analyst(self.quick_thinking_llm, self.toolkit)
             delete_nodes["industry_social"] = create_msg_delete()
             tool_nodes["industry_social"] = self.tool_nodes["industry_social"]
-            
-        if "industry_fundamentals" in selected_analysts:
-            analyst_nodes["industry_fundamentals"] = create_industry_fundamentals_analyst(self.quick_thinking_llm, self.toolkit)
-            delete_nodes["industry_fundamentals"] = create_msg_delete()
-            tool_nodes["industry_fundamentals"] = self.tool_nodes["industry_fundamentals"]
 
         # --- News ---
         if "news" in selected_analysts:
@@ -86,6 +83,16 @@ class GraphSetup:
             analyst_nodes["fundamentals"] = create_fundamentals_analyst(self.quick_thinking_llm, self.toolkit)
             delete_nodes["fundamentals"] = create_msg_delete()
             tool_nodes["fundamentals"] = self.tool_nodes["fundamentals"]
+        
+        if "industry_fundamentals" in selected_analysts:
+            analyst_nodes["industry_fundamentals"] = create_industry_fundamentals_analyst(self.quick_thinking_llm, self.toolkit)
+            delete_nodes["industry_fundamentals"] = create_msg_delete()
+            tool_nodes["industry_fundamentals"] = self.tool_nodes["industry_fundamentals"]
+        
+        if "industry_cross_signals" in selected_analysts:
+            analyst_nodes["industry_cross_signals"] = create_industry_cross_signals_analyst(self.quick_thinking_llm, self.toolkit)
+            delete_nodes["industry_cross_signals"] = create_msg_delete()
+            tool_nodes["industry_cross_signals"] = self.tool_nodes["industry_cross_signals"]
 
         # Build the execution order: insert industry_social right after social
         ordered_analysts = list(selected_analysts)

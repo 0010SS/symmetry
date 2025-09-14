@@ -735,3 +735,111 @@ class Toolkit:
             for url in data["sources"]:
                 md.append(f"- {url}")
         return "\n".join(md)
+
+    @staticmethod
+    @tool
+    def get_industry_cross_signals_openai(
+        ticker: Annotated[str, "Company ticker, e.g. 'AAPL', 'TSM'"],
+        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+        look_back_days: Annotated[int, "How many days to look back"],
+    ) -> str:
+        """
+        Retrieve company-centric cross-signals (facts) and mathematical indices
+        versus a benchmark for the given ticker within the specified window.
+
+        Args:
+            ticker (str): Company ticker, e.g. AAPL, TSM.
+            curr_date (str): Current date in yyyy-mm-dd format.
+            look_back_days (int): How many days to look back.
+        Returns:
+            str: A formatted Markdown report with (1) window-level math indices
+                 (relative strength, beta, correlation, vol, max drawdown, etc.)
+                 and (2) exposure items (facts-only) showing how industry changes
+                 can affect the company (inputs/suppliers/customers/geo/policy/ETF).
+        """
+        import json
+        import pandas as pd
+
+        # --- Call the underlying data provider (facts-only) ---
+        print("Calling get_industry_cross_signals_openai...")
+        data = interface.get_industry_cross_signals_openai(ticker, curr_date, look_back_days)
+        print("Received data:", data)
+
+        # Defensive defaults
+        from_date = data.get("from_date", "")
+        to_date = data.get("to_date", curr_date)
+        company_name = data.get("company_name") or ""
+        chosen_benchmark = data.get("chosen_benchmark", "Unknown")
+        alt_bench = data.get("alternative_benchmarks", []) or []
+        window_summary = data.get("window_summary", "")
+
+        # -------- Math indices block --------
+        mi = data.get("math_indices", {}) or {}
+        # Build a small table for math indices (only fields that exist)
+        mi_rows = []
+        def _fmt(v, pct=False):
+            try:
+                if v is None:
+                    return ""
+                return f"{float(v):.2f}%" if pct else f"{float(v):.4f}"
+            except Exception:
+                return str(v)
+
+        mi_rows.append(("Company return", _fmt(mi.get("company_return_pct"), pct=True)))
+        mi_rows.append(("Benchmark return", _fmt(mi.get("benchmark_return_pct"), pct=True)))
+        mi_rows.append(("Relative strength (company - benchmark)", _fmt(mi.get("relative_strength_pct"), pct=True)))
+        mi_rows.append(("Beta (window OLS)", _fmt(mi.get("beta"))))
+        mi_rows.append(("Correlation (window)", _fmt(mi.get("corr"))))
+        mi_rows.append(("Volatility (annualized)", _fmt(mi.get("volatility_ann_pct"), pct=True)))
+        mi_rows.append(("Max drawdown", _fmt(mi.get("max_drawdown_pct"), pct=True)))
+        if mi.get("abnormal_return_capm_pct") is not None:
+            mi_rows.append(("Abnormal return (CAPM)", _fmt(mi.get("abnormal_return_capm_pct"), pct=True)))
+
+        mi_df = pd.DataFrame(mi_rows, columns=["Metric", "Value"])
+        mi_md = mi_df.to_markdown(index=False)
+
+        # -------- Exposure items table --------
+        items = data.get("items", []) or []
+        # Keep at most 12 for readability; the interface may already cap, but be safe
+        items = items[:12]
+
+        if items:
+            df = pd.DataFrame(items)
+            # Flatten metrics dict to a short JSON string for visibility
+            if "metrics" in df.columns:
+                df["metrics"] = df["metrics"].apply(lambda m: json.dumps(m, ensure_ascii=False) if isinstance(m, dict) else (m or ""))
+            keep_cols = [c for c in ["exposure_type", "headline", "fact", "source", "published_at", "metrics", "url"] if c in df.columns]
+            df = df[keep_cols]
+            items_md = df.to_markdown(index=False)
+        else:
+            items_md = "_No exposure items found in the window._"
+
+        # -------- Optional rollups --------
+        rollups = data.get("rollups", {}) or {}
+        rollups_md = ""
+        if rollups:
+            # Pretty-print as JSON inside a code block to avoid wide tables
+            rollups_md = "```json\n" + json.dumps(rollups, indent=2, ensure_ascii=False) + "\n```"
+
+        # -------- Assemble Markdown report --------
+        header_line = f"## {ticker} Cross-Signals & Math Indices Report, {from_date} → {to_date}\n"
+        if company_name:
+            header_line = f"## {company_name} ({ticker}) Cross-Signals & Math Indices Report, {from_date} → {to_date}\n"
+
+        alt_bench_str = ", ".join(alt_bench) if alt_bench else "—"
+
+        report = (
+            f"{header_line}\n"
+            f"**Benchmark:** {chosen_benchmark}  \n"
+            f"**Alternative benchmarks:** {alt_bench_str}\n\n"
+            f"**Window Summary (facts-only):** {window_summary}\n\n"
+            f"### Mathematical Indices (window-level)\n"
+            f"{mi_md}\n\n"
+            f"### Exposure Items (facts-only)\n"
+            f"{items_md}\n\n"
+        )
+
+        if rollups_md:
+            report += "### Company Rollups (from filings)\n" + rollups_md + "\n"
+
+        return report

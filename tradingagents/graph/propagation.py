@@ -42,7 +42,7 @@ class Propagator:
             "industry_sentiment_report": "",
             "industry_market_report": "",
             "industry_fundamentals_report": "",
-            "industry_company_relatedness_report": "",
+            "industry_cross_signals_report": "",
         }
 
     def get_graph_args(self) -> Dict[str, Any]:

@@ -5,151 +5,227 @@
   "to_date": "2024-05-10",
   "items": [
     {
-      "headline": "TSMC’s advanced packaging capacity fully booked by major AI chip customers through next year",
-      "source": "TrendForce",
-      "platform": "News site / industry research",
-      "url": "citeturn3search1",
-      "published_at": "2024-05-06T00:00:00Z",
-      "numbers": {
-        "CoWoS_monthly_target_end_of_year": 45000,
-        "CoWoS_monthly_target_end_of_year_high": 50000,
-        "SoIC_monthly_target_end_of_year_low": 5000,
-        "SoIC_monthly_target_end_of_year_high": 6000
-      },
-      "summary": "TrendForce reported TSMC’s CoWoS/SoIC advanced-packaging capacity is fully booked by major AI chip customers, affecting multiple GPU/accelerator suppliers and cloud buyers. citeturn3search1",
+      "headline": "SIA/BCG report: U.S. fab capacity projected to triple by 2032",
+      "source": "Semiconductor Industry Association (SIA)",
+      "platform": "News site / industry report",
+      "url": "https://www.semiconductors.org/emerging-resilience-in-the-semiconductor-supply-chain/",
+      "published_at": "2024-05-08",
+      "numbers": null,
+      "summary": "SIA and BCG released a May 8 report projecting U.S. wafer-fab capacity will increase ~203% by 2032, framing CHIPS-driven reshoring as an industry-wide capacity shift.",
       "sentiment": {
-        "label": "neutral",
-        "score": 0.0
+        "label": "positive",
+        "score": 0.6
       }
     },
     {
-      "headline": "TSMC fully booked on advanced packaging until 2025, TrendForce/EDN coverage",
-      "source": "The Register (news coverage of TrendForce/EDN)",
-      "platform": "News site",
-      "url": "citeturn3search4",
-      "published_at": "2024-05-07T00:00:00Z",
-      "numbers": {
-        "quoted_tail": null
-      },
-      "summary": "Coverage summarised that TSMC’s advanced-packaging orderbook is constrained, calling out potential crowding effects on HBM and multi-customer allocation issues. citeturn3search4",
-      "sentiment": {
-        "label": "neutral",
-        "score": 0.0
-      }
-    },
-    {
-      "headline": "TSMC’s advanced packaging booked for two years, industry commentary",
-      "source": "TechNode (industry news)",
-      "platform": "News site",
-      "url": "citeturn11search9",
-      "published_at": "2024-05-06T00:00:00Z",
-      "numbers": {
-        "note": null
-      },
-      "summary": "TechNode reported Taiwanese media saying CoWoS/SoIC capacity is reserved by large GPU/HPC customers, a sector-wide supply constraint for AI accelerators. citeturn11search9",
-      "sentiment": {
-        "label": "neutral",
-        "score": 0.0
-      }
-    },
-    {
-      "headline": "Reddit: TSMC’s CoWoS capacity reportedly booked by Nvidia and AMD (community thread)",
-      "source": "r/AMD_Stock (Reddit thread)",
-      "platform": "Reddit",
-      "url": "citeturn1reddit18",
-      "published_at": "2024-05-06T00:00:00Z",
-      "numbers": {
-        "upvotes": 82
-      },
-      "summary": "Community discussion picked up TrendForce reporting that TSMC’s advanced-packaging slots are reserved by major GPU/accelerator vendors, debating allocation across peers. citeturn1reddit18",
+      "headline": "Emerging Resilience in the Semiconductor Supply Chain (BCG commentary)",
+      "source": "Boston Consulting Group",
+      "platform": "News site / consultancy article",
+      "url": "https://www.bcg.com/publications/2024/emerging-resilience-in-semiconductor-supply-chain",
+      "published_at": "2024-05-08",
+      "numbers": null,
+      "summary": "BCG published analysis (May 8) reinforcing SIA findings that global fab capex will diversify beyond Taiwan/SK, affecting global supply-chain footprints and capex flows.",
       "sentiment": {
         "label": "neutral",
         "score": 0.1
       }
     },
     {
-      "headline": "Infographic: 'Breaking Down $545 Billion Semiconductor' (sector revenue breakdown shared on Reddit)",
+      "headline": "Nvdia: CHIPS Act to triple U.S. semiconductor manufacturing capacity by 2032",
+      "source": "r/wallstreetbets (Reddit post linking SIA/BCG report)",
+      "platform": "Reddit (r/wallstreetbets)",
+      "url": "https://www.reddit.com/r/wallstreetbets/comments/1cn62sp",
+      "published_at": "2024-05-08",
+      "numbers": {
+        "ups": 115,
+        "comments": 432
+      },
+      "summary": "Reddit users amplified the SIA/BCG findings (May 8), discussing CHIPS-driven capacity growth and potential sector winners (semiconductor suppliers and design firms).",
+      "sentiment": {
+        "label": "positive",
+        "score": 0.5
+      }
+    },
+    {
+      "headline": "America projected to triple semiconductor manufacturing capacity — industry write-up",
+      "source": "Circuits Assembly",
+      "platform": "News site",
+      "url": "https://circuitsassembly.com/ca/editorial/menu-news/40613-america-projected-to-triple-semiconductor-manufacturing-capacity-by-2032-sia-reports.html",
+      "published_at": "2024-05-08",
+      "numbers": null,
+      "summary": "Trade press (May 8) summarized the SIA/BCG report, emphasizing CHIPS-backed private investments and U.S. fab-capacity reshoring implications for equipment and packaging suppliers.",
+      "sentiment": {
+        "label": "neutral",
+        "score": 0.0
+      }
+    },
+    {
+      "headline": "Breaking Down $545 Billion Semiconductor (infographic) — industry map and ASML dependency",
       "source": "r/Infographics (Reddit)",
-      "platform": "Reddit",
-      "url": "citeturn0reddit22",
-      "published_at": "2024-05-07T00:00:00Z",
+      "platform": "Reddit (r/Infographics)",
+      "url": "https://www.reddit.com/r/Infographics/comments/1cmijiv",
+      "published_at": "2024-05-07",
       "numbers": {
-        "upvotes": 328
+        "ups": 328,
+        "comments": 0
       },
-      "summary": "Viral sector infographic outlining semiconductor revenue segments and supply-chain chokepoints, widely shared by investors and technologists. citeturn0reddit22",
+      "summary": "Highly-upvoted infographic (May 7) circulated across subs showing industry structure, capex flows, and single points-of-failure (e.g., ASML/EUV), driving cross-company supply-chain discussion.",
       "sentiment": {
         "label": "neutral",
         "score": 0.0
       }
     },
     {
-      "headline": "TSMC April sales jump as AI demand stays strong (social discussion)",
-      "source": "r/stocks (Reddit post summarising TSMC revenue jump)",
-      "platform": "Reddit",
-      "url": "citeturn1reddit20",
-      "published_at": "2024-05-10T00:00:00Z",
-      "numbers": {
-        "April_revenue_jump_percent": 60
-      },
-      "summary": "Reddit discussion highlighted TSMC’s strong April sales, reinforcing the industry-wide AI-driven demand narrative for foundry and packaging services. citeturn1reddit20",
+      "headline": "CHIPS for America issues $285M NOFO for a digital-twin Manufacturing USA institute",
+      "source": "U.S. Department of Commerce / NIST press release",
+      "platform": "Government press release",
+      "url": "https://www.commerce.gov/news/press-releases/2024/05/chips-america-announces-285-million-funding-opportunity-digital-twin",
+      "published_at": "2024-05-06",
+      "numbers": null,
+      "summary": "Federal CHIPS NOFO (May 6) offered ~$285M to build a digital-twin Manufacturing USA institute, prompting social discussion about R&D, workforce, and domestic process modernization across the semiconductor ecosystem.",
       "sentiment": {
-        "label": "neutral",
-        "score": 0.0
+        "label": "positive",
+        "score": 0.6
       }
     },
     {
-      "headline": "SK Hynix says high-end HBM production largely sold out through 2025",
-      "source": "AFP (widely re-posted)",
-      "platform": "News site (AFP syndication)",
-      "url": "citeturn5search2",
-      "published_at": "2024-05-03T00:00:00Z",
+      "headline": "Reddit thread: Biden admin to fund $285M for digital twin semiconductors",
+      "source": "r/JoeBiden (Reddit post linking Commerce NOFO)",
+      "platform": "Reddit (r/JoeBiden)",
+      "url": "https://www.reddit.com/r/JoeBiden/comments/1clmtsf",
+      "published_at": "2024-05-06",
       "numbers": {
-        "HBM_2024_status": 0,
-        "HBM_2025_status": 1,
-        "note": 0
+        "ups": 44,
+        "comments": null
       },
-      "summary": "SK Hynix announced HBM output for 2024 was sold out and much of 2025 already allocated, tightening memory supply used across AI accelerators. citeturn5search2",
+      "summary": "Community post (May 6) circulated Commerce/NIST NOFO details, highlighting industry-wide R&D and workforce implications for U.S. semiconductor manufacturing.",
       "sentiment": {
-        "label": "negative",
-        "score": -0.4
+        "label": "positive",
+        "score": 0.4
       }
     },
     {
-      "headline": "TSMC advanced-packaging demand heralds growth for packaging suppliers",
-      "source": "EDN / industry commentary",
+      "headline": "Tata Electronics begins exporting semiconductor chip samples from Bengaluru centre",
+      "source": "Times of India / Economic Times coverage",
       "platform": "News site",
-      "url": "citeturn3search5",
-      "published_at": "2024-05-08T00:00:00Z",
+      "url": "https://timesofindia.indiatimes.com/business/india-business/boost-for-indias-semiconductor-prowess-tata-electronics-starts-exporting-chip-samples-to-partners-in-japan-us-europe/articleshow/109900940.cms",
+      "published_at": "2024-05-07",
+      "numbers": null,
+      "summary": "Indian press (May 7–8) reported Tata Electronics shipped limited packaged chip samples abroad, fueling social debate on India’s emergence in packaging/foundry supply chains.",
+      "sentiment": {
+        "label": "positive",
+        "score": 0.5
+      }
+    },
+    {
+      "headline": "Reddit: 'Make in India' — Tata Electronics starts exporting chip samples (community discussion)",
+      "source": "r/IndiaSpeaks (Reddit post linking Tata news)",
+      "platform": "Reddit (r/IndiaSpeaks)",
+      "url": "https://www.reddit.com/r/IndiaSpeaks/comments/1cmi5gd",
+      "published_at": "2024-05-07",
       "numbers": {
-        "industry_note": null
+        "ups": 75,
+        "comments": null
       },
-      "summary": "Industry outlets flagged that TSMC’s booking pressure is stimulating equipment and OSAT supplier activity, a multi-company supply-chain story. citeturn3search5",
+      "summary": "Reddit discussion (May 7) amplified coverage of Tata Electronics' sample exports, framing it as an industry-level step toward distributed ATP (assembly/test/packaging) capacity.",
+      "sentiment": {
+        "label": "positive",
+        "score": 0.4
+      }
+    },
+    {
+      "headline": "Tata Electronics chip exports discussed in Geopolitics sub (regional supply-chain angle)",
+      "source": "r/GeopoliticsIndia (Reddit post)",
+      "platform": "Reddit (r/GeopoliticsIndia)",
+      "url": "https://www.reddit.com/r/GeopoliticsIndia/comments/1cmdoxh",
+      "published_at": "2024-05-07",
+      "numbers": {
+        "ups": 60,
+        "comments": null
+      },
+      "summary": "Community post (May 7) placed Tata's sample exports in a geopolitical context, discussing regional fab/packaging investment and supply-chain diversification away from China/Taiwan.",
+      "sentiment": {
+        "label": "positive",
+        "score": 0.3
+      }
+    },
+    {
+      "headline": "Academic / workforce post: why pursue semiconductor careers (student survey invite)",
+      "source": "r/ECE (Reddit post)",
+      "platform": "Reddit (r/ECE)",
+      "url": "https://www.reddit.com/r/ECE/comments/1cmvu1v",
+      "published_at": "2024-05-08",
+      "numbers": {
+        "ups": 8,
+        "comments": null
+      },
+      "summary": "A May 8 academic post solicited ECE participants for a semiconductor-career survey, highlighting industry concerns about talent pipelines and workforce shortages across companies and fabs.",
       "sentiment": {
         "label": "neutral",
         "score": 0.0
       }
     },
     {
-      "headline": "HBM supply tightness: coverage noting SK Hynix and Micron commitments",
-      "source": "Tom's Hardware (industry reporting)",
+      "headline": "Yahoo Finance: U.S. chip manufacturing capacity projected to triple by 2032 (SIA/BCG coverage)",
+      "source": "Yahoo Finance",
       "platform": "News site",
-      "url": "citeturn5search1",
-      "published_at": "2024-05-03T00:00:00Z",
-      "numbers": {
-        "industry_shares_note": null
-      },
-      "summary": "Tom’s Hardware summarised vendor remarks that HBM inventories are mostly allocated for 2024–2025, creating cross-company memory supply tightness for AI accelerators. citeturn5search1",
+      "url": "https://finance.yahoo.com/news/us-chip-manufacturing-capacity-projected-to-triple-by-2032-fueled-by-chips-act-industry-leader-142127075.html",
+      "published_at": "2024-05-08",
+      "numbers": null,
+      "summary": "Business press (May 8) echoed SIA/BCG findings, catalyzing social discussion about winners across equipment, packaging, and design companies.",
       "sentiment": {
-        "label": "negative",
-        "score": -0.3
+        "label": "positive",
+        "score": 0.4
+      }
+    },
+    {
+      "headline": "Make in India: Tata Electronics begins limited export of semiconductor chips (IBEF summary)",
+      "source": "India Brand Equity Foundation (IBEF)",
+      "platform": "News/industry summary",
+      "url": "https://www.ibef.org/news/make-in-india-tata-electronics-begins-limited-export-of-semiconductor-chips",
+      "published_at": "2024-05-08",
+      "numbers": null,
+      "summary": "May 8 industry summary framed Tata’s sample exports as a milestone for India's ATP and foundry ambitions, prompting cross-company commentary about regional supply-chain entrants.",
+      "sentiment": {
+        "label": "positive",
+        "score": 0.3
+      }
+    },
+    {
+      "headline": "Business Standard: Make in India — Tata begins limited exports of chip samples",
+      "source": "Business Standard",
+      "platform": "News site",
+      "url": "https://www.business-standard.com/companies/news/make-in-india-tata-electronics-begin-limited-export-of-semiconductor-chips-124050700232_1.html",
+      "published_at": "2024-05-07",
+      "numbers": null,
+      "summary": "Trade press (May 7) covered Tata Electronics' exports and planned packaging/foundry projects, fueling sector conversation about non-traditional regional entrants to packaging and foundry services.",
+      "sentiment": {
+        "label": "positive",
+        "score": 0.3
+      }
+    },
+    {
+      "headline": "Reddit: 'Makes you wonder…' — Palantir / digital-twin discussion referencing CHIPS NOFO",
+      "source": "r/palantir (Reddit post referencing CHIPS digital-twin NOFO)",
+      "platform": "Reddit (r/palantir)",
+      "url": "https://www.reddit.com/r/palantir/comments/1clh8tq",
+      "published_at": "2024-05-06",
+      "numbers": {
+        "ups": 8,
+        "comments": null
+      },
+      "summary": "Community thread (May 6) connected the CHIPS digital-twin funding to enterprise software vendors (e.g., Palantir), underscoring cross-industry implications for software/EDA/tooling vendors.",
+      "sentiment": {
+        "label": "neutral",
+        "score": 0.0
       }
     }
   ],
-  "window_summary": "Industry conversations May 3–10 focused on TSMC advanced-packaging bookings and tight HBM memory allocations constraining AI accelerator supply. citeturn3search1turn5search2",
+  "window_summary": "Social conversation was dominated by the SIA/BCG CHIPS report and CHIPS funding (digital-twin NOFO), highlighting U.S. fab expansion, R&D funding, and India’s early packaging exports.",
   "window_sentiment": {
-    "positive": 0,
-    "negative": 2,
-    "neutral": 7,
-    "net_score": -0.22
+    "positive": 10,
+    "negative": 0,
+    "neutral": 5,
+    "net_score": 0.33
   }
 }

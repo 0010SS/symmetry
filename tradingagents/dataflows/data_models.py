@@ -1,6 +1,8 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, Field, ConfigDict
+from typing import Optional, Literal, Any
 
+class StrictBase(BaseModel):
+    model_config = ConfigDict(extra='forbid')
 
 class ShareholderEvent(BaseModel):
     headline: str
@@ -198,3 +200,83 @@ class IndustryFundamentals(BaseModel):
     aggregates: IndustryAggregates
     coverage_stats: Optional[IndustryCoverageStats] = None
     window_summary: Optional[str] = None     # terse factual note (≤ 28 words)
+
+# Keep exposure factors focused & high-signal
+ExposureType = Literal[
+    "input_materials",        # key raw materials/inputs; hedging/clauses if disclosed
+    "supplier_dependency",    # named suppliers; concentration/agreements
+    "customer_dependency",    # major customers/verticals; concentration
+    "geographic_dependency",  # revenue by region; export controls/tariffs exposure
+    "policy_regulatory",      # rules/licensing/subsidies/sanctions affecting the firm
+    "index_etf_membership"    # sector/index ETF membership & weights; rebalance notes
+]
+
+# ----- Small typed kv for metrics (instead of free dicts) -----
+class MetricKV(StrictBase):
+    key: str
+    value_number: Optional[float] = None   # numeric value if applicable
+    value_text: Optional[str] = None       # fallback text if not numeric
+    unit: Optional[str] = None             # e.g., "%", "bps", "days"
+
+# ----- Items & rollups -----
+class ExposureItem(StrictBase):
+    exposure_type: ExposureType
+    headline: str
+    source: str
+    url: str
+    published_at: Optional[str] = None
+    fact: str = Field(..., description="≤28 words; explicit company–industry linkage; strictly factual")
+    metrics: List[MetricKV] = Field(default_factory=list)
+    evidence_snippet: Optional[str] = None
+
+class RegionMixItem(StrictBase):
+    region: str
+    revenue_pct: Optional[float] = None
+
+class CustomerConcentrationItem(StrictBase):
+    name: str
+    revenue_pct: Optional[float] = None
+
+class ETFWeight(StrictBase):
+    symbol: str
+    weight_bps: Optional[int] = None
+    as_of: Optional[str] = None  # ISO8601
+
+class ExposureRollups(StrictBase):
+    segment_revenue_mix: List[RegionMixItem] = Field(default_factory=list)
+    customer_concentration: List[CustomerConcentrationItem] = Field(default_factory=list)
+    supplier_list: List[str] = Field(default_factory=list)
+    key_materials: List[str] = Field(default_factory=list)
+    etf_index_membership: List[ETFWeight] = Field(default_factory=list)
+
+# ----- Math indices -----
+class MathIndices(StrictBase):
+    benchmark: str
+    series_frequency: Literal["daily", "hourly"] = "daily"
+    method: str = "close-to-close; simple returns"
+    from_date: str
+    to_date: str
+    sample_size: int = 0
+
+    company_return_pct: Optional[float] = None
+    benchmark_return_pct: Optional[float] = None
+    relative_strength_pct: Optional[float] = None
+    beta: Optional[float] = None
+    corr: Optional[float] = None
+    volatility_ann_pct: Optional[float] = None
+    max_drawdown_pct: Optional[float] = None
+    risk_free_annual_pct: Optional[float] = None
+    abnormal_return_capm_pct: Optional[float] = None
+
+# ----- Top-level package -----
+class CompanyCrossPackage(StrictBase):
+    ticker: str
+    company_name: Optional[str] = None
+    from_date: str
+    to_date: str
+    chosen_benchmark: str
+    alternative_benchmarks: List[str] = Field(default_factory=list)
+    math_indices: MathIndices
+    items: List[ExposureItem] = Field(default_factory=list)
+    rollups: Optional[ExposureRollups] = None
+    window_summary: str = ""
