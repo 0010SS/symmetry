@@ -34,7 +34,7 @@ class TradingAgentsGraph:
 
     def __init__(
         self,
-        selected_analysts=["market", "social", "news", "fundamentals", "industry_social", "industry_market", "industry_fundamentals"],
+        selected_analysts=["market", "social", "news", "fundamentals", "industry_social", "industry_market", "industry_fundamentals", "industry_cross_signals"],
         debug=False,
         config: Dict[str, Any] = None,
     ):
@@ -178,6 +178,12 @@ class TradingAgentsGraph:
                 [
                     # online tools
                     self.toolkit.get_industry_fundamentals_openai,
+                ]
+            ),
+            "industry_cross_signals": ToolNode(
+                [
+                    # online tools
+                    self.toolkit.get_industry_cross_signals_openai,
                 ]
             ),
         }

@@ -1563,3 +1563,113 @@ def get_industry_fundamentals_openai(
     out.setdefault("window_summary", out.get("window_summary", ""))
 
     return out
+
+def get_industry_cross_signals_openai(
+    ticker: Annotated[str, "Compan y ticker, e.g. 'AAPL', 'TSM'"],
+    curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
+    look_back_days: Annotated[int, "How many days to look back"],
+    max_items: Annotated[int, "Max exposure items to return"] = 12,
+) -> Dict[str, Any]:
+    """
+    Fetch **company-centric exposure facts** AND compute **mathematical indices**
+    (company ↔ benchmark) via OpenAI Responses API + web_search tool.
+
+    Returns a dict matching CompanyCrossPackage (facts-only; no opinions/recommendations).
+
+    Mathematical indices (window-level):
+      - company_return_pct, benchmark_return_pct
+      - relative_strength_pct (company - benchmark)
+      - beta (OLS slope), corr (Pearson)
+      - volatility_ann_pct, max_drawdown_pct
+      - abnormal_return_capm_pct (optional; only if risk-free sourced)
+
+    Exposure factors (most important, company-centric with explicit industry linkage):
+      - input_materials, supplier_dependency, customer_dependency,
+        geographic_dependency, policy_regulatory, index_etf_membership
+
+    Notes & guardrails:
+      - Data provider only. No forecasts or recommendations.
+      - All numbers should cite reputable sources (e.g., Yahoo/Refinitiv filings, ETF providers).
+      - For indices, the agent should pull window price series for {ticker} and a **single chosen benchmark ETF/index**
+        strongly associated with the company (document which one), then compute metrics.
+      - Prefer original/source URLs; deduplicate; keep each 'fact' ≤28 words and linkage-explicit.
+      - Requires OPENAI_API_KEY in the environment.
+    """
+    # --- dates ---
+    to_dt = datetime.strptime(curr_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    from_dt = to_dt - timedelta(days=int(look_back_days))
+    from_date = from_dt.date().isoformat()
+    to_date = to_dt.date().isoformat()
+
+    # --- OpenAI setup ---
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+    # --- System instructions (facts-only; compute indices; concise exposures) ---
+    system_instructions = (
+        "You are a **facts-only data provider**. Use the web_search tool.\n"
+        "Task: For the given ticker and window, output (A) **mathematical indices** vs. a single, well-justified benchmark ETF/index; "
+        "and (B) **company-centric exposure facts** that explicitly show how industry changes affect the company.\n\n"
+        "STRICT RULES:\n"
+        "- No opinions, advice, or predictions. Provide only sourced facts and computed numbers.\n"
+        "- For mathematical indices, fetch window price series for the company and **one chosen benchmark** (plus alternatives). "
+        "Compute: company_return_pct, benchmark_return_pct, relative_strength_pct, beta, corr, volatility_ann_pct, max_drawdown_pct. "
+        "Optionally compute abnormal_return_capm_pct if a reputable risk-free rate is available; otherwise omit.\n"
+        "- Choose a benchmark that best represents the company's primary exposure (e.g., sector ETF or relevant index). "
+        "Report your chosen benchmark symbol and list 1–3 alternatives considered.\n"
+        "- For exposures, include **only**: input_materials, supplier_dependency, customer_dependency, geographic_dependency, "
+        "policy_regulatory, index_etf_membership. Each item must:\n"
+        "  • be within the window;  • cite an authoritative source;  • include numbers if available;  • have a ≤28-word 'fact' sentence "
+        "that makes the company–industry linkage explicit. De-duplicate aggressively.\n"
+        "- Keep total exposure items ≤ the provided 'max_items'. Prefer recency and materiality.\n"
+        "- Populate 'rollups' if readily available from filings (e.g., region revenue mix %, top customer %, ETF weights in bps).\n"
+    )
+
+    # --- Search & compute directives (step-by-step) ---
+    search_directives = (
+        f"Ticker: {ticker}\n"
+        f"Window: {from_date} to {to_date} (inclusive)\n"
+        f"Max exposure items: {max_items}\n\n"
+        "STEP 1 — Resolve company name and candidate benchmarks (ETF/index) that best represent the company's primary exposure.\n"
+        "- Use Yahoo Finance profile, ETF provider pages, index factsheets. Pick ONE **chosen_benchmark** and list 1–3 alternatives.\n\n"
+        "STEP 2 — Pull window price series (daily preferred) for the ticker and chosen_benchmark; compute:\n"
+        "- company_return_pct and benchmark_return_pct (close-to-close over window).\n"
+        "- relative_strength_pct = company_return_pct − benchmark_return_pct.\n"
+        "- beta = OLS slope of daily company returns regressed on benchmark returns (window).\n"
+        "- corr = Pearson correlation of returns (window).\n"
+        "- volatility_ann_pct = stdev(daily returns) × sqrt(252) × 100.\n"
+        "- max_drawdown_pct based on window close series.\n"
+        "- Optional: abnormal_return_capm_pct using risk_free_annual_pct if a reputable risk-free (e.g., US 3M T-bill) is available.\n"
+        "Record 'sample_size' and 'series_frequency'.\n\n"
+        "STEP 3 — Extract **company-centric exposure facts** (within window) limited to the six allowed exposure types.\n"
+        "- Prefer 10-K/10-Q, earnings calls, investor presentations, regulator/ETF providers, major newswires. Include numeric metrics where available.\n"
+        "- Each item: headline, source, url, published_at, fact (≤28 words; explicit linkage), metrics dict, exposure_type.\n"
+        "- Hard cap at 'max_items'.\n\n"
+        "STEP 4 — (Optional) Rollups from filings (stable baseline facts): region revenue mix %, top customer %, supplier list (if public), ETF weights (bps).\n\n"
+        "STEP 5 — Provide a ≤28-word 'window_summary' that is factual (no advice) describing what changed/was confirmed in the window.\n\n"
+        "Output strictly in the CompanyCrossPackage schema."
+    )
+
+    # --- Responses API call with structured output ---
+    resp = client.responses.parse(
+        model="gpt-5-nano",
+        instructions=system_instructions,
+        input=search_directives,
+        tools=[{"type": "web_search"}],
+        text_format=CompanyCrossPackage,
+    )
+
+    parsed: CompanyCrossPackage = resp.output_parsed
+
+    # Defensive normalization
+    parsed.ticker = ticker
+    parsed.from_date = from_date
+    parsed.to_date = to_date
+
+    # Persist for inspection (optional)
+    try:
+        with open("company_cross_pkg_output.json", "w") as f:
+            f.write(parsed.model_dump_json(indent=2))
+    except Exception:
+        pass
+
+    return parsed.model_dump()

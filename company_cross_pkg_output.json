@@ -1,0 +1,37 @@
+{
+  "ticker": "NVDA",
+  "company_name": "NVIDIA Corporation",
+  "from_date": "2024-05-03",
+  "to_date": "2024-05-10",
+  "chosen_benchmark": "SMH",
+  "alternative_benchmarks": [
+    "SOXX",
+    "QQQ"
+  ],
+  "math_indices": {
+    "benchmark": "SMH",
+    "series_frequency": "daily",
+    "method": "OLS (beta)",
+    "from_date": "2024-05-03",
+    "to_date": "2024-05-10",
+    "sample_size": 5,
+    "company_return_pct": 0.01228,
+    "benchmark_return_pct": 0.02556,
+    "relative_strength_pct": -0.01328,
+    "beta": 1.687,
+    "corr": 0.98,
+    "volatility_ann_pct": 37.17,
+    "max_drawdown_pct": -3.68,
+    "risk_free_annual_pct": null,
+    "abnormal_return_capm_pct": null
+  },
+  "items": [],
+  "rollups": {
+    "segment_revenue_mix": [],
+    "customer_concentration": [],
+    "supplier_list": [],
+    "key_materials": [],
+    "etf_index_membership": []
+  },
+  "window_summary": "From 2024-05-03 to 2024-05-10, NVDA closed at 88.79 (May 3) and 89.88 (May 10); SMH closed at 217.73 (May 3) and 223.30 (May 10). 5 daily returns were used. NVDA price rose ~1.23% vs SMH ~2.56%; NVDA vs benchmark: relative strength ~-1.33%. Beta ≈ 1.687; correlation ≈ 0.98; NVDA annualized volatility ≈ 37.17%; max drawdown within window ≈ -3.68%. Sources: NVDA history (Yahoo Finance, May 2024 data) and SMH history (Yahoo Finance, May 2024 data)."
+}

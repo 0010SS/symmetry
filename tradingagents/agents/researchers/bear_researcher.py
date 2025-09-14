@@ -17,9 +17,9 @@ def create_bear_researcher(llm, memory):
         industry_market_report = state["industry_market_report"]
         industry_sentiment_report = state["industry_sentiment_report"]
         industry_fundamentals_report = state["industry_fundamentals_report"]
-        industry_company_relatedness_report = state["industry_company_relatedness_report"]
+        industry_cross_signals_report = state["industry_cross_signals_report"]
 
-        curr_situation = f"{market_research_report}\n\n{sentiment_report}\n\n{news_report}\n\n{fundamentals_report}\n\n{industry_sentiment_report}\n\n{industry_market_report}\n\n{industry_fundamentals_report}\n\n{industry_company_relatedness_report}"
+        curr_situation = f"{market_research_report}\n\n{sentiment_report}\n\n{news_report}\n\n{fundamentals_report}\n\n{industry_sentiment_report}\n\n{industry_market_report}\n\n{industry_fundamentals_report}\n\n{industry_cross_signals_report}"
         past_memories = memory.get_memories(curr_situation, n_matches=2)
 
         past_memory_str = ""
@@ -48,9 +48,11 @@ Reflections from similar situations and lessons learned: {past_memory_str}
 Industry social sentiment report: {industry_sentiment_report}
 Industry market report: {industry_market_report}
 Industry fundamentals report: {industry_fundamentals_report}
+Industry-company relatedness & exposure report: {industry_cross_signals_report}
 Use this information to deliver a compelling bear argument, refute the bull's claims, and engage in a dynamic debate that demonstrates the risks and weaknesses of investing in the stock. You must also address reflections and learn from lessons and mistakes you made in the past.
 """
 
+        print(prompt)
         response = llm.invoke(prompt)
 
         argument = f"Bear Analyst: {response.content}"
