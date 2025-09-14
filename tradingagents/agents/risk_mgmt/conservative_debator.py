@@ -1,133 +1,230 @@
-# conservative_debator.py
-import json
+from __future__ import annotations
+from typing import List, Optional, Literal
+from pydantic import BaseModel, Field, field_validator
+
+
+# ---------------------------
+# Pydantic Schemas
+# ---------------------------
+
+class HorizonSizing(BaseModel):
+    max_size_pct_portfolio: float = Field(..., ge=0, le=100)
+    risk_per_trade_pct: float = Field(..., ge=0, le=100)
+    pyramiding: Literal["none", "ladder", "time-based", "scale-in", "scale-out", "fixed"] = "none"
+
+    class Config:
+        extra = "forbid"
+
+
+class HorizonParams(BaseModel):
+    annual: HorizonSizing
+    swing: HorizonSizing
+    intraday: HorizonSizing
+
+    class Config:
+        extra = "forbid"
+
+
+class EntryPlan(BaseModel):
+    rule: str
+    band: str
+    conditions: List[str] = []
+
+    class Config:
+        extra = "forbid"
+
+
+class StopPlan(BaseModel):
+    rule: str
+    level: str
+    invalidation: str
+
+    class Config:
+        extra = "forbid"
+
+
+class LiquidityPlan(BaseModel):
+    min_adv_usd: str = "n/a"
+    max_spread_bps: str = "n/a"
+    notes: str = ""
+
+    class Config:
+        extra = "forbid"
+
+
+class TimePlan(BaseModel):
+    review: str
+    max_hold: str
+    time_stop: Optional[str] = None
+
+    class Config:
+        extra = "forbid"
+
+
+class SizingPlan(BaseModel):
+    max_size_pct_portfolio: float = Field(..., ge=0, le=100)
+    risk_per_trade_pct: float = Field(..., ge=0, le=100)
+    pyramiding: Literal["none", "ladder", "time-based", "scale-in", "scale-out", "fixed"] = "none"
+
+    class Config:
+        extra = "forbid"
+
+
+class StrategyOutline(BaseModel):
+    direction: Literal["buy", "sell", "hold", "wait", "reduce", "hedge"] = "wait"
+    thesis: str
+    setup: str
+    entry: EntryPlan
+    stop: StopPlan
+    targets: List[str] = []
+    sizing: SizingPlan
+    vol_anchor: str
+    liquidity: LiquidityPlan
+    time: TimePlan
+    contingencies: List[str] = []
+    one_liner: str
+
+    class Config:
+        extra = "forbid"
+
+
+class StrategyOutlines(BaseModel):
+    annual: StrategyOutline
+    swing: StrategyOutline
+    intraday: StrategyOutline
+
+    class Config:
+        extra = "forbid"
+
+
+class ProfileInference(BaseModel):
+    alignment_score: float = Field(..., ge=-1.0, le=1.0)
+    volatility_regime: Literal["low", "moderate", "high"] = "moderate"
+    liquidity_class: Literal["thin", "average", "deep"] = "average"
+    event_risk: Literal["low", "moderate", "high"] = "moderate"
+    conviction: float = Field(..., ge=0.0, le=1.0)
+    horizon_params: HorizonParams
+    derivation_notes: str = ""
+
+    class Config:
+        extra = "forbid"
+
+
+class SafeDebatePackage(BaseModel):
+    debate_text: str = Field(..., description="Short conversational reply by the Safe Analyst.")
+    profile_inference: ProfileInference
+    strategy_outlines: StrategyOutlines
+    assumptions: List[str] = []
+    confidence: float = Field(..., ge=0.0, le=1.0)
+    data_citations: List[str] = []
+
+    class Config:
+        extra = "forbid"
+
+    @field_validator("debate_text")
+    @classmethod
+    def _trim_debate_text(cls, v: str) -> str:
+        return v.strip()
+
+
+# ---------------------------
+# Main factory (no fallback)
+# ---------------------------
 
 def create_safe_debator(llm):
+    """
+    Returns a node that:
+      1) Prompts the model as a conservative analyst,
+      2) Uses LangChain structured output to produce a SafeDebatePackage,
+      3) Updates debate state strictly; if schema validation fails, an exception is raised.
+    """
 
-    SOFT_CAPS = {"max_size_pct_portfolio": (0, 15), "risk_per_trade_pct": (0, 1.5)}
+    structured_llm = llm.with_structured_output(schema=SafeDebatePackage)
 
-    def _clip(v, lo, hi):
-        try: return max(lo, min(hi, float(v)))
-        except Exception: return lo
+    def _build_prompt(state: dict) -> str:
+        risk_debate_state = state.get("risk_debate_state", {}) or {}
 
-    def _ensure_schema(packet):
-        packet.setdefault("debate_text","")
-        packet.setdefault("assumptions",[])
-        packet.setdefault("confidence",0.5)
-        packet.setdefault("data_citations",[])
-        packet.setdefault("profile_inference",{})
-        so = packet.setdefault("strategy_outlines",{})
-        for h in ("annual","swing","intraday"):
-            p = so.setdefault(h,{})
-            p.setdefault("direction","wait")
-            p.setdefault("thesis","")
-            p.setdefault("setup","valuation band")
-            p.setdefault("entry",{"rule":"","band":"","conditions":[]})
-            p.setdefault("stop",{"rule":"","level":"","invalidation":""})
-            p.setdefault("targets",[])
-            p.setdefault("sizing",{"max_size_pct_portfolio":0,"risk_per_trade_pct":0,"pyramiding":"none"})
-            p.setdefault("vol_anchor","not available")
-            p.setdefault("liquidity",{"min_adv_usd":"","max_spread_bps":"","notes":""})
-            p.setdefault("time",{"review":"","max_hold":"","time_stop":None})
-            p.setdefault("contingencies",[])
-            p.setdefault("one_liner","")
-            if p["direction"] in ("hold","wait"):
-                p["sizing"]["max_size_pct_portfolio"]=0
-                p["sizing"]["risk_per_trade_pct"]=0
-            p["sizing"]["max_size_pct_portfolio"]=_clip(p["sizing"].get("max_size_pct_portfolio",0),*SOFT_CAPS["max_size_pct_portfolio"])
-            p["sizing"]["risk_per_trade_pct"]=_clip(p["sizing"].get("risk_per_trade_pct",0),*SOFT_CAPS["risk_per_trade_pct"])
-        return packet
+        history = risk_debate_state.get("history", "")
+        current_risky_response = risk_debate_state.get("current_risky_response", "")
+        current_neutral_response = risk_debate_state.get("current_neutral_response", "")
 
-    def safe_node(state) -> dict:
-        rds = state["risk_debate_state"]
-        history = rds.get("history","")
+        market_research_report = state.get("market_report", "")
+        sentiment_report = state.get("sentiment_report", "")
+        news_report = state.get("news_report", "")
+        fundamentals_report = state.get("fundamentals_report", "")
+        trader_decision = state.get("trader_investment_plan", "")
+        industry_sentiment_report = state.get("industry_sentiment_report", "")
+        industry_market_report = state.get("industry_market_report", "")
+        industry_fundamentals_report = state.get("industry_fundamentals_report", "")
+        industry_cross_signals_report = state.get("industry_cross_signals_report", "")
 
-        # Firm inputs
-        market = state.get("market_report","")
-        senti  = state.get("sentiment_report","")
-        news   = state.get("news_report","")
-        fund   = state.get("fundamentals_report","")
+        return f"""You are the Safe/Conservative Risk Analyst.  
+Your mission is to **protect capital, minimize volatility, and prioritize steady long-term growth**.  
+You should **critically evaluate the trader’s plan and counter the Risky/Neutral Analysts** wherever they are over-optimistic or underestimating threats.  
 
-        # Industry inputs
-        imkt  = state.get("industry_market_report","")
-        isent = state.get("industry_sentiment_report","")
-        ifund = state.get("industry_fundamentals_report","")
-        irel  = state.get("industry_company_relatedness_report","")
+⚖️ Debate Rules:
+- If Risky/Neutral have not spoken, do **not fabricate their arguments**—simply present your conservative case.  
+- Respond in a **short, conversational tone** (no special formatting).  
+- Emphasize **downside risks, hidden exposures, liquidity constraints, and volatility regimes**.  
 
-        vol   = state.get("vol_metrics","")
-        liq   = state.get("liquidity_snapshot","")
-        events= state.get("event_calendar","")
+📊 Information you may draw from:
+- Trader Decision/Plan: {trader_decision}
+- Company Reports:
+  • Market Research: {market_research_report}  
+  • Social Media Sentiment: {sentiment_report}  
+  • Fundamentals: {fundamentals_report}  
+  • Latest World Affairs/News: {news_report}  
+- Industry Context:
+  • Social Sentiment: {industry_sentiment_report}  
+  • Market Research: {industry_market_report}  
+  • Fundamentals: {industry_fundamentals_report}  
+  • Relatedness & Exposure Signals: {industry_cross_signals_report}  
+- Conversation History: {history}  
+- Last Risky Analyst Reply: {current_risky_response}  
+- Last Neutral Analyst Reply: {current_neutral_response}  
 
-        plan  = state.get("trader_investment_plan") or state.get("investment_plan","")
+🎯 Output Requirements:
+Produce a **SafeDebatePackage** object that includes:
+- `debate_text`: your short conversational reply as the Safe Analyst.  
+- `profile_inference`: your risk and horizon assessment (alignment score, volatility regime, liquidity class, event risk, conviction, horizon sizing, notes).  
+- `strategy_outlines`: three outlines (annual, swing, intraday) each with thesis, setup, entry, stop, sizing, liquidity, time, contingencies, one-liner.  
+- `assumptions`: key assumptions behind your reasoning.  
+- `confidence`: numeric confidence score in [0, 1].  
+- `data_citations`: references to the reports above that informed your reasoning.  
 
-        prompt = f"""
-You are the **Conservative Risk Analyst**. Your priority is capital preservation and drawdown control.
-Autonomously derive cautious sizing/risk and hedge overlays based on evidence; avoid static defaults.
+Only output a **valid SafeDebatePackage instance** strictly following the schema.
+"""
 
-### Evidence
-Trader plan: {plan}
-Firm(Mkt/Sent/News/Fund): {market} || {senti} || {news} || {fund}
-Industry(Mkt/Sent/Fund/Relatedness): {imkt} || {isent} || {ifund} || {irel}
-Volatility: {vol} | Liquidity: {liq} | Events: {events}
-Conversation so far: {history}
 
-### Derive first:
-- alignment_score [-2..2], volatility_regime, liquidity_class, event_risk
-- conviction [0..1] with rationale (conviction should lean lower when risks dominate)
-- For each horizon propose sizing/risk/pyramiding for a **conservative** stance:
-  * bias toward smaller sizes and tighter stops when vol is high or liquidity poor
-  * explicitly consider **no-trade** and **hedged** alternatives (pairs/options/ETF overlay)
-  * widen review cadence around earnings/policy; include blackouts as needed
+    def safe_node(state: dict) -> dict:
+        risk_debate_state = dict(state.get("risk_debate_state", {}) or {})
+        history = risk_debate_state.get("history", "")
+        safe_history = risk_debate_state.get("safe_history", "")
+        count = risk_debate_state.get("count", 0)
 
-### Build outlines (annual/swing/intraday) with:
-(direction, thesis, setup, entry, stop, targets, sizing, vol_anchor, liquidity, time, contingencies—especially hedges/blackouts, one_liner)
+        prompt = _build_prompt(state)
 
-### STRICT JSON ONLY:
-{{
-  "debate_text": "succinct case for caution/hedge; rebut high-risk assumptions",
-  "profile_inference": {{
-    "alignment_score": -2..2,
-    "volatility_regime": "low|normal|high",
-    "liquidity_class": "poor|average|good",
-    "event_risk": "low|medium|high",
-    "conviction": 0..1,
-    "horizon_params": {{
-      "annual": {{"max_size_pct_portfolio": number, "risk_per_trade_pct": number, "pyramiding": "none|ladder|time-based"}},
-      "swing":  {{"max_size_pct_portfolio": number, "risk_per_trade_pct": number, "pyramiding": "none|ladder|time-based"}},
-      "intraday": {{"max_size_pct_portfolio": number, "risk_per_trade_pct": number, "pyramiding": "none|ladder|time-based"}}
-    }},
-    "derivation_notes": "why you chose these cautious values"
-  }},
-  "strategy_outlines": {{"annual": {{...}}, "swing": {{...}}, "intraday": {{...}}}},
-  "assumptions": [],
-  "confidence": 0..1,
-  "data_citations": []
-}}
-""".strip()
+        # Model must return a valid SafeDebatePackage or raise
+        package: SafeDebatePackage = structured_llm.invoke(prompt)
 
-        raw = getattr(llm.invoke(prompt), "content", "")
-        start, end = raw.find("{"), raw.rfind("}")
-        payload = raw[start:end+1] if start != -1 and end != -1 else "{}"
-        try:
-            packet = json.loads(payload)
-        except Exception:
-            packet = {"debate_text": "JSON parse error", "strategy_outlines": {"annual": {}, "swing": {}, "intraday": {}}}
+        argument = f"Safe Analyst: {package.debate_text}"
 
-        packet = _ensure_schema(packet)
-
-        argument = f"Safe Analyst: {packet.get('debate_text','')}"
-        new_rds = dict(rds)
-        new_rds["history"] = (rds.get("history","")+ "\n"+ argument).strip()
-        new_rds["safe_history"] = (rds.get("safe_history","")+ "\n"+ argument).strip()
-        new_rds["latest_speaker"] = "Safe"
-        new_rds["current_safe_response"] = argument
-        new_rds["count"] = rds.get("count",0)+1
-
-        with open("output/risk_manager/conservative_debate.md", "w") as f:
-            f.write(new_rds["history"])
+        new_risk_debate_state = {
+            "history": (history + ("\n" if history else "") + argument),
+            "risky_history": risk_debate_state.get("risky_history", ""),
+            "safe_history": (safe_history + ("\n" if safe_history else "") + argument),
+            "neutral_history": risk_debate_state.get("neutral_history", ""),
+            "latest_speaker": "Safe",
+            "current_risky_response": risk_debate_state.get("current_risky_response", ""),
+            "current_safe_response": argument,
+            "current_neutral_response": risk_debate_state.get("current_neutral_response", ""),
+            "count": count + 1,
+            "safe_structured": package.model_dump(mode="python"),
+        }
 
         return {
-            "risk_debate_state": new_rds,
-            "conservative_strategy_packet": packet
+            "risk_debate_state": new_risk_debate_state,
+            "safe_package": package.model_dump(mode="python"),
         }
 
     return safe_node

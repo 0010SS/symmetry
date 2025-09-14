@@ -509,7 +509,7 @@ class Toolkit:
         # --- Call the underlying data provider ---
         print("Calling get_industry_social_news_openai...")
         news_data = interface.get_industry_social_news_openai(ticker, curr_date, look_back_days)
-        print("Received data:", news_data)
+        # print("Received data:", news_data)
 
         # --- No items case ---
         if not news_data.get("items"):
@@ -763,7 +763,7 @@ class Toolkit:
         # --- Call the underlying data provider (facts-only) ---
         print("Calling get_industry_cross_signals_openai...")
         data = interface.get_industry_cross_signals_openai(ticker, curr_date, look_back_days)
-        print("Received data:", data)
+        # print("Received data:", data)
 
         # Defensive defaults
         from_date = data.get("from_date", "")

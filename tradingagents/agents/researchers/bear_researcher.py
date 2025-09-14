@@ -19,12 +19,12 @@ def create_bear_researcher(llm, memory):
         industry_fundamentals_report = state["industry_fundamentals_report"]
         industry_cross_signals_report = state["industry_cross_signals_report"]
 
-        curr_situation = f"{market_research_report}\n\n{sentiment_report}\n\n{news_report}\n\n{fundamentals_report}\n\n{industry_sentiment_report}\n\n{industry_market_report}\n\n{industry_fundamentals_report}\n\n{industry_cross_signals_report}"
-        past_memories = memory.get_memories(curr_situation, n_matches=2)
+        # curr_situation = f"{market_research_report}\n\n{sentiment_report}\n\n{news_report}\n\n{fundamentals_report}\n\n{industry_sentiment_report}\n\n{industry_market_report}\n\n{industry_fundamentals_report}\n\n{industry_cross_signals_report}"
+        # past_memories = memory.get_memories(curr_situation, n_matches=2)
 
-        past_memory_str = ""
-        for i, rec in enumerate(past_memories, 1):
-            past_memory_str += rec["recommendation"] + "\n\n"
+        # past_memory_str = ""
+        # for i, rec in enumerate(past_memories, 1):
+        #     past_memory_str += rec["recommendation"] + "\n\n"
 
         prompt = f"""You are a Bear Analyst making the case against investing in the stock. Your goal is to present a well-reasoned argument emphasizing risks, challenges, and negative indicators. Leverage the provided research and data to highlight potential downsides and counter bullish arguments effectively.
 
@@ -44,7 +44,6 @@ Latest world affairs news: {news_report}
 Company fundamentals report: {fundamentals_report}
 Conversation history of the debate: {history}
 Last bull argument: {current_response}
-Reflections from similar situations and lessons learned: {past_memory_str}
 Industry social sentiment report: {industry_sentiment_report}
 Industry market report: {industry_market_report}
 Industry fundamentals report: {industry_fundamentals_report}
