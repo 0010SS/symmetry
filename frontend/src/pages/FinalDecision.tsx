@@ -1,19 +1,45 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, TrendingUp, DollarSign, Clock, Target, AlertTriangle, CheckCircle2, Eye, Activity, Shield, BarChart3, AlertCircle } from "lucide-react";
+import {
+  ArrowLeft, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Eye, Activity,
+  Shield, BarChart3, AlertCircle, Target, DollarSign, Clock
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import riskData from "@/data/risk-final-packet.json";
 
 export default function FinalDecision() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "matrix" | "execution" | "risk" | "monitoring">("overview");
+  const [riskData, setRiskData] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/data/final_decision.tsla.json", { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        if (!cancelled) {
+          setRiskData(json);
+          setLoading(false);
+        }
+      } catch (e: any) {
+        if (!cancelled) {
+          setErr(e?.message || "Failed to load data");
+          setLoading(false);
+        }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const getDirectionColor = (direction: string) => {
-    switch (direction) {
+    switch ((direction || "").toLowerCase()) {
       case "buy": return "text-green-600 bg-green-50";
       case "hold": return "text-yellow-600 bg-yellow-50";
       case "sell": return "text-red-600 bg-red-50";
@@ -22,7 +48,7 @@ export default function FinalDecision() {
   };
 
   const getRiskLevelColor = (level: string) => {
-    switch (level.toLowerCase()) {
+    switch ((level || "").toLowerCase()) {
       case "low": return "text-green-600 bg-green-50";
       case "medium": return "text-yellow-600 bg-yellow-50";
       case "high": return "text-red-600 bg-red-50";
@@ -31,9 +57,11 @@ export default function FinalDecision() {
   };
 
   const renderStrategyMatrix = () => {
-    const strategies = riskData.strategy_matrix;
-    const profiles = ["aggressive", "neutral", "conservative"];
-    const timeframes = ["annual", "swing", "intraday"];
+    const strategies = riskData?.strategy_matrix;
+    if (!strategies) return null;
+
+    const profiles = ["aggressive", "neutral", "conservative"] as const;
+    const timeframes = ["annual", "swing", "intraday"] as const;
 
     return (
       <div className="space-y-6">
@@ -47,51 +75,56 @@ export default function FinalDecision() {
             <CardContent>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {timeframes.map((timeframe) => {
-                  const strategy = strategies[profile][timeframe];
+                  const strategy = strategies?.[profile]?.[timeframe];
+                  if (!strategy) return null;
                   return (
                     <div key={timeframe} className="border rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="font-semibold capitalize">{timeframe}</h4>
                         <Badge className={getDirectionColor(strategy.direction)}>
-                          {strategy.direction.toUpperCase()}
+                          {String(strategy.direction || "").toUpperCase()}
                         </Badge>
                       </div>
-                      
+
                       <div className="space-y-3 text-sm">
                         <div>
                           <span className="font-medium">Entry: </span>
-                          <span className="text-muted-foreground">{strategy.entry.rule}</span>
+                          <span className="text-muted-foreground">{strategy.entry?.rule}</span>
                         </div>
-                        
-                        {strategy.entry.band && (
+
+                        {strategy.entry?.band && (
                           <div>
                             <span className="font-medium">Zone: </span>
                             <span className="text-muted-foreground">{strategy.entry.band}</span>
                           </div>
                         )}
-                        
+
                         <div>
                           <span className="font-medium">Stop: </span>
-                          <span className="text-muted-foreground">{strategy.stop.level}</span>
+                          <span className="text-muted-foreground">{strategy.stop?.level}</span>
                         </div>
-                        
-                        {strategy.targets.length > 0 && (
+
+                        {Array.isArray(strategy.targets) && strategy.targets.length > 0 && (
                           <div>
                             <span className="font-medium">Targets: </span>
                             <span className="text-muted-foreground">{strategy.targets.join(", ")}</span>
                           </div>
                         )}
-                        
-                        <div>
-                          <span className="font-medium">Size: </span>
-                          <span className="text-muted-foreground">
-                            {strategy.sizing.max_size_pct_portfolio}% / {strategy.sizing.risk_per_trade_pct}%
-                          </span>
-                        </div>
-                        
-                        <div className="pt-2 border-t">
-                          <p className="text-xs italic text-muted-foreground">{strategy.one_liner}</p>
-                        </div>
+
+                        {strategy.sizing && (
+                          <div>
+                            <span className="font-medium">Size: </span>
+                            <span className="text-muted-foreground">
+                              {strategy.sizing.max_size_pct_portfolio}% / {strategy.sizing.risk_per_trade_pct}%
+                            </span>
+                          </div>
+                        )}
+
+                        {strategy.one_liner && (
+                          <div className="pt-2 border-t">
+                            <p className="text-xs italic text-muted-foreground">{strategy.one_liner}</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -104,20 +137,59 @@ export default function FinalDecision() {
     );
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-surface-1 to-surface-2 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-4 mb-8">
+            <Button variant="outline" size="sm" onClick={() => navigate('/')} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Dashboard
+            </Button>
+            <h1 className="text-3xl font-bold">Final Investment Decision</h1>
+          </div>
+          <Card><CardContent className="p-6 text-muted-foreground">Loading data…</CardContent></Card>
+        </div>
+      </div>
+    );
+  }
+
+  if (err || !riskData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-surface-1 to-surface-2 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-4 mb-8">
+            <Button variant="outline" size="sm" onClick={() => navigate('/')} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Dashboard
+            </Button>
+            <h1 className="text-3xl font-bold">Final Investment Decision</h1>
+          </div>
+          <Card>
+            <CardHeader><CardTitle>Error</CardTitle></CardHeader>
+            <CardContent className="text-red-600">
+              {err || "Unable to load decision data."}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-surface-1 to-surface-2 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => navigate('/')}
             className="flex items-center gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
           </Button>
-          <h1 className="text-3xl font-bold">Final Investment Decision</h1>
+          <h1 className="text-3xl font-bold">{riskData?.meta?.pageTitle || "Final Investment Decision"}</h1>
         </div>
 
         {/* Main Decision Summary */}
@@ -125,32 +197,40 @@ export default function FinalDecision() {
           <CardHeader className="bg-gradient-to-r from-yellow-500/10 to-yellow-500/5">
             <CardTitle className="flex items-center gap-2 text-yellow-600">
               <AlertCircle className="h-6 w-6" />
-              FINAL DECISION: {riskData.decision.toUpperCase()}
+              FINAL DECISION: {String(riskData.decision || "").toUpperCase()}
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
             <p className="text-muted-foreground leading-relaxed mb-6">
               {riskData.decision_rationale}
             </p>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-center">
-                <div className="text-4xl font-bold text-yellow-600 mb-2">HOLD</div>
+                <div className="text-4xl font-bold text-yellow-600 mb-2">
+                  {String((riskData.summary_cards?.action || riskData.decision) ?? "").toUpperCase()}
+                </div>
                 <p className="text-sm text-muted-foreground">Recommended Action</p>
                 <Badge variant="outline" className="mt-2">MAINTAIN POSITIONS</Badge>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-trading-blue mb-2">330-335</div>
+                <div className="text-4xl font-bold text-trading-blue mb-2">
+                  {riskData.summary_cards?.support_zone || "—"}
+                </div>
                 <p className="text-sm text-muted-foreground">Support Zone</p>
-                <Badge variant="technical" className="mt-2">KEY LEVEL</Badge>
+                <Badge className="mt-2">KEY LEVEL</Badge>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-trading-green mb-2">350-420</div>
+                <div className="text-4xl font-bold text-trading-green mb-2">
+                  {riskData.summary_cards?.target_range || "—"}
+                </div>
                 <p className="text-sm text-muted-foreground">Target Range</p>
-                <Badge variant="sentiment" className="mt-2">UPSIDE POTENTIAL</Badge>
+                <Badge className="mt-2">UPSIDE POTENTIAL</Badge>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-red-500 mb-2">320</div>
+                <div className="text-4xl font-bold text-red-500 mb-2">
+                  {riskData.summary_cards?.stop_level || "—"}
+                </div>
                 <p className="text-sm text-muted-foreground">Stop Level</p>
                 <Badge variant="destructive" className="mt-2">RISK CONTROL</Badge>
               </div>
@@ -172,7 +252,7 @@ export default function FinalDecision() {
               <Button
                 key={tab.id}
                 variant={activeTab === tab.id ? "default" : "outline"}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => setActiveTab(tab.id as any)}
                 className="flex items-center gap-2"
               >
                 <Icon className="h-4 w-4" />
@@ -185,7 +265,7 @@ export default function FinalDecision() {
         {/* Tab Content */}
         {activeTab === "overview" && (
           <div className="space-y-6">
-            {/* Quick Strategy Snapshot */}
+            {/* Snapshot */}
             <Card className="trading-panel-enhanced">
               <CardHeader>
                 <CardTitle>Strategy Matrix Snapshot</CardTitle>
@@ -197,20 +277,20 @@ export default function FinalDecision() {
                     <div className="font-semibold">Direction</div>
                     <div className="font-semibold">Key Details</div>
                   </div>
-                  
-                  {Object.entries(riskData.strategy_matrix).map(([profile, strategies]) =>
-                    Object.entries(strategies).map(([timeframe, strategy]) => (
+
+                  {Object.entries(riskData.strategy_matrix || {}).map(([profile, strategies]: any) =>
+                    Object.entries(strategies || {}).map(([timeframe, strategy]: any) => (
                       <div key={`${profile}-${timeframe}`} className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-3 border rounded">
                         <div className="capitalize font-medium">{profile} / {timeframe}</div>
                         <div>
                           <Badge className={getDirectionColor(strategy.direction)}>
-                            {strategy.direction}
+                            {String(strategy.direction || "").toUpperCase()}
                           </Badge>
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          Entry: {strategy.entry.band || "N/A"} | 
-                          Stop: {strategy.stop.level} | 
-                          Size: {strategy.sizing.max_size_pct_portfolio}%
+                          Entry: {strategy.entry?.band || "N/A"} |{" "}
+                          Stop: {strategy.stop?.level || "N/A"} |{" "}
+                          Size: {strategy.sizing?.max_size_pct_portfolio ?? "—"}%
                         </div>
                       </div>
                     ))
@@ -229,7 +309,7 @@ export default function FinalDecision() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {riskData.conflicts_and_resolutions.map((conflict, index) => (
+                  {(riskData.conflicts_and_resolutions || []).map((conflict: string, index: number) => (
                     <div key={index} className="p-3 border rounded-lg bg-amber-50/50">
                       <p className="text-sm">{conflict}</p>
                     </div>
@@ -241,9 +321,7 @@ export default function FinalDecision() {
         )}
 
         {activeTab === "matrix" && (
-          <div>
-            {renderStrategyMatrix()}
-          </div>
+          <div>{renderStrategyMatrix()}</div>
         )}
 
         {activeTab === "execution" && (
@@ -261,29 +339,29 @@ export default function FinalDecision() {
                   <div className="space-y-4">
                     <div>
                       <span className="font-medium">Instrument: </span>
-                      <span className="text-muted-foreground">{riskData.execution_ticket.instrument}</span>
+                      <span className="text-muted-foreground">{riskData.execution_ticket?.instrument}</span>
                     </div>
                     <div>
                       <span className="font-medium">Side: </span>
-                      <span className="text-muted-foreground">{riskData.execution_ticket.side}</span>
+                      <span className="text-muted-foreground">{riskData.execution_ticket?.side}</span>
                     </div>
                     <div>
                       <span className="font-medium">Entry Method: </span>
-                      <span className="text-muted-foreground">{riskData.execution_ticket.entry_method}</span>
+                      <span className="text-muted-foreground">{riskData.execution_ticket?.entry_method}</span>
                     </div>
                     <div>
                       <span className="font-medium">Size Plan: </span>
-                      <span className="text-muted-foreground">{riskData.execution_ticket.initial_size_plan}</span>
+                      <span className="text-muted-foreground">{riskData.execution_ticket?.initial_size_plan}</span>
                     </div>
                   </div>
                   <div className="space-y-4">
                     <div>
                       <span className="font-medium">Max Slippage: </span>
-                      <span className="text-muted-foreground">{riskData.execution_ticket.max_slippage_bps} bps</span>
+                      <span className="text-muted-foreground">{riskData.execution_ticket?.max_slippage_bps} bps</span>
                     </div>
                     <div>
                       <span className="font-medium">Time in Force: </span>
-                      <span className="text-muted-foreground">{riskData.execution_ticket.time_in_force}</span>
+                      <span className="text-muted-foreground">{riskData.execution_ticket?.time_in_force}</span>
                     </div>
                   </div>
                 </div>
@@ -297,7 +375,7 @@ export default function FinalDecision() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {riskData.what_would_change_my_mind.map((scenario, index) => (
+                  {(riskData.what_would_change_my_mind || []).map((scenario: string, index: number) => (
                     <div key={index} className="p-3 border rounded-lg">
                       <p className="text-sm">{scenario}</p>
                     </div>
@@ -322,30 +400,30 @@ export default function FinalDecision() {
                 <div className="space-y-4">
                   <div>
                     <span className="font-medium">Exposure After Trade: </span>
-                    <span className="text-muted-foreground">{riskData.risk_budget_summary.exposure_after_trade}</span>
+                    <span className="text-muted-foreground">{riskData.risk_budget_summary?.exposure_after_trade}</span>
                   </div>
                   <div>
                     <span className="font-medium">Position Risk: </span>
-                    <span className="text-muted-foreground">{riskData.risk_budget_summary.position_risk}</span>
+                    <span className="text-muted-foreground">{riskData.risk_budget_summary?.position_risk}</span>
                   </div>
-                  
+
                   <Separator />
-                  
+
                   <div>
                     <h3 className="font-semibold mb-3">Portfolio Risk Considerations</h3>
                     <div className="space-y-2">
-                      {riskData.risk_budget_summary.portfolio_risk_considerations.map((consideration, index) => (
+                      {(riskData.risk_budget_summary?.portfolio_risk_considerations || []).map((consideration: string, index: number) => (
                         <div key={index} className="p-2 bg-blue-50 rounded text-sm">
                           {consideration}
                         </div>
                       ))}
                     </div>
                   </div>
-                  
+
                   <div>
                     <h3 className="font-semibold mb-3">Hard Constraints</h3>
                     <div className="space-y-2">
-                      {riskData.risk_budget_summary.hard_constraints.map((constraint, index) => (
+                      {(riskData.risk_budget_summary?.hard_constraints || []).map((constraint: string, index: number) => (
                         <div key={index} className="p-2 bg-red-50 rounded text-sm font-medium">
                           {constraint}
                         </div>
@@ -363,7 +441,7 @@ export default function FinalDecision() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {riskData.lessons_learned.map((lesson, index) => (
+                  {(riskData.lessons_learned || []).map((lesson: string, index: number) => (
                     <div key={index} className="p-3 border rounded-lg bg-green-50/50">
                       <p className="text-sm">{lesson}</p>
                     </div>
@@ -384,7 +462,7 @@ export default function FinalDecision() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {riskData.execution_ticket.monitoring_checklist.map((item, index) => (
+                {(riskData.execution_ticket?.monitoring_checklist || []).map((item: string, index: number) => (
                   <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
                     <CheckCircle2 className="h-4 w-4 text-trading-green" />
                     <span className="text-sm">{item}</span>
