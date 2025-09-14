@@ -1,55 +1,130 @@
-import time
+# neutral_debator.py
 import json
 
-
 def create_neutral_debator(llm):
+
+    SOFT_CAPS = {"max_size_pct_portfolio": (0, 20), "risk_per_trade_pct": (0, 2.0)}
+
+    def _clip(v, lo, hi):
+        try: return max(lo, min(hi, float(v)))
+        except Exception: return lo
+
+    def _ensure_schema(packet):
+        packet.setdefault("debate_text", "")
+        packet.setdefault("assumptions", [])
+        packet.setdefault("confidence", 0.5)
+        packet.setdefault("data_citations", [])
+        packet.setdefault("profile_inference", {})
+        so = packet.setdefault("strategy_outlines", {})
+        for h in ("annual","swing","intraday"):
+            p = so.setdefault(h, {})
+            p.setdefault("direction","hold")
+            p.setdefault("thesis","")
+            p.setdefault("setup","trendline")
+            p.setdefault("entry",{"rule":"","band":"","conditions":[]})
+            p.setdefault("stop",{"rule":"","level":"","invalidation":""})
+            p.setdefault("targets",[])
+            p.setdefault("sizing",{"max_size_pct_portfolio":0,"risk_per_trade_pct":0,"pyramiding":"none"})
+            p.setdefault("vol_anchor","not available")
+            p.setdefault("liquidity",{"min_adv_usd":"","max_spread_bps":"","notes":""})
+            p.setdefault("time",{"review":"","max_hold":"","time_stop":None})
+            p.setdefault("contingencies",[])
+            p.setdefault("one_liner","")
+            if p["direction"] in ("hold","wait"):
+                p["sizing"]["max_size_pct_portfolio"]=0
+                p["sizing"]["risk_per_trade_pct"]=0
+            p["sizing"]["max_size_pct_portfolio"]=_clip(p["sizing"].get("max_size_pct_portfolio",0),*SOFT_CAPS["max_size_pct_portfolio"])
+            p["sizing"]["risk_per_trade_pct"]=_clip(p["sizing"].get("risk_per_trade_pct",0),*SOFT_CAPS["risk_per_trade_pct"])
+        return packet
+
     def neutral_node(state) -> dict:
-        risk_debate_state = state["risk_debate_state"]
-        history = risk_debate_state.get("history", "")
-        neutral_history = risk_debate_state.get("neutral_history", "")
+        rds = state["risk_debate_state"]
+        history = rds.get("history","")
 
-        current_risky_response = risk_debate_state.get("current_risky_response", "")
-        current_safe_response = risk_debate_state.get("current_safe_response", "")
+        # Firm inputs
+        market = state.get("market_report","")
+        senti = state.get("sentiment_report","")
+        news  = state.get("news_report","")
+        fund  = state.get("fundamentals_report","")
 
-        market_research_report = state["market_report"]
-        sentiment_report = state["sentiment_report"]
-        news_report = state["news_report"]
-        fundamentals_report = state["fundamentals_report"]
+        # Industry inputs
+        imkt  = state.get("industry_market_report","")
+        isent = state.get("industry_sentiment_report","")
+        ifund = state.get("industry_fundamentals_report","")
+        irel  = state.get("industry_company_relatedness_report","")
 
-        trader_decision = state["trader_investment_plan"]
+        vol   = state.get("vol_metrics","")
+        liq   = state.get("liquidity_snapshot","")
+        events= state.get("event_calendar","")
 
-        prompt = f"""As the Neutral Risk Analyst, your role is to provide a balanced perspective, weighing both the potential benefits and risks of the trader's decision or plan. You prioritize a well-rounded approach, evaluating the upsides and downsides while factoring in broader market trends, potential economic shifts, and diversification strategies.Here is the trader's decision:
+        plan  = state.get("trader_investment_plan") or state.get("investment_plan","")
 
-{trader_decision}
+        prompt = f"""
+You are the **Neutral Risk Analyst**. You must reconcile upside and drawdown with evidence-driven parameters.
+Autonomously derive balanced sizing and risk-per-trade—no static defaults.
 
-Your task is to challenge both the Risky and Safe Analysts, pointing out where each perspective may be overly optimistic or overly cautious. Use insights from the following data sources to support a moderate, sustainable strategy to adjust the trader's decision:
+### Evidence
+Trader plan: {plan}
+Firm(Market/Sentiment/News/Fundamentals): {market} || {senti} || {news} || {fund}
+Industry(Market/Sentiment/Fundamentals/Relatedness): {imkt} || {isent} || {ifund} || {irel}
+Volatility: {vol} | Liquidity: {liq} | Events: {events}
+Conversation so far: {history}
 
-Market Research Report: {market_research_report}
-Social Media Sentiment Report: {sentiment_report}
-Latest World Affairs Report: {news_report}
-Company Fundamentals Report: {fundamentals_report}
-Here is the current conversation history: {history} Here is the last response from the risky analyst: {current_risky_response} Here is the last response from the safe analyst: {current_safe_response}. If there are no responses from the other viewpoints, do not halluncinate and just present your point.
+### Derive first:
+- alignment_score [-2..2], volatility_regime, liquidity_class, event_risk
+- conviction [0..1] with rationale
+- For each horizon, propose sizing/risk/pyramiding suited to a **neutral** stance:
+  * prefer staged entries and confirmation (trigger + breadth/volume confirmation)
+  * down-weight when sentiment extremes or event risk are high
+  * up-weight when firm & industry align and liquidity is good
 
-Engage actively by analyzing both sides critically, addressing weaknesses in the risky and conservative arguments to advocate for a more balanced approach. Challenge each of their points to illustrate why a moderate risk strategy might offer the best of both worlds, providing growth potential while safeguarding against extreme volatility. Focus on debating rather than simply presenting data, aiming to show that a balanced view can lead to the most reliable outcomes. Output conversationally as if you are speaking without any special formatting."""
+### Build three strategy outlines with these fields:
+(direction, thesis, setup, entry, stop, targets, sizing, vol_anchor, liquidity, time, contingencies, one_liner)
 
-        response = llm.invoke(prompt)
+### STRICT JSON ONLY:
+{{
+  "debate_text": "concise balanced synthesis and critique of other stances",
+  "profile_inference": {{
+    "alignment_score": -2..2,
+    "volatility_regime": "low|normal|high",
+    "liquidity_class": "poor|average|good",
+    "event_risk": "low|medium|high",
+    "conviction": 0..1,
+    "horizon_params": {{
+      "annual": {{"max_size_pct_portfolio": number, "risk_per_trade_pct": number, "pyramiding": "none|ladder|time-based"}},
+      "swing":  {{"max_size_pct_portfolio": number, "risk_per_trade_pct": number, "pyramiding": "none|ladder|time-based"}},
+      "intraday": {{"max_size_pct_portfolio": number, "risk_per_trade_pct": number, "pyramiding": "none|ladder|time-based"}}
+    }},
+    "derivation_notes": "how evidence shaped these numbers"
+  }},
+  "strategy_outlines": {{"annual": {{...}}, "swing": {{...}}, "intraday": {{...}}}},
+  "assumptions": [],
+  "confidence": 0..1,
+  "data_citations": []
+}}
+""".strip()
 
-        argument = f"Neutral Analyst: {response.content}"
+        raw = getattr(llm.invoke(prompt), "content", "")
+        start, end = raw.find("{"), raw.rfind("}")
+        payload = raw[start:end+1] if start != -1 and end != -1 else "{}"
+        try:
+            packet = json.loads(payload)
+        except Exception:
+            packet = {"debate_text": "JSON parse error", "strategy_outlines": {"annual": {}, "swing": {}, "intraday": {}}}
 
-        new_risk_debate_state = {
-            "history": history + "\n" + argument,
-            "risky_history": risk_debate_state.get("risky_history", ""),
-            "safe_history": risk_debate_state.get("safe_history", ""),
-            "neutral_history": neutral_history + "\n" + argument,
-            "latest_speaker": "Neutral",
-            "current_risky_response": risk_debate_state.get(
-                "current_risky_response", ""
-            ),
-            "current_safe_response": risk_debate_state.get("current_safe_response", ""),
-            "current_neutral_response": argument,
-            "count": risk_debate_state["count"] + 1,
+        packet = _ensure_schema(packet)
+
+        argument = f"Neutral Analyst: {packet.get('debate_text','')}"
+        new_rds = dict(rds)
+        new_rds["history"] = (rds.get("history","")+ "\n"+ argument).strip()
+        new_rds["neutral_history"] = (rds.get("neutral_history","")+ "\n"+ argument).strip()
+        new_rds["latest_speaker"] = "Neutral"
+        new_rds["current_neutral_response"] = argument
+        new_rds["count"] = rds.get("count",0)+1
+
+        return {
+            "risk_debate_state": new_rds,
+            "neutral_strategy_packet": packet
         }
-
-        return {"risk_debate_state": new_risk_debate_state}
 
     return neutral_node

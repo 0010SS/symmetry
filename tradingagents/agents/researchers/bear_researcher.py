@@ -14,7 +14,6 @@ def create_bear_researcher(llm, memory):
         sentiment_report = state["sentiment_report"]
         news_report = state["news_report"]
         fundamentals_report = state["fundamentals_report"]
-        # industry_sentiment_report = state["industry_sentiment_report"]
         industry_market_report = state["industry_market_report"]
         industry_sentiment_report = state["industry_sentiment_report"]
         industry_fundamentals_report = state["industry_fundamentals_report"]
