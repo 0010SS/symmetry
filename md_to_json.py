@@ -313,6 +313,64 @@ class _MS_FromIndustryMD(BaseModel):
 
     final_industry: _MS_FinalProposal
 
+# ---------- Cross-Signals schema ----------
+
+class _CS_Meta(BaseModel):
+    pageTitle: str
+    subtitle: str
+    last_updated: str
+    ticker: str
+
+class _CS_Exec(BaseModel):
+    linkageScore: Union[float, str]
+    correlation: Union[float, str]
+    beta: Union[float, str]
+    relativeStrength: Union[float, str]
+    etfWeight: Union[float, str]
+    top_exposures_note: str
+
+class _CS_Metric(BaseModel):
+    metric: str
+    value: str
+
+class _CS_Policy(BaseModel):
+    type: str
+    description: str
+    source: str
+    confidence: str
+
+class _CS_Item(BaseModel):
+    type: str
+    description: str
+    source: str
+    confidence: str
+
+class _CS_Evidence(BaseModel):
+    exposure: str
+    headline: str
+    metric: str
+    source: str
+    date: str
+    confidence: str
+    takeaway: str
+
+class _CS_MVI(BaseModel):
+    headline: str
+    paragraphs: List[str]
+
+class CrossSignalsData(BaseModel):
+    meta: _CS_Meta
+    executive_summary: _CS_Exec
+    linkage_metrics: List[_CS_Metric]
+    score_calculations: List[str]
+    exposure_items: List[_CS_Item]
+    policy_hooks: List[_CS_Policy]
+    risk_paths: List[str]
+    monitoring_triggers: List[str]
+    market_volatility_impact: _CS_MVI
+    deep_synthesis_insights: List[str]
+    evidence_table: List[_CS_Evidence]
+
 
 # ---------- GPT helper ----------
 
@@ -555,6 +613,46 @@ def parse_market_sentiment_dual(
     )
     print(f"✅ Market Sentiment (dual MD): Structured data saved to {output_file}")
 
+def parse_cross_signals(markdown_file: str, output_file: str, json_schema: BaseModel):
+    """Turn a Cross-Signals markdown into structured JSON (for CrossSignals.tsx)."""
+    client = OpenAI()
+    text = Path(markdown_file).read_text(encoding="utf-8")
+
+    response = client.chat.completions.create(
+        model="gpt-5-nano",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a financial analyst assistant. Extract structured *cross-signal* linkage data "
+                    "from the markdown into the required JSON schema. Keep wording where sensible. "
+                    "If qualitative is missing, add a plausible fill. If quantitative is missing, use '—' or 'N/A'. "
+                    "Do NOT invent precise numbers. Return ONLY JSON matching the schema."
+                )
+            },
+            {
+                "role": "user",
+                "content": f"Markdown:\n\n{text}\n\nReturn ONLY JSON matching the schema."
+            }
+        ],
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "CrossSignalsData",
+                "schema": json_schema.model_json_schema()
+            }
+        }
+    )
+
+    raw = response.choices[0].message.content
+    data = json_schema.model_validate_json(raw)
+
+    Path(output_file).write_text(
+        json.dumps(data.model_dump(), indent=2),
+        encoding="utf-8"
+    )
+    print(f"✅ Cross-Signals: Structured data saved to {output_file}")
+
 
 # ---------- Example run ----------
 if __name__ == "__main__":
@@ -565,4 +663,4 @@ if __name__ == "__main__":
     parse_market_sentiment_dual(company_markdown_file="output/analysts/company_sentiment.md",
                                industry_markdown_file="output/analysts/industry_sentiment.md",
                                output_file="tesla_market_sentiment.json")
-    
+    parse_cross_signals("output/analysts/cross_signals.md", "tesla_cross_signals.json", CrossSignalsData)
