@@ -1,4 +1,4 @@
-import { ArrowLeft, TrendingUp, TrendingDown, MessageSquare, Users, BarChart3, AlertTriangle, Target, Calendar, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, MessageSquare, Users, BarChart3, AlertTriangle, Target, Calendar, ArrowUpCircle, ArrowDownCircle, ChevronRight, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,9 @@ export default function MarketSentiment() {
             Back to Dashboard
           </Button>
           <h1 className="text-3xl font-bold">Market Sentiment Analysis</h1>
+          <div className="ml-auto text-sm text-muted-foreground">
+            Period: September 6-13, 2025
+          </div>
         </div>
 
         {/* Executive Summary Comparison */}
@@ -31,47 +34,50 @@ export default function MarketSentiment() {
           <Card className="trading-panel-enhanced">
             <CardHeader className="flex flex-row items-center gap-2">
               <ArrowUpCircle className="h-5 w-5 text-trading-green" />
-              <CardTitle className="text-lg">Company Sentiment (TSLA)</CardTitle>
-              <Badge variant="default" className="ml-auto bg-trading-green text-white">Strongly Positive ↑</Badge>
+              <CardTitle className="text-lg">Tesla Company Sentiment</CardTitle>
+              <Badge variant="default" className="ml-auto bg-trading-green text-white">POSITIVE</Badge>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <h3 className="font-semibold text-sm">Largest Daily Move</h3>
-                  <div className="text-xl font-bold text-trading-green">+$48.15</div>
-                  <p className="text-xs text-muted-foreground">+13.9% on Sep 11–12, 2025</p>
+                  <h3 className="font-semibold text-sm">Stock Price</h3>
+                  <div className="text-xl font-bold text-trading-green">$395.94</div>
+                  <p className="text-xs text-muted-foreground">Slight positive intraday</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm">Peak Daily Mentions</h3>
-                  <div className="text-xl font-bold">2,500+</div>
-                  <p className="text-xs text-muted-foreground">September 11, 2025</p>
+                  <h3 className="font-semibold text-sm">Peak Mentions</h3>
+                  <div className="text-xl font-bold">Sep 6-9</div>
+                  <p className="text-xs text-muted-foreground">High volume period</p>
                 </div>
               </div>
+              
               <div>
-                <h3 className="font-semibold mb-2">Brightest Narrative</h3>
-                <p className="text-sm text-muted-foreground">
-                  Tesla's rapid AI/robotics advancement ("game-changing" chips), high optimism for future product impact
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Darkest Narrative</h3>
-                <p className="text-sm text-muted-foreground">
-                  Minimal negative narrative present, aside from generic market volatility talk
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Current Sentiment</h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm">Positive</span>
-                    <span className="text-sm font-medium text-trading-green">{">"} 80%</span>
+                <h3 className="font-semibold mb-2">Key Focus Areas</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <ChevronRight className="h-3 w-3 text-trading-green" />
+                    <span>AI chips (AI5 and AI6 designs) for market-leading inference</span>
                   </div>
-                  <Progress value={80} className="h-2" />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Negative: {"<"} 10%</span>
-                    <span>Neutral: ~10%</span>
+                  <div className="flex items-center gap-2">
+                    <ChevronRight className="h-3 w-3 text-trading-green" />
+                    <span>Optimus Version 3 described as "sublime"</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ChevronRight className="h-3 w-3 text-trading-green" />
+                    <span>Megablock 20 MWh AC battery technology</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ChevronRight className="h-3 w-3 text-trading-green" />
+                    <span>$1 trillion compensation package positive sentiment</span>
                   </div>
                 </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-2">Market Stability</h3>
+                <p className="text-sm text-muted-foreground">
+                  No signs of social media manipulation, brigading, or pump-and-dump activity detected
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -79,51 +85,54 @@ export default function MarketSentiment() {
           {/* Industry Sentiment */}
           <Card className="trading-panel-enhanced">
             <CardHeader className="flex flex-row items-center gap-2">
-              <ArrowDownCircle className="h-5 w-5 text-trading-red" />
-              <CardTitle className="text-lg">Industry Sentiment (EV Sector)</CardTitle>
-              <Badge variant="destructive" className="ml-auto">Negative ↓</Badge>
+              <TrendingUp className="h-5 w-5 text-trading-green" />
+              <CardTitle className="text-lg">Industry Sentiment (Auto/EV)</CardTitle>
+              <Badge variant="secondary" className="ml-auto">SLIGHTLY POSITIVE (+0.06)</Badge>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <h3 className="font-semibold text-sm">Net Sentiment Score</h3>
-                  <div className="text-xl font-bold text-trading-red">-0.37</div>
-                  <p className="text-xs text-muted-foreground">13 headlines analyzed</p>
+                  <h3 className="font-semibold text-sm">Net Score</h3>
+                  <div className="text-xl font-bold text-trading-green">+0.06</div>
+                  <p className="text-xs text-muted-foreground">Balanced sentiment</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm">Peak Mention Date</h3>
-                  <div className="text-xl font-bold">Sep 8</div>
-                  <p className="text-xs text-muted-foreground">EV sales spike concerns</p>
-                </div>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Brightest Narrative</h3>
-                <p className="text-sm text-muted-foreground">
-                  Autonomy/robotaxi competition (Zoox launch, positive public reaction)
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Darkest Narrative</h3>
-                <p className="text-sm text-muted-foreground">
-                  EV demand spike tied only to U.S. federal tax-credit expiration (risk of demand cliff)
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Sentiment Breakdown</h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm">Negative</span>
-                    <span className="text-sm font-medium text-trading-red">8 items</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Neutral</span>
-                    <span className="text-sm font-medium">3 items</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">Positive</span>
-                    <span className="text-sm font-medium text-trading-green">2 items</span>
+                  <h3 className="font-semibold text-sm">Sentiment Breakdown</h3>
+                  <div className="text-sm">
+                    <div className="text-trading-green">Positive: 7</div>
+                    <div className="text-trading-red">Negative: 6</div>
+                    <div className="text-muted-foreground">Neutral: 3</div>
                   </div>
                 </div>
+              </div>
+              
+              <div>
+                <h3 className="font-semibold mb-2">Key Industry Dynamics</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-3 w-3 text-trading-green" />
+                    <span>Tesla NACS charging standard adoption by Porsche, Audi</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <TrendingDown className="h-3 w-3 text-trading-red" />
+                    <span>EV tax-credit expiry driving consumer rush</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <TrendingDown className="h-3 w-3 text-trading-red" />
+                    <span>GM cutting EV production ahead of credit expiry</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-3 w-3 text-amber-500" />
+                    <span>Trade policy frictions: Mexico tariffs, US chip controls</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-2">Supply Chain Developments</h3>
+                <p className="text-sm text-muted-foreground">
+                  CATL Hungary plant expansion, Tesla Megapack 3 and Megablock products continuing battery supply growth
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -134,29 +143,24 @@ export default function MarketSentiment() {
           {/* Company Timeline */}
           <Card className="trading-panel-enhanced">
             <CardHeader>
-              <CardTitle>Company Volume & Sentiment Timeline</CardTitle>
+              <CardTitle>Tesla Sentiment Timeline</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="border-l-2 border-trading-green pl-4">
-                  <h3 className="font-semibold text-sm">September 6–9</h3>
-                  <p className="text-sm text-muted-foreground">~900–1,200 mentions/day</p>
-                  <p className="text-xs text-muted-foreground">60% positive, 30% neutral, 10% negative</p>
-                </div>
-                <div className="border-l-2 border-trading-green pl-4">
-                  <h3 className="font-semibold text-sm">September 10</h3>
-                  <p className="text-sm text-muted-foreground">1,900+ mentions, +$27 intraday move</p>
-                  <p className="text-xs text-muted-foreground">~75% positive—AI5/AI6 chip news spike</p>
-                </div>
-                <div className="border-l-2 border-trading-green pl-4">
-                  <h3 className="font-semibold text-sm">September 11</h3>
-                  <p className="text-sm text-muted-foreground">~2,500 mentions (+13.9% move)</p>
-                  <p className="text-xs text-muted-foreground">80% positive—AI chips & technical breakout</p>
-                </div>
-                <div className="border-l-2 border-trading-green pl-4">
-                  <h3 className="font-semibold text-sm">September 12–13</h3>
-                  <p className="text-sm text-muted-foreground">Volume near peak, "TSLA to $500?" threads</p>
-                  <p className="text-xs text-muted-foreground">{">"} 80% positive, {"<"} 10% negative</p>
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-semibold text-sm">September 6-9, 2025</h3>
+                    <Badge variant="secondary" className="bg-trading-green text-white">Peak Volume</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Most significant volume of mentions tied to technical innovation narratives and executive announcements
+                  </p>
+                  <div className="mt-2 text-xs space-y-1">
+                    <div>• AI chip updates (AI5 and AI6 designs)</div>
+                    <div>• Optimus Version 3 announcement</div>
+                    <div>• Megablock 20 MWh launch</div>
+                    <div>• Positive analyst commentary</div>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -165,66 +169,245 @@ export default function MarketSentiment() {
           {/* Industry Timeline */}
           <Card className="trading-panel-enhanced">
             <CardHeader>
-              <CardTitle>Industry Volume & Sentiment Timeline</CardTitle>
+              <CardTitle>Industry Sentiment Timeline</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="border-l-2 border-trading-red pl-4">
-                  <h3 className="font-semibold text-sm">2025-09-08</h3>
-                  <p className="text-sm text-muted-foreground">4 major items, net negative</p>
-                  <p className="text-xs text-muted-foreground">U.S. EV sales spike + tax credit concerns</p>
+                <div className="border-l-2 border-trading-green pl-4">
+                  <h3 className="font-semibold text-sm">Sep 6: Tesla Supercharger + Porsche</h3>
+                  <p className="text-sm text-muted-foreground">Positive spike (+0.3 to +0.4 sentiment)</p>
+                  <p className="text-xs text-muted-foreground">Business sales launch and access announced</p>
                 </div>
-                <div className="border-l-2 border-trading-red pl-4">
-                  <h3 className="font-semibold text-sm">2025-09-09</h3>
-                  <p className="text-sm text-muted-foreground">3 mentions, net negative</p>
-                  <p className="text-xs text-muted-foreground">CATL lithium mine restart catalyst</p>
+                
+                <div className="border-l-2 border-gray-400 pl-4">
+                  <h3 className="font-semibold text-sm">Sep 7: CATL Hungary Plant</h3>
+                  <p className="text-sm text-muted-foreground">Neutral sentiment</p>
+                  <p className="text-xs text-muted-foreground">Battery factory expansion news</p>
                 </div>
-                <div className="border-l-2 border-amber-500 pl-4">
-                  <h3 className="font-semibold text-sm">2025-09-10</h3>
-                  <p className="text-sm text-muted-foreground">Autonomy/robotaxi coverage spike</p>
-                  <p className="text-xs text-muted-foreground">Positive/neutral—Zoox public trials</p>
-                </div>
+                
                 <div className="border-l-2 border-trading-red pl-4">
-                  <h3 className="font-semibold text-sm">Sept 11–13</h3>
-                  <p className="text-sm text-muted-foreground">Neutral to negative</p>
-                  <p className="text-xs text-muted-foreground">Lithium pricing, BEV trends, supply chain risks</p>
+                  <h3 className="font-semibold text-sm">Sep 8: Policy & Production</h3>
+                  <p className="text-sm text-muted-foreground">Negative (-0.4 to -0.5 sentiment)</p>
+                  <p className="text-xs text-muted-foreground">US chip export controls + GM cuts EV production</p>
+                </div>
+                
+                <div className="border-l-2 border-trading-red pl-4">
+                  <h3 className="font-semibold text-sm">Sep 10: Mexico Tariffs</h3>
+                  <p className="text-sm text-muted-foreground">Negative (-0.6 sentiment), VW delays (-0.2)</p>
+                  <p className="text-xs text-muted-foreground">Trade friction impacts</p>
+                </div>
+                
+                <div className="border-l-2 border-trading-green pl-4">
+                  <h3 className="font-semibold text-sm">Sep 11+: Audi Access</h3>
+                  <p className="text-sm text-muted-foreground">Positive (+0.35 sentiment)</p>
+                  <p className="text-xs text-muted-foreground">Tesla Supercharger access + industry adaptation</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Narratives & Evidence Comparison */}
+        {/* Tesla Social Media Analyst Insights */}
+        <Card className="trading-panel-enhanced mb-8">
+          <CardHeader>
+            <CardTitle>Tesla Social Media Analyst Insights</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Theme</TableHead>
+                    <TableHead>Source/Platform</TableHead>
+                    <TableHead>Date/Window</TableHead>
+                    <TableHead>Metric</TableHead>
+                    <TableHead>Value</TableHead>
+                    <TableHead>Confidence</TableHead>
+                    <TableHead>Takeaway</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium">AI Chip Development</TableCell>
+                    <TableCell>Multiple (news sites)</TableCell>
+                    <TableCell>Sep 6-8, 2025</TableCell>
+                    <TableCell>Headline mentions</TableCell>
+                    <TableCell>3 major announcements</TableCell>
+                    <TableCell><Badge className="bg-trading-green text-white">High</Badge></TableCell>
+                    <TableCell>Tesla advancing leading AI chip designs with strong CEO backing</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Optimus Robot Version</TableCell>
+                    <TableCell>Social media/news</TableCell>
+                    <TableCell>Sep 7, 2025</TableCell>
+                    <TableCell>Positive sentiment</TableCell>
+                    <TableCell>CEO calls v3 "sublime"</TableCell>
+                    <TableCell><Badge className="bg-trading-green text-white">High</Badge></TableCell>
+                    <TableCell>Optimus V3 might boost robotics segment interest</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Battery Megablock</TableCell>
+                    <TableCell>News</TableCell>
+                    <TableCell>Sep 9, 2025</TableCell>
+                    <TableCell>Product launch</TableCell>
+                    <TableCell>20 MWh AC blocks, 50 GWh/yr</TableCell>
+                    <TableCell><Badge className="bg-trading-green text-white">High</Badge></TableCell>
+                    <TableCell>Energy storage scale and efficiency improvements</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Compensation Package</TableCell>
+                    <TableCell>Analyst commentary</TableCell>
+                    <TableCell>Sep 7, 2025</TableCell>
+                    <TableCell>Positive analyst</TableCell>
+                    <TableCell>Morgan Stanley optimistic</TableCell>
+                    <TableCell><Badge className="bg-trading-green text-white">High</Badge></TableCell>
+                    <TableCell>$1 trillion CEO package seen as shareholder positive</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Industry Social Media Analyst Insights */}
+        <Card className="trading-panel-enhanced mb-8">
+          <CardHeader>
+            <CardTitle>Industry Social Media Analyst Insights</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Theme</TableHead>
+                    <TableHead>Platform</TableHead>
+                    <TableHead>Source</TableHead>
+                    <TableHead>Date/Window</TableHead>
+                    <TableHead>Metric</TableHead>
+                    <TableHead>Value</TableHead>
+                    <TableHead>Confidence</TableHead>
+                    <TableHead>Takeaway</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium">EV Tax Credit & Production</TableCell>
+                    <TableCell>News websites</TableCell>
+                    <TableCell>The Verge, WP</TableCell>
+                    <TableCell>2025-09-06 to 13</TableCell>
+                    <TableCell>Sentiment score</TableCell>
+                    <TableCell>-0.5 to 0.0</TableCell>
+                    <TableCell><Badge className="bg-trading-green text-white">High</Badge></TableCell>
+                    <TableCell>Tax credit expiry causes visible production cuts and sales timing acceleration</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Charging Standard (NACS) Adoption</TableCell>
+                    <TableCell>Industry portals</TableCell>
+                    <TableCell>CBT News, EVCS</TableCell>
+                    <TableCell>2025-09-06 to 13</TableCell>
+                    <TableCell>Sentiment score</TableCell>
+                    <TableCell>+0.25 to +0.4</TableCell>
+                    <TableCell><Badge className="bg-trading-green text-white">High</Badge></TableCell>
+                    <TableCell>NACS spreading, cross-brand access gains momentum but VW technical delays persist</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Trade/Policy Impact</TableCell>
+                    <TableCell>Reuters</TableCell>
+                    <TableCell>Reuters</TableCell>
+                    <TableCell>2025-09-08 to 10</TableCell>
+                    <TableCell>Sentiment score</TableCell>
+                    <TableCell>-0.6 to -0.4</TableCell>
+                    <TableCell><Badge className="bg-trading-green text-white">High</Badge></TableCell>
+                    <TableCell>Tariffs and export-controls add material headwinds to supply chain and pricing</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Battery Supply Growth</TableCell>
+                    <TableCell>Reuters</TableCell>
+                    <TableCell>Reuters</TableCell>
+                    <TableCell>2025-09-07</TableCell>
+                    <TableCell>Neutral</TableCell>
+                    <TableCell>0.0</TableCell>
+                    <TableCell><Badge className="bg-trading-green text-white">High</Badge></TableCell>
+                    <TableCell>Expanding battery production called out as positive foundation for long-term EV supply</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Utility Storage & Infrastructure</TableCell>
+                    <TableCell>News / Industry blogs</TableCell>
+                    <TableCell>The Verge, TeslaNorth</TableCell>
+                    <TableCell>2025-09-06 to 13</TableCell>
+                    <TableCell>Sentiment score</TableCell>
+                    <TableCell>+0.2 to +0.3</TableCell>
+                    <TableCell><Badge className="bg-trading-green text-white">High</Badge></TableCell>
+                    <TableCell>Fast charging and grid storage tech continue innovation and new commercial offerings</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">EV Market Consolidation & Pricing</TableCell>
+                    <TableCell>Financial news</TableCell>
+                    <TableCell>FT</TableCell>
+                    <TableCell>2025-09-07 to 10</TableCell>
+                    <TableCell>Sentiment score</TableCell>
+                    <TableCell>-0.3</TableCell>
+                    <TableCell><Badge variant="secondary">Medium</Badge></TableCell>
+                    <TableCell>Market consolidation in China signals returning pricing power and winnowing weaker brands</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Detailed Narratives & Evidence */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Company Narratives */}
           <Card className="trading-panel-enhanced">
             <CardHeader>
-              <CardTitle>Company Narratives & Evidence</CardTitle>
+              <CardTitle>Tesla Detailed Analysis</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div>
-                <h3 className="font-semibold mb-2 text-trading-green">Product/Technology Advances (Confirmed)</h3>
-                <p className="text-sm text-muted-foreground">
-                  "AI5 and AI6" chips labeled as "game-changing" by Musk; excitement about new autonomous driving/robotics prospects
-                </p>
+                <h3 className="font-semibold mb-3 text-trading-green">Two Non-Obvious Insights</h3>
+                <div className="space-y-3">
+                  <div className="p-3 bg-trading-green/10 rounded-lg">
+                    <h4 className="font-medium text-sm mb-1">Strategic Silicon Consolidation</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Elon Musk's focus on a single-chip architecture (AI5) signals strategic consolidation of Tesla's silicon efforts, 
+                      potentially increasing R&D efficiency and innovation speed, unlike competitors spreading resources across multiple chip platforms.
+                    </p>
+                  </div>
+                  <div className="p-3 bg-trading-green/10 rounded-lg">
+                    <h4 className="font-medium text-sm mb-1">Robotics Strategy Maturation</h4>
+                    <p className="text-sm text-muted-foreground">
+                      The staggered reveal of Optimus versions (2.5 followed by promised v3) suggests Tesla is pacing robotic product readiness carefully, 
+                      possibly to ensure robustness before commercialization, indicating a maturing robotics strategy rather than hype.
+                    </p>
+                  </div>
+                </div>
               </div>
+
               <div>
-                <h3 className="font-semibold mb-2 text-trading-green">Trader/Investor Success (Confirmed)</h3>
-                <p className="text-sm text-muted-foreground">
-                  Options trading anecdotes report outsized recent returns on call/put spreads
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2 text-trading-green">Technical Breakout/Price Action (Confirmed)</h3>
-                <p className="text-sm text-muted-foreground">
-                  Significant price movement discussed as momentum shift; bullish reposts of chart patterns
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Other/Emergent</h3>
-                <p className="text-sm text-muted-foreground">
-                  Very few negative or risk-based narratives visible in major threads
-                </p>
+                <h3 className="font-semibold mb-3">Action Watchlist</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Target className="h-3 w-3 text-primary" />
+                    <span>Watch for official Tesla releases on Optimus Version 3</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Target className="h-3 w-3 text-primary" />
+                    <span>Monitor Megablock installations starting 2026</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Target className="h-3 w-3 text-primary" />
+                    <span>Track compensation package implications</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Target className="h-3 w-3 text-primary" />
+                    <span>Follow AI chip production volume disclosures</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Target className="h-3 w-3 text-primary" />
+                    <span>Observe AI chip performance benchmarks</span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -232,237 +415,115 @@ export default function MarketSentiment() {
           {/* Industry Narratives */}
           <Card className="trading-panel-enhanced">
             <CardHeader>
-              <CardTitle>Industry Narratives & Evidence</CardTitle>
+              <CardTitle>Industry Detailed Analysis</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div>
-                <h3 className="font-semibold mb-2 text-trading-red">Demand Dynamics & Incentives</h3>
-                <p className="text-sm text-muted-foreground">
-                  EV surge ahead of $7,500 U.S. credit expiry; concern for Q4 demand cliff (WaPo, negative, high confidence)
-                </p>
+                <h3 className="font-semibold mb-3">Key Industry Narratives</h3>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-sm mb-2 text-trading-red">EV Tax Credit Expiry & Production Adjustments</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      GM cuts EV output ahead of credit expiry; retail rush noted across US consumers/dealers.
+                    </p>
+                    <div className="flex items-center gap-1 text-xs text-trading-green">
+                      <ExternalLink className="h-3 w-3" />
+                      <span>High confidence - confirmed sources</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium text-sm mb-2 text-trading-green">Charging Standard Consolidation (NACS)</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Porsche and Audi launch soft access to Tesla Superchargers; Nissan to launch NACS entry-level EV, VW delays adapter rollout.
+                    </p>
+                    <div className="flex items-center gap-1 text-xs text-trading-green">
+                      <ExternalLink className="h-3 w-3" />
+                      <span>High confidence - multiple confirmed sources</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium text-sm mb-2 text-amber-600">Trade & Supply Chain Policies</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Mexico raises tariffs on Chinese cars (50%), US weighs tighter chip export controls on fabs in China.
+                    </p>
+                    <div className="flex items-center gap-1 text-xs text-trading-green">
+                      <ExternalLink className="h-3 w-3" />
+                      <span>High confidence - Reuters confirmed</span>
+                    </div>
+                  </div>
+                </div>
               </div>
+
               <div>
-                <h3 className="font-semibold mb-2 text-trading-red">Tesla Competitive Pressure</h3>
-                <p className="text-sm text-muted-foreground">
-                  U.S. EV share drops to ~38% (Reuters, negative, confirmed)
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2 text-amber-600">Lithium/Raw Materials</h3>
-                <p className="text-sm text-muted-foreground">
-                  CATL mine restarting, significant impact on supply/price volatility (Reuters; med-high confidence)
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2 text-trading-green">Autonomy/Robotaxi</h3>
-                <p className="text-sm text-muted-foreground">
-                  Amazon Zoox launched public service (positive), intensifies debate with Tesla/Waymo (Reuters; neutral/confidence high)
-                </p>
+                <h3 className="font-semibold mb-3">Actionable Industry Watchlist</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-3 w-3 text-primary" />
+                    <span>Monitor Sept 30 EV tax credit deadline impact</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Target className="h-3 w-3 text-primary" />
+                    <span>Track NACS adoption pace by other OEMs</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-3 w-3 text-primary" />
+                    <span>Watch China supply chain policies</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Target className="h-3 w-3 text-primary" />
+                    <span>Follow CATL Hungary plant progress (early 2026)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="h-3 w-3 text-primary" />
+                    <span>Track EV market pricing dynamics in China</span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Social Media Analyst Insights */}
-        <Card className="trading-panel-enhanced mb-8">
-          <CardHeader>
-            <CardTitle>Social Media Analyst Insights - Company Focus</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="font-semibold">Theme</TableHead>
-                    <TableHead className="font-semibold">Source/Platform</TableHead>
-                    <TableHead className="font-semibold">Date/Window</TableHead>
-                    <TableHead className="font-semibold">Metric</TableHead>
-                    <TableHead className="font-semibold">Value</TableHead>
-                    <TableHead className="font-semibold">Confidence</TableHead>
-                    <TableHead className="font-semibold">Takeaway</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">Price/sentiment breakout</TableCell>
-                    <TableCell>Reddit, Twitter</TableCell>
-                    <TableCell>Sep 10–13, 2025</TableCell>
-                    <TableCell>Daily mentions</TableCell>
-                    <TableCell>1,900–2,500 (peak)</TableCell>
-                    <TableCell><Badge variant="default" className="bg-trading-green text-white">High</Badge></TableCell>
-                    <TableCell>Record bullishness, driven by product/momentum news</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">AI/Chip narrative</TableCell>
-                    <TableCell>Teslarati, Reddit</TableCell>
-                    <TableCell>Sep 10–13, 2025</TableCell>
-                    <TableCell>Positivity%</TableCell>
-                    <TableCell>~80% positive</TableCell>
-                    <TableCell><Badge variant="default" className="bg-trading-green text-white">High</Badge></TableCell>
-                    <TableCell>New "AI5/6 chip" breakthrough a key catalyst</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Options trader stories</TableCell>
-                    <TableCell>Reddit, Medium</TableCell>
-                    <TableCell>Sep 8–12, 2025</TableCell>
-                    <TableCell>Anecdotal returns</TableCell>
-                    <TableCell>$674→$5,000; {">"} 100% in 48 hrs</TableCell>
-                    <TableCell><Badge variant="secondary">Med-High</Badge></TableCell>
-                    <TableCell>Options wins stoking FOMO, reinforcing bullish narrative</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Risk/dark narratives</TableCell>
-                    <TableCell>Twitter, Reddit</TableCell>
-                    <TableCell>Sep 6–13, 2025</TableCell>
-                    <TableCell>Negative%</TableCell>
-                    <TableCell>{"<"} 10%</TableCell>
-                    <TableCell><Badge variant="default" className="bg-trading-green text-white">High</Badge></TableCell>
-                    <TableCell>Little visible fear or skepticism</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Industry Social Analyst Insights */}
-        <Card className="trading-panel-enhanced mb-8">
-          <CardHeader>
-            <CardTitle>Industry Social Analyst Insights</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="font-semibold">Theme</TableHead>
-                    <TableHead className="font-semibold">Platform</TableHead>
-                    <TableHead className="font-semibold">Source</TableHead>
-                    <TableHead className="font-semibold">Date/Window</TableHead>
-                    <TableHead className="font-semibold">Metric</TableHead>
-                    <TableHead className="font-semibold">Value</TableHead>
-                    <TableHead className="font-semibold">Confidence</TableHead>
-                    <TableHead className="font-semibold">Takeaway</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">Demand/incentive cliff</TableCell>
-                    <TableCell>News/social amplify</TableCell>
-                    <TableCell>Washington Post</TableCell>
-                    <TableCell>2025-09-08</TableCell>
-                    <TableCell>Sales spike</TableCell>
-                    <TableCell>Peak before credit expiration</TableCell>
-                    <TableCell><Badge variant="default" className="bg-trading-green text-white">High</Badge></TableCell>
-                    <TableCell>Risk: Q4 demand rollover likely after U.S. tax credits end</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Market share erosion</TableCell>
-                    <TableCell>News/social</TableCell>
-                    <TableCell>Reuters</TableCell>
-                    <TableCell>2025-09-08</TableCell>
-                    <TableCell>U.S. EV share</TableCell>
-                    <TableCell>Tesla drops to ~38%</TableCell>
-                    <TableCell><Badge variant="default" className="bg-trading-green text-white">High</Badge></TableCell>
-                    <TableCell>Competition driving Tesla share loss; price war impact amplified</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Lithium/input shock</TableCell>
-                    <TableCell>News/social</TableCell>
-                    <TableCell>Reuters/Barron's</TableCell>
-                    <TableCell>2025-09-09</TableCell>
-                    <TableCell>Mine restart</TableCell>
-                    <TableCell>CATL ≈8% global lithium resumes</TableCell>
-                    <TableCell><Badge variant="secondary">Med-High</Badge></TableCell>
-                    <TableCell>Commodity volatility threatens sector input pricing, hits battery supply chain</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Robotaxi/AV competition</TableCell>
-                    <TableCell>News/social</TableCell>
-                    <TableCell>Reuters</TableCell>
-                    <TableCell>2025-09-10</TableCell>
-                    <TableCell>Launch event</TableCell>
-                    <TableCell>Zoox opens free Las Vegas service</TableCell>
-                    <TableCell><Badge variant="default" className="bg-trading-green text-white">High</Badge></TableCell>
-                    <TableCell>Robotaxi battle escalates; Amazon/Waymo threat to first-mover narrative for Tesla</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Actionable Watchlists Comparison */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Company Watchlist */}
+        {/* Final Investment Proposals */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card className="trading-panel-enhanced">
-            <CardHeader className="flex flex-row items-center gap-2">
-              <Target className="h-5 w-5 text-trading-blue" />
-              <CardTitle className="text-lg">Company Actionable Watchlist</CardTitle>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-trading-green" />
+                Tesla Final Proposal
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <ol className="space-y-2 text-sm text-muted-foreground">
-                <li>1. Watch for confirmation/details on new "game-changing" AI chip (AI5/6) deployment timetables.</li>
-                <li>2. Monitor recurring large options trades for possible sentiment reversals or abnormal volume spikes.</li>
-                <li>3. Track official company statements (especially Elon Musk's channels) for product launches, guidance, or regulatory news.</li>
-                <li>4. Stay alert for any pushback or skepticism as bullishness saturates (contrarian risk rising).</li>
-                <li>5. Eyes on the next quarterly earnings date for signpost on tech contribution to revenue.</li>
-                <li>6. Follow global macro/EV competitive news to anticipate narrative pivots.</li>
-              </ol>
-            </CardContent>
-          </Card>
-
-          {/* Industry Watchlist */}
-          <Card className="trading-panel-enhanced">
-            <CardHeader className="flex flex-row items-center gap-2">
-              <Target className="h-5 w-5 text-trading-blue" />
-              <CardTitle className="text-lg">Industry Actionable Watchlist</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ol className="space-y-2 text-sm text-muted-foreground">
-                <li>1. Watch September–October U.S. EV sales for reversal post-tax credit expiry.</li>
-                <li>2. Lithium contract/futures moves after CATL mine restarts.</li>
-                <li>3. Autonomy/robotaxi regulatory/pilot expansions (Zoox, Waymo, Tesla schedules).</li>
-                <li>4. U.S. EV incentive policy updates—Congressional/executive actions imminent.</li>
-                <li>5. BEV adoption data for Europe: OEM pipeline response and possible allocation shifts.</li>
-                <li>6. Cross-sector supplier reactions (battery/auto parts) to potential volatility in input prices.</li>
-              </ol>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Key Insights & Synthesis */}
-        <Card className="trading-panel-enhanced">
-          <CardHeader className="flex flex-row items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-amber-500" />
-            <CardTitle className="text-lg">Non-obvious Synthesis Insights</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <h3 className="font-semibold mb-3 text-trading-green">Company Level Insights</h3>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <p>1. The surge of options-trading success stories is likely reinforcing bullish sentiment feedback loops—this can create short-term euphoria, but also raises risk if expectations race ahead of fundamentals.</p>
-                <p>2. The narrative dominance by AI/chip advancements has temporarily crowded out usual risk/skeptical themes—if any negative or supply-chain news breaks, sentiment could reverse sharply due to lack of "hedged" discourse.</p>
+              <div className="text-center mb-4">
+                <Badge className="bg-amber-500 text-white text-lg px-4 py-2">HOLD</Badge>
               </div>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-3 text-trading-red">Industry Level Insights</h3>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <p>1. The U.S. EV demand spike is heavily front-loaded ahead of policy deadlines, suggesting a likely "air pocket" in demand in Q4—OEMs' production pausing is a rare real-time indicator of incentive-driven volatility, now amplified in social-and-news markets.</p>
-                <p>2. Robotaxi competition is shifting from a technology race to a public/regulatory adoption battle; Amazon Zoox's publicity for public trials, not technical specs, is capturing more positive sentiment—Tesla's autonomous narrative faces new, non-technical challenges.</p>
-              </div>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-3 text-trading-blue">Comparative Summary</h3>
               <p className="text-sm text-muted-foreground">
-                <strong>Company sentiment</strong> is strongly positive driven by AI chip breakthrough narratives and technical momentum. 
-                <strong>Industry sentiment</strong> is net negative due to policy uncertainty and competitive pressures. 
-                This divergence suggests TSLA may be benefiting from company-specific catalysts while facing sector headwinds, 
-                creating both opportunity and risk for sentiment reversals.
+                No signs of social media brigading or manipulation were found. Sentiment is overall positive and aligned with verified product and corporate updates. 
+                Market impact is likely neutral to moderately positive barring unforeseen operational issues.
               </p>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          <Card className="trading-panel-enhanced">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-trading-green" />
+                Industry Final Proposal
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center mb-4">
+                <Badge className="bg-amber-500 text-white text-lg px-4 py-2">HOLD</Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                The EV auto manufacturing industry shows balanced sentiment with immediate-term tax-credit-driven dynamics, 
+                decisive shift to Tesla's NACS standard, emerging trade barriers, and advancing infrastructure. 
+                Market consolidation themes emerging in China.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
