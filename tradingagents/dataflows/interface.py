@@ -1382,7 +1382,7 @@ def get_industry_fundamentals_openai(
         text_format=IndustryFundamentals,
     )
 
-    print(f"Websearch response {resp}")
+    # print(f"Websearch response {resp}")
     parsed: IndustryFundamentals = resp.output_parsed
 
     # --- Defensive normalization (mirror your social-news pattern) ---
