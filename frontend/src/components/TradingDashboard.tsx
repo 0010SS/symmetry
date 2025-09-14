@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { TradingChart } from './TradingChart';
 import { AIPanel } from './AIPanel';
+import data from "@/data/company-news.json";
 
 export const TradingDashboard = () => {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ export const TradingDashboard = () => {
     },
     {
       title: "News",
-      summary: "Recent product launch announcement boosted investor confidence. Sector showing resilience amid market volatility. Key partnerships announced.",
+      summary: data.one_sentence_summary || "Latest news impacting the stock and market sentiment.",
       route: "/news"
     }
   ];

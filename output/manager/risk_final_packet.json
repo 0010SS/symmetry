@@ -1,165 +1,200 @@
 {
-  "decision": "Sell",
-  "decision_rationale": "After synthesizing perspectives and firm evidence, the consensus favors reducing exposure to TSLA. Despite strong YoY growth (+71.9%) and bullish trends confirmed by price above 50/200 SMAs and rising MACD, the RSI over 74.8 signals overbought conditions with elevated ATR volatility. The 17.5% retracement from the 52-week high and stalled momentum near resistance recommend caution. A prudent strategy calls for trimming positions near current levels, securing profits, and awaiting a pullback near the 330 SMA support zone for potential re-entry, enforcing risk caps (max 30% portfolio size; max 3% risk/trade).",
+  "decision": "Hold",
+  "decision_rationale": "Despite strong bullish momentum, positive seasonality, and technical support near $330-$335, significant risks including intensified competition, regulatory and legal uncertainties, valuation concerns, and near-term overbought conditions advise caution. Synthesizing all views favors maintaining existing positions without new purchases, employing risk controls and monitoring key technical and fundamental signals.",
   "strategy_matrix": {
     "aggressive": {
       "annual": {
         "direction": "buy",
-        "thesis": "TSLA exhibits strong bullish momentum supported by YoY +71.9% returns, institutional volume, and positive seasonality in September (~12% avg). Technical indicators (MACD positive, price > 50/200 SMAs) justify tactical accumulation on pullbacks.",
-        "setup": "Price above 50/200 SMAs with strong momentum but RSI near overbought; favor entries on dips to ~330 SMA support.",
+        "thesis": "Strong medium- and long-term bullish fundamentals with robust momentum, positive seasonality in September, and price above key moving averages support upside potential. Scaling strategy with risk controls profiting from trend continuation with caution for overbought indicators.",
+        "setup": "Price above 50 and 200-day SMAs; confirmed volume strength on breakouts; RSI elevated but manageable; positive seasonality with near-term technical support at 330-335.",
         "entry": {
-          "rule": "Enter on pullback to 330-335 price band with confirmation of momentum stabilization (MACD remains positive).",
-          "band": "330-335",
+          "rule": "Enter on confirmed price strength near/above support 330-335 with volume confirmation and RSI moderating from extreme levels.",
+          "band": "330-335 zone",
           "conditions": [
-            "MACD > 0",
-            "Volume stable or increasing"
+            "Price > 330",
+            "Volume spikes confirm strength",
+            "RSI < 75 or declining"
           ]
         },
         "stop": {
-          "rule": "Stop loss below 320 to protect against breakdown beneath SMA support.",
-          "level": "320",
-          "invalidation": "Close below 320 invalidates bullish thesis."
+          "rule": "Stop below SMA support zone",
+          "level": "Below 320",
+          "invalidation": "Price closes below 320 invalidates bullish thesis"
         },
         "targets": [
-          "Around prior high near 480",
-          "Potential extension if price breaks above 480"
+          "350",
+          "380",
+          "420"
         ],
         "sizing": {
           "max_size_pct_portfolio": 30.0,
           "risk_per_trade_pct": 3.0,
           "pyramiding": "ladder"
         },
-        "vol_anchor": "ATR ~13.75 indicating moderate volatility; size accordingly.",
+        "vol_anchor": "ATR ~13.75",
         "liquidity": {
-          "min_adv_usd": "Sufficient average daily volume (~100mm shares)",
-          "max_spread_bps": "<=5",
-          "notes": "Enter during peak liquidity hours to minimize slippage."
+          "min_adv_usd": "10M",
+          "max_spread_bps": "10",
+          "notes": "Ensure tight spread around execution"
         },
         "time": {
           "review": "Weekly",
-          "max_hold": "12 months",
+          "max_hold": "1 year",
           "time_stop": null
         },
         "contingencies": [
-          "If MACD turns negative and RSI falls below 60, pause additions.",
-          "If price breaks below 320 SMA, consider exit."
+          "Trim or hedge if RSI > 80 for extended period",
+          "Sell if support breached"
         ],
-        "one_liner": "Aggressive buy on pullbacks maintaining strict stops and size limits."
+        "one_liner": "Capture upside with disciplined scaling amid strong bullish trend"
       },
       "swing": {
         "direction": "buy",
-        "thesis": "Medium-term bullishness supported by seasonal trends, technical indicators, and fundamental performance.",
-        "setup": "Wait for RSI to moderate and price stabilize around 330 SMA before scaling in.",
+        "thesis": "Bullish swing potential leveraging September positive seasonality and continued momentum with tight risk management given volatility and overbought RSI.",
+        "setup": "Momentum confirmation after minor retracement near support; volume sustains price levels; RSI starts to normalize.",
         "entry": {
-          "rule": "Enter on MACD confirmation of upward momentum after dip near 330 SMA.",
-          "band": "325-335",
+          "rule": "Buy on dip towards 335 with stable volume and RSI ≤ 70",
+          "band": "332-338",
           "conditions": [
-            "RSI < 70",
-            "MACD histogram rising"
+            "RSI ≤ 70",
+            "Support holds",
+            "Volume not declining"
           ]
         },
         "stop": {
-          "rule": "Stop below 315 if momentum fails.",
-          "level": "315",
-          "invalidation": "Price below 315 with negative MACD invalidates swing thesis."
+          "rule": "Stop set below recent swing lows",
+          "level": "325",
+          "invalidation": "Sustained break below 325 signals trend weakness"
         },
         "targets": [
-          "450 intermediate target",
-          "480 near-term resistance"
+          "370",
+          "400"
         ],
         "sizing": {
           "max_size_pct_portfolio": 20.0,
           "risk_per_trade_pct": 2.0,
           "pyramiding": "scale-in"
         },
-        "vol_anchor": "ATR 13.75; anticipate volatility spike during rollouts.",
+        "vol_anchor": "ATR ~13.75",
         "liquidity": {
-          "min_adv_usd": "Sufficient daily volume for 2-3% position sizes",
-          "max_spread_bps": "5",
-          "notes": "Avoid entry near market opens/close for stability."
+          "min_adv_usd": "5M",
+          "max_spread_bps": "15",
+          "notes": "Flexible liquidity for swing trades"
         },
         "time": {
-          "review": "Biweekly",
-          "max_hold": "6 months",
+          "review": "Every 3 days",
+          "max_hold": "3 months",
           "time_stop": null
         },
         "contingencies": [
-          "If RSI stays > 75 longer than 10 days, re-evaluate momentum.",
-          "If support breaks 320, pause new entries."
+          "Exit partial if momentum wanes",
+          "Hedge against sector pullbacks"
         ],
-        "one_liner": "Measured exposure increase on momentum confirmation post-pullback."
+        "one_liner": "Exploit favorable seasonality with disciplined risk control"
       },
       "intraday": {
         "direction": "hold",
-        "thesis": "Intraday risk favors no new entries given overbought RSI and elevated volatility; preserve capital.",
-        "setup": "Monitor MACD and RSI intraday for reversal signals; avoid chasing strength.",
+        "thesis": "Intraday trades not recommended at current overbought levels and elevated volatility; potential short-term pullbacks suggest caution.",
+        "setup": "High RSI (~75) and ATR indicating volatility; volume spikes on rallies followed by weak pullbacks; no clear entry signal aligned with long-term trend.",
         "entry": {
-          "rule": "No intraday entries amid overbought indicators.",
+          "rule": "No new intraday entries recommended",
           "band": "",
           "conditions": []
         },
         "stop": {
-          "rule": "Trailing stop if position held intraday falls below VWAP or key intraday low.",
-          "level": "Intraday support",
-          "invalidation": "Intraday breakdown under VWAP."
+          "rule": "Use tight stop if intraday positions taken",
+          "level": "Within 1% below entry",
+          "invalidation": "Rapid momentum loss intraday"
         },
         "targets": [
-          "Capture small intra-day retracements if shorting is considered"
+          "Intraday scalps not favored"
         ],
         "sizing": {
           "max_size_pct_portfolio": 5.0,
           "risk_per_trade_pct": 0.5,
           "pyramiding": "none"
         },
-        "vol_anchor": "High intraday ATR; limit position size.",
+        "vol_anchor": "ATR ~13.75",
         "liquidity": {
-          "min_adv_usd": "High",
-          "max_spread_bps": "3",
-          "notes": "Trade during peak liquidity."
+          "min_adv_usd": "1M",
+          "max_spread_bps": "20",
+          "notes": "Avoid wide spread trades"
         },
         "time": {
           "review": "Daily",
-          "max_hold": "intraday",
-          "time_stop": "End of day"
+          "max_hold": "1 day",
+          "time_stop": "End of trading day"
         },
         "contingencies": [
-          "If intraday MACD turns negative and RSI declines rapidly, consider exiting positions."
+          "Exit immediately if partial reversal occurs",
+          "Avoid holding overnight"
         ],
-        "one_liner": "Preserve capital intraday, avoid chasing overbought moves."
+        "one_liner": "Avoid initiating new intraday positions without clear momentum confirmation"
       }
     },
     "neutral": {
       "annual": {
-        "direction": "sell",
-        "thesis": "TSLA’s valuation is stretched with technicals signaling overbought and volatile conditions, justifying reducing exposure near current highs.",
-        "setup": "Gradual position trimming focusing on securing gains with trailing stop loss near 350.",
+        "direction": "hold",
+        "thesis": "Balanced view with strong long-term fundamentals but near-term risks including valuation, regulatory/legal uncertainties, and competitive pressures; recommend maintaining positions without adding exposure.",
+        "setup": "Price above SMA support; RSI overbought; legal and market risks acknowledged; monitor support around 330-335 carefully.",
         "entry": {
-          "rule": "Trim positions incrementally near resistance zone 380-395.",
-          "band": "380-395",
-          "conditions": [
-            "RSI > 70",
-            "MACD peaking"
-          ]
+          "rule": "No new annual entries; maintain current exposure",
+          "band": "",
+          "conditions": []
         },
         "stop": {
-          "rule": "Set trailing stop 10% below entry to lock profits.",
-          "level": "~350",
-          "invalidation": "Price drops below 340 with RSI decreasing."
+          "rule": "Monitor for price breach below 330",
+          "level": "330",
+          "invalidation": "Sustained close below 320 suggests re-evaluation"
         },
-        "targets": [
-          "Lock-in partial profits at 395",
-          "Exit further near fallback to 330 SMA"
-        ],
+        "targets": [],
         "sizing": {
           "max_size_pct_portfolio": 15.0,
-          "risk_per_trade_pct": 1.5,
+          "risk_per_trade_pct": 1.0,
           "pyramiding": "none"
         },
-        "vol_anchor": "ATR elevated; cautious sizing advised.",
+        "vol_anchor": "ATR ~13.75",
         "liquidity": {
-          "min_adv_usd": "Moderate",
-          "max_spread_bps": "5",
-          "notes": "Avoid large fills at peak prices."
+          "min_adv_usd": "10M",
+          "max_spread_bps": "10",
+          "notes": "Limit new exposure"
+        },
+        "time": {
+          "review": "Monthly",
+          "max_hold": "1 year",
+          "time_stop": null
+        },
+        "contingencies": [
+          "Trim on material legal news or market deterioration",
+          "Consider hedging"
+        ],
+        "one_liner": "Preserve capital with cautious stance amid uncertainty"
+      },
+      "swing": {
+        "direction": "hold",
+        "thesis": "Moderate swing approach favoring position maintenance with active risk monitoring around critical support and fundamental developments.",
+        "setup": "Price tests support zone with volatile swings; volume mixed; sector and company risks present.",
+        "entry": {
+          "rule": "No new swing entries; monitor and manage existing positions prudently",
+          "band": "",
+          "conditions": []
+        },
+        "stop": {
+          "rule": "Stop-loss at 325 to limit downside",
+          "level": "325",
+          "invalidation": "Breaching 320 level invalidates swing stability"
+        },
+        "targets": [],
+        "sizing": {
+          "max_size_pct_portfolio": 10.0,
+          "risk_per_trade_pct": 1.0,
+          "pyramiding": "none"
+        },
+        "vol_anchor": "ATR ~13.75",
+        "liquidity": {
+          "min_adv_usd": "5M",
+          "max_spread_bps": "15",
+          "notes": "Maintain liquidity for risk exit"
         },
         "time": {
           "review": "Weekly",
@@ -167,267 +202,217 @@
           "time_stop": null
         },
         "contingencies": [
-          "If price breaks above 480 with good volume, reassess for re-entry.",
-          "If RSI falls below 60, prepare to exit."
+          "Hedge on sector weakness",
+          "Partial trims on negative signals"
         ],
-        "one_liner": "Capitalize gains by trimming exposure in overbought conditions."
-      },
-      "swing": {
-        "direction": "sell",
-        "thesis": "Risk of pullback high; reduce exposure with stop near SMA support.",
-        "setup": "Scale down positions while monitoring momentum.",
-        "entry": {
-          "rule": "Begin reducing holdings around 390-395 band.",
-          "band": "390-395",
-          "conditions": [
-            "RSI high",
-            "Momentum signs weakening"
-          ]
-        },
-        "stop": {
-          "rule": "Stop at 330 SMA support region; exit if broken.",
-          "level": "330",
-          "invalidation": "Break below 330 invalidates neutral thesis."
-        },
-        "targets": [
-          "Partial profit taking at 370",
-          "Exit if 330 support fails"
-        ],
-        "sizing": {
-          "max_size_pct_portfolio": 10.0,
-          "risk_per_trade_pct": 1.0,
-          "pyramiding": "none"
-        },
-        "vol_anchor": "Volatility calls for tight risk controls.",
-        "liquidity": {
-          "min_adv_usd": "Moderate",
-          "max_spread_bps": "5",
-          "notes": "Enter exits during liquidity peaks."
-        },
-        "time": {
-          "review": "Biweekly",
-          "max_hold": "3 months",
-          "time_stop": null
-        },
-        "contingencies": [
-          "Re-enter only after confirmed support and momentum recovery."
-        ],
-        "one_liner": "Prudent trimming anticipating pullback near strong support."
-      },
-      "intraday": {
-        "direction": "sell",
-        "thesis": "Avoid initiating intraday buys amid overbought RSI and elevated volatility; consider tactical short selling on extreme momentum exhaustion.",
-        "setup": "Short positions only after intraday confirmation of reversal.",
-        "entry": {
-          "rule": "Enter shorts on confirmed breakdown below intraday VWAP with volume confirmation.",
-          "band": "Below intraday VWAP",
-          "conditions": [
-            "RSI dropping",
-            "Volume increasing on sell side"
-          ]
-        },
-        "stop": {
-          "rule": "Tight stop above recent intraday high.",
-          "level": "Recent high",
-          "invalidation": "Price rebound above entry point."
-        },
-        "targets": [
-          "Short target near intraday support levels"
-        ],
-        "sizing": {
-          "max_size_pct_portfolio": 3.0,
-          "risk_per_trade_pct": 0.5,
-          "pyramiding": "none"
-        },
-        "vol_anchor": "High volatility warrants small, quick trades.",
-        "liquidity": {
-          "min_adv_usd": "High",
-          "max_spread_bps": "3",
-          "notes": "Prefer trades in first 3 hours of session."
-        },
-        "time": {
-          "review": "Daily",
-          "max_hold": "intraday",
-          "time_stop": "Close"
-        },
-        "contingencies": [
-          "Quick exits if momentum fails."
-        ],
-        "one_liner": "Tactical intraday shorts to capitalize on overbought exhaustion."
-      }
-    },
-    "conservative": {
-      "annual": {
-        "direction": "sell",
-        "thesis": "Given overbought conditions and high valuation risk, a conservative approach is full or partial exit to preserve capital with strict stops below 330 SMA.",
-        "setup": "Sell to reduce exposure with stops tight near 320-330 support.",
-        "entry": {
-          "rule": "Execute sell orders in 385-395 range to lock profits.",
-          "band": "385-395",
-          "conditions": [
-            "RSI > 70",
-            "Overextended MACD"
-          ]
-        },
-        "stop": {
-          "rule": "Stop on unexpected price move back above 400 with strong volume, reevaluate.",
-          "level": "400",
-          "invalidation": "Breakout above 400 suggests renewed momentum."
-        },
-        "targets": [
-          "Full sell near 380-395 range",
-          "Avoid re-entry until confirmed pullback and trend reset"
-        ],
-        "sizing": {
-          "max_size_pct_portfolio": 5.0,
-          "risk_per_trade_pct": 1.0,
-          "pyramiding": "none"
-        },
-        "vol_anchor": "Volatility high, limit exposure aggressively.",
-        "liquidity": {
-          "min_adv_usd": "Moderate",
-          "max_spread_bps": "5",
-          "notes": "Use limit orders to capture target prices."
-        },
-        "time": {
-          "review": "Monthly",
-          "max_hold": "1 month",
-          "time_stop": null
-        },
-        "contingencies": [
-          "Reassess only after confirmed pullback below 330 SMA and improvement in fundamentals."
-        ],
-        "one_liner": "Conservatively reduce exposure now; capital preservation priority."
-      },
-      "swing": {
-        "direction": "sell",
-        "thesis": "Downside protection prioritized via position reduction at early signs of momentum loss.",
-        "setup": "Begin sales at signs of RSI decline from peak and momentum weakening.",
-        "entry": {
-          "rule": "Sell 50% position on RSI dropping below 70 after high peak.",
-          "band": "380-395",
-          "conditions": [
-            "MACD turning flat or declining"
-          ]
-        },
-        "stop": {
-          "rule": "Stop losses placed at 330 SMA support.",
-          "level": "330",
-          "invalidation": "Sustained break below 320."
-        },
-        "targets": [
-          "Partial sales at 380-395 to 350 range."
-        ],
-        "sizing": {
-          "max_size_pct_portfolio": 3.0,
-          "risk_per_trade_pct": 1.0,
-          "pyramiding": "none"
-        },
-        "vol_anchor": "Volatility cautious; use tight stops.",
-        "liquidity": {
-          "min_adv_usd": "Moderate",
-          "max_spread_bps": "5",
-          "notes": "Execute in smaller tranches to avoid slippage."
-        },
-        "time": {
-          "review": "Monthly",
-          "max_hold": "3 months",
-          "time_stop": null
-        },
-        "contingencies": [
-          "Hold off on purchases until confirmation of a trend reversal."
-        ],
-        "one_liner": "Conservative trimming with tight risk controls."
+        "one_liner": "Manage risk actively, hold positions with caution"
       },
       "intraday": {
         "direction": "hold",
-        "thesis": "Avoid additional intraday trades until momentum normalizes; prioritize capital preservation.",
-        "setup": "No new intraday longs; observe for reversal signals.",
+        "thesis": "Intraday activity minimized due to unfavorable momentum signals and overbought conditions; prioritize capital preservation.",
+        "setup": "Lack of clear momentum for entries; high volatility risks.",
         "entry": {
-          "rule": "No intraday buy orders while RSI >70 and ATR elevated.",
+          "rule": "No new intraday positions",
           "band": "",
           "conditions": []
         },
         "stop": {
-          "rule": "Use tight intraday stops for any existing positions below VWAP.",
-          "level": "Intraday support",
-          "invalidation": "Intraday close above VWAP indicates potential reversal."
+          "rule": "If positions exist, use tight stops",
+          "level": "Within 0.5%",
+          "invalidation": "Momentum reversal intraday"
         },
-        "targets": [
-          "Focus on risk avoidance rather than profit chasing intraday."
-        ],
+        "targets": [],
         "sizing": {
-          "max_size_pct_portfolio": 1.0,
+          "max_size_pct_portfolio": 2.0,
           "risk_per_trade_pct": 0.3,
           "pyramiding": "none"
         },
-        "vol_anchor": "High ATR requires minimized intraday risk exposure.",
+        "vol_anchor": "ATR ~13.75",
         "liquidity": {
-          "min_adv_usd": "High",
-          "max_spread_bps": "3",
-          "notes": "Trade only during most liquid hours."
+          "min_adv_usd": "1M",
+          "max_spread_bps": "20",
+          "notes": "Focus on liquid market hours"
         },
         "time": {
           "review": "Daily",
-          "max_hold": "intraday",
-          "time_stop": "End of day"
+          "max_hold": "1 day",
+          "time_stop": "EOD"
         },
         "contingencies": [
-          "Exit promptly if intraday momentum reverses."
+          "Exit positions promptly on negative intraday momentum"
         ],
-        "one_liner": "Defensive intraday stance; avoid chasing prices."
+        "one_liner": "Avoid new intraday risk exposure"
+      }
+    },
+    "conservative": {
+      "annual": {
+        "direction": "hold",
+        "thesis": "Heightened caution due to ongoing legal, regulatory, and competitive headwinds combined with stretched valuations dictates a defensive posture maintaining but not increasing exposure.",
+        "setup": "Price supported by SMAs but vulnerable due to external risks; market share decline noted; uncertainty on regulatory fronts.",
+        "entry": {
+          "rule": "No new annual buys until clear risk resolution",
+          "band": "",
+          "conditions": []
+        },
+        "stop": {
+          "rule": "Stop-loss triggered below 325",
+          "level": "325",
+          "invalidation": "Price movement below 320 signals increased downside risk"
+        },
+        "targets": [],
+        "sizing": {
+          "max_size_pct_portfolio": 8.0,
+          "risk_per_trade_pct": 1.0,
+          "pyramiding": "none"
+        },
+        "vol_anchor": "ATR ~13.75",
+        "liquidity": {
+          "min_adv_usd": "15M",
+          "max_spread_bps": "8",
+          "notes": "Prioritize minimal spread and firm liquidity given risk profile"
+        },
+        "time": {
+          "review": "Monthly",
+          "max_hold": "1+ year",
+          "time_stop": null
+        },
+        "contingencies": [
+          "Consider hedging or trimming on adverse news",
+          "Increase cash allocation if risk escalates"
+        ],
+        "one_liner": "Protect capital amid uncertainty"
+      },
+      "swing": {
+        "direction": "hold",
+        "thesis": "Maintain current swing exposure with tight risk management; no increase given margin pressure and competition risks.",
+        "setup": "Volatile price near key supports; legal risk looming; moderate sector momentum.",
+        "entry": {
+          "rule": "No new swing entries recommended",
+          "band": "",
+          "conditions": []
+        },
+        "stop": {
+          "rule": "Tight stops below 320-325 region",
+          "level": "320-325",
+          "invalidation": "Violation warrants reassessment"
+        },
+        "targets": [],
+        "sizing": {
+          "max_size_pct_portfolio": 5.0,
+          "risk_per_trade_pct": 0.5,
+          "pyramiding": "none"
+        },
+        "vol_anchor": "ATR ~13.75",
+        "liquidity": {
+          "min_adv_usd": "7M",
+          "max_spread_bps": "12",
+          "notes": "Liquidity prioritized for risk exits"
+        },
+        "time": {
+          "review": "Weekly",
+          "max_hold": "3-6 months",
+          "time_stop": null
+        },
+        "contingencies": [
+          "Partial trimming if momentum fades",
+          "Apply hedges if legal risks manifest"
+        ],
+        "one_liner": "Hold with caution, focus on downside protection"
+      },
+      "intraday": {
+        "direction": "hold",
+        "thesis": "Avoid intraday trading due to elevated volatility and unfavorable momentum signals; protect principal.",
+        "setup": "Intraday RSI overbought; volume volatile; risk outweighs reward.",
+        "entry": {
+          "rule": "No new intraday entries",
+          "band": "",
+          "conditions": []
+        },
+        "stop": {
+          "rule": "If holding intraday positions, apply very tight stops",
+          "level": "Within 0.3%",
+          "invalidation": "Rapid adverse moves intraday"
+        },
+        "targets": [],
+        "sizing": {
+          "max_size_pct_portfolio": 1.0,
+          "risk_per_trade_pct": 0.2,
+          "pyramiding": "none"
+        },
+        "vol_anchor": "ATR ~13.75",
+        "liquidity": {
+          "min_adv_usd": "1M",
+          "max_spread_bps": "20",
+          "notes": "Limit intraday size"
+        },
+        "time": {
+          "review": "Daily",
+          "max_hold": "1 day",
+          "time_stop": "End of session"
+        },
+        "contingencies": [
+          "Immediate exit on adverse momentum"
+        ],
+        "one_liner": "Focus strictly on capital preservation"
       }
     }
   },
   "conflicts_and_resolutions": [
-    "Aggressive seeks to buy on dips near 330 SMA leveraging momentum continuation; Conservative and Neutral counsel reducing current exposure due primarily to overbought RSI and elevated volatility.",
-    "Resolved by enforcing size caps (max 30% portfolio, max 3% risk per trade) and advocating trimmed buys only tactically after confirmed stabilization, with primary bias to reduce outright holdings today.",
-    "All agree that overbought RSI and risk of pullback require disciplined stops below 320-330 SMA support and close monitoring of momentum indicators (MACD, RSI).",
-    "Intraday strategies prefer hands-off or defensive stances given elevated volatility and overbought levels, minimizing risk of intraday losses."
+    "Aggressive view proposes buying with scaling and tight stops to capture medium-term momentum; resolved by incorporating staging and strict risk controls respecting sizing caps.",
+    "Safe and Neutral perspectives emphasize caution due to legal, regulatory, and valuation risks; resolved by setting a hold recommendation with readiness to trim/hedge and not adding new exposure.",
+    "Disagreement on intraday activity settled by unanimous recommendation to avoid new intraday trades given overbought and volatile conditions.",
+    "Sizing conflicts resolved by capping max portfolio exposure at 30% and risk per trade at 3% as per instruction."
   ],
   "execution_ticket": {
     "instrument": "TSLA",
-    "side": "sell",
-    "entry_method": "limit and trailing stop orders",
-    "initial_size_plan": "Gradual trimming of 20-30% current position sized to max 30% portfolio exposure with max 3% risk per trade; initial trims in 380-395 band, with stops below 330 SMA.",
-    "max_slippage_bps": "5",
+    "side": "none",
+    "entry_method": "N/A - Hold position",
+    "initial_size_plan": "Maintain existing position size within 30% portfolio max sizing and 3% risk per trade constraints",
+    "max_slippage_bps": "10",
     "time_in_force": "GTC",
     "monitoring_checklist": [
-      "Monitor RSI for drop below 70 indicating pullback confirmation.",
-      "Watch MACD for momentum reversal signals.",
-      "Review price action around 330 SMA support for potential re-entry points.",
-      "Check volume for institutional activity confirmation.",
-      "Adjust stops to trailing as price moves down to lock gains.",
-      "Stay alert for breakout above 480 to reconsider aggressive buying."
+      "Monitor price support at 330-335 zone",
+      "Watch RSI for overbought readings and momentum shifts",
+      "Track legal and regulatory news flow for impact",
+      "Observe volume to confirm trend strength or weakness",
+      "Review sector performance relative to SPY and DRIV ETF",
+      "Stay alert to earnings or guidance updates",
+      "Evaluate macroeconomic and Fed policy developments"
     ]
   },
   "risk_budget_summary": {
-    "exposure_after_trade": "Reduced to max 30% portfolio target size, down from higher exposure.",
-    "position_risk": "Maintained below 3% risk per trade by tight stops and measured entry sizes.",
+    "exposure_after_trade": "Holding current exposure within portfolio limits",
+    "position_risk": "Moderate due to elevated volatility and legal/regulatory uncertainties",
     "portfolio_risk_considerations": [
-      "High volatility requires tighter stops and smaller increments in position size.",
-      "Portfolio-wide exposure capped to prevent overconcentration in TSLA due to stock-specific volatility.",
-      "Seasonal and technical factors inform timing of re-entry to prevent chase risk."
+      "Maintain risk exposure under 30% portfolio sizing ceiling",
+      "Limit risk per trade to 3% max",
+      "Avoid incremental exposure until clearer catalysts emerge",
+      "Apply hedging selectively depending on risk appetite",
+      "Observe market-wide volatility and sector trends as modifiers"
     ],
     "hard_constraints": [
-      "Max position size capped at 30% of portfolio.",
-      "Max risk per trade capped at 3%.",
-      "Stops must be set no wider than 10% below entry price.",
-      "Avoid pyramiding intraday due to risk of volatility."
+      "Max portfolio size at 30%",
+      "Max risk per trade at 3%",
+      "No pyramiding beyond prescribed methods",
+      "Avoid new buys under current overbought and uncertain conditions"
     ]
   },
   "what_would_change_my_mind": [
-    "RSI declining below 60 with MACD remaining positive indicating sustained momentum.",
-    "Price breakout above 480 on strong volume confirming new bullish phase.",
-    "Significant positive fundamental or industry changes reducing operational risks.",
-    "Volume and institution participation increasing substantially at new highs.",
-    "Volatility (ATR) moderating allowing safer layering into positions."
+    "Price sustains above 350-380 with strong volume and fundamental confirmation supporting momentum continuation",
+    "Resolution or mitigation of legal and regulatory risks",
+    "Improved clarity on competitive positioning and margin expansion",
+    "Significant positive catalysts from product launches or earnings surprises",
+    "Macroeconomic environment confirming robust equity rally supportive of growth stocks",
+    "Sustained technical strength with RSI normalizing and MACD positive",
+    "Deterioration of key support below 320 with volume confirming breakdown",
+    "Evident worsening of sector conditions or Tesla-specific adverse news"
   ],
   "lessons_learned": [
-    "Strong momentum stocks can become overbought quickly necessitating disciplined risk controls.",
-    "Overreliance on peak momentum without stops exposes portfolio to sharp pullbacks.",
-    "Seasonality and technical signals provide valuable timing cues for entries and exits.",
-    "Pyramiding must be limited in volatile environments to manage downside.",
-    "Clear sizing caps protect against concentration and magnify risk management effectiveness."
+    "High momentum and positive seasonality can coexist with significant structural risks warranting caution",
+    "Strict sizing discipline critical to manage risk in volatile growth stocks",
+    "Aligning entry, stop, and target coherently ensures disciplined trade management",
+    "Monitoring multi-timeframe perspectives enriches decision quality",
+    "Avoid forcing decisions; holding is valid when risks offset clear entry merits",
+    "Remain flexible to update stance based on evolving fundamentals, technicals, and industry dynamics"
   ]
 }
